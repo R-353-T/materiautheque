@@ -1,0 +1,8 @@
+{
+    "tasks": {
+        "install": "deno run --allow-all ./script/install.ts",
+        "build": "deno run --allow-all ./script/build.ts",
+        "dev": "deno run --allow-all ./script/dev.ts",
+        "serve": "deno run --allow-all ./script/serve.ts"
+    }
+}

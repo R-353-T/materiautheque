@@ -1,0 +1,9 @@
+.DS_Store
+
+backend/config.dev.yml
+
+backend/build/**
+!backend/build/.gitkeep
+
+.vscode/
+node_modules/

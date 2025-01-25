@@ -1,0 +1,34 @@
+db:
+  host: localhost
+  name: 
+  username: 
+  password: 
+  charset: utf8mb4
+  prefix: litepress_
+
+site:
+  name: Matériauthèque
+  protocol: http
+  host: localhost
+  port: 8080
+  username: root
+  password: toor
+  email: root@localhost
+
+plugins:
+  - slug: jwt-authentication-for-wp-rest-api
+
+options:
+  - key: permalink_structure
+    value: /index.php/%postname%/
+
+extra: |
+  // WORDPRESS
+  define("WP_DEBUG", true);
+  define("WP_DEBUG_LOG", true);
+  define("WP_DEBUG_DISPLAY", true);
+  define("WP_ENVIRONMENT_TYPE", "development");
+  
+  // JWT AUTHENTICATION PLUGIN
+  define("JWT_AUTH_SECRET_KEY", "your-top-secret-key");
+  define("JWT_AUTH_CORS_ENABLE", true);
