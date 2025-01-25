@@ -1,6 +1,6 @@
 create table if not exists mate_unit_value (
   `id` int unsigned not null auto_increment primary key,
-  `text` text not null,
+  `value` text not null,
   `unitId` int unsigned not null,
   `position` int unsigned not null,
 

@@ -20,6 +20,14 @@ class SchemaError
         ];
     }
 
+    public static function paramNotUnique(string $name)
+    {
+        return [
+            "name" => $name,
+            "code" => "param_not_unique"
+        ];
+    }
+
     public static function paramTooLong(string $name, int $max)
     {
         return [
@@ -67,6 +75,15 @@ class SchemaError
         return [
             "name" => $name,
             "code" => "param_not_found"
+        ];
+    }
+
+    public static function paramNotForeignOf(string $name, string $foreign)
+    {
+        return [
+            "name" => $name,
+            "code" => "param_not_foreign_of",
+            "foreign" => $foreign
         ];
     }
 }

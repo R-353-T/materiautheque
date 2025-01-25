@@ -3,7 +3,7 @@
 $header_infos = array(
     "charset"           => get_bloginfo("charset"),
     "description"       => get_bloginfo("description"),
-    "body_classes"      => get_body_class(),
+    "body_classes"      => join(" ", get_body_class()),
     "lang_attributes"   => get_language_attributes()
 );
 
@@ -23,6 +23,6 @@ $header_infos = array(
     <!-- wp_head -->
     <?php wp_head(); ?>
 </head>
-<body class="<?php echo $header_infos["body_classes"]; ?>">
+<body class="<?php echo $header_infos["body_classes"]; ?>" style="background: #428bca; min-height: 100vh;">
     <!-- wp_body_open -->
     <?php wp_body_open(); ?>

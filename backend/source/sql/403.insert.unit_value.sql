@@ -1,4 +1,4 @@
-insert into mate_unit_value (`text`, `unitId`, `position`) VALUES
+insert into mate_unit_value (`value`, `unitId`, `position`) VALUES
 	 ('Celsius (°C)',1,0),
 	 ('Fahrenheit (°F)',1,1),
 	 ('Kelvin (K)',1,2),

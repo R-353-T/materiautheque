@@ -4,24 +4,26 @@ namespace mate\controller;
 
 use mate\abstract\clazz\Controller;
 use mate\error\WPErrorBuilder;
-use mate\repository\ImageRepository;
-use mate\schema\ImageSchema;
+use mate\repository\UnitRepository;
+use mate\repository\UnitValueRepository;
+use mate\schema\UnitSchema;
+use mate\schema\UnitValueSchema;
 use mate\util\RestPermission;
 use mate\util\SqlSelectQueryOptions;
 use PDO;
 use WP_REST_Request;
 use WP_REST_Server;
 
-class ImageController extends Controller
+class UnitController extends Controller
 {
-    protected string $endpoint = "image";
+    protected string $endpoint = "unit";
     protected array $routes = [
         "create" => [
             "method" => WP_REST_Server::CREATABLE,
             "permission" => RestPermission::EDITOR
         ],
         "update" => [
-            "method" => WP_REST_Server::CREATABLE,
+            "method" => WP_REST_Server::EDITABLE,
             "permission" => RestPermission::EDITOR
         ],
         "list" => [
@@ -38,13 +40,17 @@ class ImageController extends Controller
         ]
     ];
 
-    private readonly ImageSchema $schema;
-    private readonly ImageRepository $repository;
+    private readonly UnitSchema $schema;
+    private readonly UnitValueSchema $valueSchema;
+
+    private readonly UnitRepository $repository;
 
     public function __construct()
     {
-        $this->schema = ImageSchema::inject();
-        $this->repository = ImageRepository::inject();
+        $this->schema = UnitSchema::inject();
+        $this->valueSchema = UnitValueSchema::inject();
+
+        $this->repository = UnitRepository::inject();
     }
 
     public function create(WP_REST_Request $req)
@@ -52,6 +58,13 @@ class ImageController extends Controller
         $model = $this->schema->create($req);
         if (is_wp_error($model)) {
             return $model;
+        }
+
+        $valueList = $this->valueSchema->create($req);
+        if (is_wp_error($valueList)) {
+            return $valueList;
+        } else {
+            $model->valueList = $valueList["valueList"];
         }
 
         return $this->ok($this->repository->insert($model));
@@ -64,7 +77,14 @@ class ImageController extends Controller
             return $model;
         }
 
-        return $this->repository->update($model);
+        $valueList = $this->valueSchema->update($req);
+        if (is_wp_error($valueList)) {
+            return $valueList;
+        } else {
+            $model->valueList = $valueList["valueList"];
+        }
+
+        return $this->ok($this->repository->update($model));
     }
 
     public function list(WP_REST_Request $req)

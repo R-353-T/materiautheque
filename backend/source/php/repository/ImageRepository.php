@@ -51,7 +51,6 @@ class ImageRepository extends Repository
                 $this->service->delete($model->relative);
             }
 
-            echo "???D";
             return WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
         }
     }

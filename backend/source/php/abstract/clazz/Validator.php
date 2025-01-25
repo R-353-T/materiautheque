@@ -66,6 +66,36 @@ class Validator
         return $name;
     }
 
+    public function validDescription(WP_REST_Request $req, array &$errors, string $paramName = "description"): string
+    {
+        $description = $req->get_param($paramName);
+
+        if ($description === null) {
+            $errors[] = SchemaError::paramRequired($paramName);
+            return "";
+        }
+
+        $description = mate_sanitize_string($description);
+
+        if ($description === false) {
+            $errors[] = SchemaError::paramIncorrectType($paramName, "string");
+            return "";
+        }
+
+        $l = strlen($description);
+        if ($l === 0) {
+            $errors[] = SchemaError::paramEmpty($paramName);
+            return "";
+        }
+
+        if ($l > 4096) {
+            $errors[] = SchemaError::paramTooLong($paramName, 4096);
+            return "";
+        }
+
+        return $description;
+    }
+
     public function validSearch(WP_REST_Request $req, string $paramName = "search"): string|null
     {
         $search = $req->get_param($paramName);

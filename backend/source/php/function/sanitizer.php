@@ -17,3 +17,12 @@ function mate_sanitize_int(mixed $v): int|false
 
     return filter_var($v, FILTER_SANITIZE_NUMBER_INT);
 }
+
+function mate_sanitize_array(mixed $v): array|false
+{
+    if ($v === null || is_array($v) === false) {
+        return false;
+    } else {
+        return $v;
+    }
+}

@@ -12,6 +12,7 @@ use mate\abstract\clazz\Controller;
 use mate\abstract\clazz\Middleware;
 use mate\controller\ImageController;
 use mate\controller\TypeController;
+use mate\controller\UnitController;
 use mate\service\DbMigrationService;
 
 # Services Configuration
@@ -24,6 +25,7 @@ DbMigrationService::addDirectory(MATE_THEME_SQL_DIRECTORY);
 
 Controller::addController(TypeController::class);
 Controller::addController(ImageController::class);
+Controller::addController(UnitController::class);
 
 # Filters
 
