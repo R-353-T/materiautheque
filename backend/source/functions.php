@@ -1,0 +1,30 @@
+<?php
+
+require_once __DIR__ . "/php/constant.php";
+require_once __DIR__ . "/php/function/autoloader.php";
+
+spl_autoload_register(mate_autoloader(MATE_THEME_NAMESPACE, MATE_THEME_PHP_DIRECTORY));
+
+# Dependencies
+
+use mate\abstract\clazz\Controller;
+use mate\abstract\clazz\Middleware;
+use mate\service\DbMigrationService;
+
+# Services Configuration
+
+DbMigrationService::addDirectory(MATE_THEME_SQL_DIRECTORY);
+
+# Filters
+
+add_filter("rest_pre_dispatch", [ Middleware::class, "preFilter" ], 10, 3);
+add_filter("rest_post_dispatch", [ Middleware::class, "postFilter" ], 10, 3);
+
+add_filter("rest_exposed_cors_headers", [ Middleware::class, "exportCorsHeadersFilter" ], 10, 2);
+add_filter("rest_endpoints", [ Middleware::class, "endpointsFilter"]);
+add_filter("jwt_auth_expire", [ Middleware::class, "jwtExpirationTimeFilter"]);
+
+# Actions
+
+add_action("after_switch_theme", [ DbMigrationService::inject(), "upgrade" ]);
+add_action("rest_api_init", [ Controller::class, "loadControllers"]);
