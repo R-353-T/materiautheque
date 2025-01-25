@@ -9,8 +9,6 @@ use mate\util\HashMap;
 use mate\util\SqlSelectQueryOptions;
 use PDO;
 
-use function Avifinfo\read;
-
 abstract class Repository
 {
     use Singleton;
@@ -46,7 +44,7 @@ abstract class Repository
         throw new NotImplementedError();
     }
 
-    public function selectById($id, bool $cache = true): ?object
+    public function selectById(int $id, bool $cache = true): ?object
     {
         if ($cache && $this->cache->has($id)) {
             return $this->cache->get($id);
@@ -89,7 +87,7 @@ abstract class Repository
         return $r;
     }
 
-    public function deleteById($id): bool
+    public function deleteById(int $id): bool
     {
         $s = $this->db->prepare("DELETE FROM {$this->table} WHERE `id` = :id");
         $s->bindValue(":id", $id, PDO::PARAM_INT);
@@ -110,6 +108,6 @@ abstract class Repository
     {
         $options = $options ?? new SqlSelectQueryOptions();
         $c = $this->getCount($options);
-        return ceil($c / $options->pageSize);
+        return $c === 0 ? 1 : ceil($c / $options->pageSize);
     }
 }

@@ -2,6 +2,7 @@
 
 require_once __DIR__ . "/php/constant.php";
 require_once __DIR__ . "/php/function/autoloader.php";
+require_once __DIR__ . "/php/function/sanitizer.php";
 
 spl_autoload_register(mate_autoloader(MATE_THEME_NAMESPACE, MATE_THEME_PHP_DIRECTORY));
 
@@ -9,6 +10,7 @@ spl_autoload_register(mate_autoloader(MATE_THEME_NAMESPACE, MATE_THEME_PHP_DIREC
 
 use mate\abstract\clazz\Controller;
 use mate\abstract\clazz\Middleware;
+use mate\controller\ImageController;
 use mate\controller\TypeController;
 use mate\service\DbMigrationService;
 
@@ -21,6 +23,7 @@ DbMigrationService::addDirectory(MATE_THEME_SQL_DIRECTORY);
 ## Controllers
 
 Controller::addController(TypeController::class);
+Controller::addController(ImageController::class);
 
 # Filters
 

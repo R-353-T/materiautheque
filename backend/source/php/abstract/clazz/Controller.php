@@ -51,4 +51,19 @@ abstract class Controller
             ]
         );
     }
+
+    protected function page(array $data, int $pageIndex = null, int $pageSize = null, int $total = null)
+    {
+        return new WP_REST_Response(
+            [
+                "success" => true,
+                "data" => $data,
+                "pagination" => [
+                    "index" => $pageIndex,
+                    "size"  => $pageSize,
+                    "total" => $total
+                ]
+            ]
+        );
+    }
 }

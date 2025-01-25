@@ -26,10 +26,10 @@ class TypeController extends Controller
         $this->typeRepository = TypeRepository::inject();
     }
 
-    public function list(): array
+    public function list()
     {
         $sqlOptions = new SqlSelectQueryOptions();
         $sqlOptions->orderBy("name", "ASC");
-        return $this->typeRepository->selectAll($sqlOptions);
+        return $this->ok($this->typeRepository->selectAll($sqlOptions));
     }
 }

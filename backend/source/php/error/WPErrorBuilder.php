@@ -27,12 +27,15 @@ class WPErrorBuilder
         );
     }
 
-    public static function internalServerError(): WP_Error
+    public static function internalServerError(string|null $message = null, string|null $trace = null): WP_Error
     {
         return new WP_Error(
             "internal_server",
-            "Critical error",
-            ["status" => 500]
+            ($message !== null ? $message : "Critical error"),
+            [
+                "status" => 500,
+                "trace" => $trace
+            ]
         );
     }
 
