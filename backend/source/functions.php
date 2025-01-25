@@ -9,11 +9,18 @@ spl_autoload_register(mate_autoloader(MATE_THEME_NAMESPACE, MATE_THEME_PHP_DIREC
 
 use mate\abstract\clazz\Controller;
 use mate\abstract\clazz\Middleware;
+use mate\controller\TypeController;
 use mate\service\DbMigrationService;
 
 # Services Configuration
 
+## Database
+
 DbMigrationService::addDirectory(MATE_THEME_SQL_DIRECTORY);
+
+## Controllers
+
+Controller::addController(TypeController::class);
 
 # Filters
 

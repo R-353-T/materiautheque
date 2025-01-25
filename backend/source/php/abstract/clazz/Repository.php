@@ -5,6 +5,7 @@ namespace mate\abstract\clazz;
 use mate\abstract\trait\Singleton;
 use mate\error\NotImplementedError;
 use mate\service\DatabaseService;
+use mate\util\HashMap;
 use mate\util\SqlSelectQueryOptions;
 use PDO;
 
@@ -16,11 +17,13 @@ abstract class Repository
 
     protected string $table;
     protected string $model;
+    protected readonly HashMap $cache;
     protected readonly DatabaseService $db;
 
     public function __construct()
     {
         $this->db = DatabaseService::inject();
+        $this->cache = new HashMap();
     }
 
     public function getTable(): string
@@ -43,17 +46,27 @@ abstract class Repository
         throw new NotImplementedError();
     }
 
-    public function selectById($id): ?object
+    public function selectById($id, bool $cache = true): ?object
     {
+        if ($cache && $this->cache->has($id)) {
+            return $this->cache->get($id);
+        }
+
         $s = $this->db->prepare("SELECT * FROM {$this->table} WHERE `id` = :id");
         $s->bindValue(":id", $id, PDO::PARAM_INT);
         $s->execute();
         $s->setFetchMode(PDO::FETCH_CLASS, $this->model);
         $m = $s->fetch();
-        return $m !== false ? $m : null;
+
+        if ($m !== false) {
+            $this->cache->set($m->id, $m);
+            return $m;
+        } else {
+            return null;
+        }
     }
 
-    public function select(SqlSelectQueryOptions $options = null): array
+    public function selectAll(SqlSelectQueryOptions|null $options = null): array
     {
         $options = $options ?? new SqlSelectQueryOptions();
 
@@ -67,7 +80,13 @@ abstract class Repository
         $s = $this->db->prepare($q);
         $options->applyWhereBinds($s);
         $s->execute();
-        return $s->fetchAll(PDO::FETCH_CLASS, $this->model);
+        $r = $s->fetchAll(PDO::FETCH_CLASS, $this->model);
+
+        foreach ($r as $model) {
+            $this->cache->set($model->id, $model);
+        }
+
+        return $r;
     }
 
     public function deleteById($id): bool
@@ -78,7 +97,7 @@ abstract class Repository
         return $s->rowCount() > 0;
     }
 
-    public function getCount(SqlSelectQueryOptions $options = null): int
+    public function getCount(SqlSelectQueryOptions|null $options = null): int
     {
         $options = $options ?? new SqlSelectQueryOptions();
         $s = $this->db->prepare("SELECT COUNT(*) FROM {$this->table} {$options->getWhereQuery()}");
@@ -87,7 +106,7 @@ abstract class Repository
         return $s->fetchColumn();
     }
 
-    public function getPageCount(SqlSelectQueryOptions $options = null): int
+    public function getPageCount(SqlSelectQueryOptions|null $options = null): int
     {
         $options = $options ?? new SqlSelectQueryOptions();
         $c = $this->getCount($options);

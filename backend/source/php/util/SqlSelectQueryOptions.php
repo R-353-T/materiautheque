@@ -13,7 +13,7 @@ class SqlSelectQueryOptions
     private array $whereRawList = [];
     private array $orderByList = [];
 
-    public function __construct(int $pageIndex = null, int $pageSize = null)
+    public function __construct(int|null $pageIndex = null, int|null $pageSize = null)
     {
         $this->pageIndex = $pageIndex;
         $this->pageSize = $pageSize;

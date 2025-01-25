@@ -11,7 +11,7 @@ abstract class Controller
 
     protected static $CONTROLLER_LIST = [];
 
-    protected static function addController(string $controller)
+    public static function addController(string $controller)
     {
         self::$CONTROLLER_LIST[] = $controller;
     }
