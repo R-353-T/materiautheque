@@ -7,5 +7,5 @@ create table if not exists mate_template_group (
     `parentId` int unsigned,
 
     constraint `mate_template_group__templateId` foreign key (`templateId`) references mate_template (`id`) on delete cascade,
-    constraint `mate_template_group__parentId` foreign key (`parentId`) references mate_template_group (`id`)
+    constraint `mate_template_group__parentId` foreign key (`parentId`) references mate_template_group (`id`) on delete cascade
 );

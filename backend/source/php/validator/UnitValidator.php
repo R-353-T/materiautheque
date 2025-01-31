@@ -11,7 +11,6 @@ class UnitValidator extends Validator
 {
     public function __construct()
     {
-        /** @var UnitRepository */
         $this->repository = UnitRepository::inject();
     }
 

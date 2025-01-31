@@ -123,7 +123,8 @@ class UnitController extends Controller
 
     public function delete(WP_REST_Request $req)
     {
-        $model = $this->schema->get($req);
+        $model = $this->schema->delete($req);
+
         if (is_wp_error($model)) {
             return $model;
         }

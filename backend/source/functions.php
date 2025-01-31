@@ -11,7 +11,9 @@ spl_autoload_register(mate_autoloader(MATE_THEME_NAMESPACE, MATE_THEME_PHP_DIREC
 use mate\abstract\clazz\Controller;
 use mate\abstract\clazz\Middleware;
 use mate\controller\EnumeratorController;
+use mate\controller\GroupController;
 use mate\controller\ImageController;
+use mate\controller\TemplateController;
 use mate\controller\TypeController;
 use mate\controller\UnitController;
 use mate\service\DbMigrationService;
@@ -28,6 +30,8 @@ Controller::addController(TypeController::class);
 Controller::addController(ImageController::class);
 Controller::addController(UnitController::class);
 Controller::addController(EnumeratorController::class);
+Controller::addController(TemplateController::class);
+Controller::addController(GroupController::class);
 
 # Filters
 

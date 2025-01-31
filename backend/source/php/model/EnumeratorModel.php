@@ -6,7 +6,7 @@ use mate\abstract\clazz\Model;
 
 class EnumeratorModel extends Model
 {
-    public ?int $id;
+    public ?int $id = null;
     public string $name;
     public string $description;
     public int $typeId;

@@ -12,12 +12,18 @@ class Validator
 
     protected Repository $repository;
 
-    public function validId(WP_REST_Request $req, array &$errors, string $paramName = "id"): int
-    {
+    public function validId(
+        WP_REST_Request $req,
+        array &$errors,
+        string $paramName = "id",
+        bool $required = true
+    ): int {
         $id = $req->get_param($paramName);
 
         if ($id === null) {
-            $errors[] = SchemaError::paramRequired($paramName);
+            if ($required) {
+                $errors[] = SchemaError::paramRequired($paramName);
+            }
             return 0;
         }
 
