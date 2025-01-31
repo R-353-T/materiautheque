@@ -15,6 +15,11 @@ defined("MATE_THEME_PHP_DIRECTORY") or define("MATE_THEME_PHP_DIRECTORY", MATE_T
 
 defined("MATE_THEME_SQL_DIRECTORY") or define("MATE_THEME_SQL_DIRECTORY", MATE_THEME_DIRECTORY . "/sql");
 
+# DATE & TIME
+
+defined("MATE_TIMEZONE") or define("MATE_TIMEZONE", "Europe/Paris");
+defined("MATE_DATE_FORMAT") or define("MATE_DATE_FORMAT", "Y-m-d H:i:s");
+
 # API
 
 defined("MATE_THEME_AUTH_ENDPOINT") or define("MATE_THEME_AUTH_ENDPOINT", "/jwt-auth/v1/token");

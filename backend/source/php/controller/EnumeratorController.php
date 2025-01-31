@@ -4,24 +4,25 @@ namespace mate\controller;
 
 use mate\abstract\clazz\Controller;
 use mate\error\WPErrorBuilder;
-use mate\repository\ImageRepository;
-use mate\schema\ImageSchema;
+use mate\model\ValueDto;
+use mate\repository\EnumeratorRepository;
+use mate\schema\EnumeratorSchema;
 use mate\util\RestPermission;
 use mate\util\SqlSelectQueryOptions;
 use PDO;
 use WP_REST_Request;
 use WP_REST_Server;
 
-class ImageController extends Controller
+class EnumeratorController extends Controller
 {
-    protected string $endpoint = "image";
+    protected string $endpoint = "enumerator";
     protected array $routes = [
         "create" => [
             "method" => WP_REST_Server::CREATABLE,
             "permission" => RestPermission::EDITOR
         ],
         "update" => [
-            "method" => WP_REST_Server::CREATABLE,
+            "method" => WP_REST_Server::EDITABLE,
             "permission" => RestPermission::EDITOR
         ],
         "list" => [
@@ -38,13 +39,13 @@ class ImageController extends Controller
         ]
     ];
 
-    private readonly ImageSchema $schema;
-    private readonly ImageRepository $repository;
+    private readonly EnumeratorSchema $schema;
+    private readonly EnumeratorRepository $repository;
 
     public function __construct()
     {
-        $this->schema = ImageSchema::inject();
-        $this->repository = ImageRepository::inject();
+        $this->schema = EnumeratorSchema::inject();
+        $this->repository = EnumeratorRepository::inject();
     }
 
     public function create(WP_REST_Request $req)
@@ -58,6 +59,7 @@ class ImageController extends Controller
         if (is_wp_error($model)) {
             return $model;
         } else {
+            $model->valueList = ValueDto::buildList($model->typeId, $model->valueList);
             return $this->ok($model);
         }
     }
@@ -73,6 +75,7 @@ class ImageController extends Controller
         if (is_wp_error($model)) {
             return $model;
         } else {
+            $model->valueList = ValueDto::buildList($model->typeId, $model->valueList);
             return $this->ok($model);
         }
     }
@@ -108,7 +111,9 @@ class ImageController extends Controller
             return $model;
         }
 
-        return $this->ok($this->repository->selectById($model->id));
+        $model = $this->repository->selectById($model->id);
+        $model->valueList = ValueDto::buildList($model->typeId, $model->valueList);
+        return $this->ok($model);
     }
 
     public function delete(WP_REST_Request $req)

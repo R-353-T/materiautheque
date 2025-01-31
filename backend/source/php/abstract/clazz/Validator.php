@@ -53,6 +53,7 @@ class Validator
         }
 
         $l = strlen($name);
+
         if ($l === 0) {
             $errors[] = SchemaError::paramEmpty($paramName);
             return "";
@@ -117,11 +118,7 @@ class Validator
     {
         $pageIndex = mate_sanitize_int($req->get_param($paramName));
 
-        if ($pageIndex === false) {
-            return 0;
-        }
-
-        if ($pageIndex < 1) {
+        if ($pageIndex === false || $pageIndex < 1) {
             return 1;
         }
 

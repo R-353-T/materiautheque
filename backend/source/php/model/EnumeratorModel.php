@@ -4,12 +4,13 @@ namespace mate\model;
 
 use mate\abstract\clazz\Model;
 
-class UnitModel extends Model
+class EnumeratorModel extends Model
 {
-    public ?int $id = null;
+    public ?int $id;
     public string $name;
     public string $description;
+    public int $typeId;
 
-    /** @var UnitValueModel[]|null */
+    /** @var EnumeratorValueModel[]|ValueDto[]|null */
     public ?array $valueList = null;
 }

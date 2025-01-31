@@ -77,6 +77,7 @@ abstract class Repository
 
         $s = $this->db->prepare($q);
         $options->applyWhereBinds($s);
+
         $s->execute();
         $r = $s->fetchAll(PDO::FETCH_CLASS, $this->model);
 

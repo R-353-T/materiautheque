@@ -42,7 +42,7 @@ class ImageRepository extends Repository
                 $s->execute();
                 $model->id = $this->db->lastInsertId();
                 $this->db->commit();
-                return $this->selectById($model->id);
+                return $this->selectById($model->id, false);
             }
         } catch (Throwable $err) {
             $this->db->rollback();
@@ -92,7 +92,7 @@ class ImageRepository extends Repository
                     return $deleteErr;
                 } else {
                     $this->db->commit();
-                    return $this->selectById($model->id);
+                    return $this->selectById($model->id, false);
                 }
             }
         } catch (Throwable $err) {

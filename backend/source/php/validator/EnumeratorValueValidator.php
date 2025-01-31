@@ -4,31 +4,36 @@ namespace mate\validator;
 
 use mate\abstract\clazz\Validator;
 use mate\error\SchemaError;
-use mate\model\UnitModel;
-use mate\model\UnitValueModel;
-use mate\repository\UnitRepository;
-use mate\repository\UnitValueRepository;
+use mate\model\EnumeratorModel;
+use mate\model\EnumeratorValueModel;
+use mate\model\TypeModel;
+use mate\repository\EnumeratorRepository;
+use mate\repository\EnumeratorValueRepository;
+use mate\repository\TypeRepository;
 use WP_REST_Request;
 
-class UnitValueValidator extends Validator
+class EnumeratorValueValidator extends Validator
 {
-    private readonly UnitRepository $unitRepository;
-    private readonly TypeValueValidator $typeValidator;
+    private readonly EnumeratorRepository $enumeratorRepository;
+    private readonly TypeRepository $typeRepository;
+    private readonly TypeValueValidator $typeValueValidator;
 
     public function __construct()
     {
-        $this->repository = UnitValueRepository::inject();
-        $this->unitRepository = UnitRepository::inject();
-        $this->typeValidator = TypeValueValidator::inject();
+        $this->enumeratorRepository = EnumeratorRepository::inject();
+        $this->repository = EnumeratorValueRepository::inject();
+        $this->typeRepository = TypeRepository::inject();
+        $this->typeValueValidator = TypeValueValidator::inject();
     }
 
     public function validValueList(WP_REST_Request $req, array &$errors): array
     {
         $output = [];
-        $unitId = $req->get_param("id");
+        $enumeratorId = $req->get_param("id");
         $valueList = $req->get_param("valueList");
+        $typeId = $req->get_param("typeId");
 
-        if (isset($errors['id'])) {
+        if (isset($errors['id']) || isset($errors['typeId'])) {
             return [];
         }
 
@@ -44,13 +49,14 @@ class UnitValueValidator extends Validator
             return [];
         }
 
-        $unit = $unitId !== null
-            ? $this->unitRepository->selectById($unitId)
+        $type = $this->typeRepository->selectById($typeId);
+        $enumerator = $enumeratorId !== null
+            ? $this->enumeratorRepository->selectById($enumeratorId)
             : null;
 
         foreach ($valueList as $valueIndex => $value) {
             $vErrors            = [];
-            $model              = $this->validValue($unit, $value, $vErrors);
+            $model              = $this->validValue($enumerator, $type, $value, $vErrors);
             $model->position    = $valueIndex + 1;
             $output[]           = $model;
 
@@ -66,9 +72,13 @@ class UnitValueValidator extends Validator
         return $output;
     }
 
-    private function validValue(?UnitModel $unit, mixed $value, array &$errors): UnitValueModel
-    {
-        $model = new UnitValueModel();
+    private function validValue(
+        ?EnumeratorModel $enumerator,
+        TypeModel $type,
+        mixed $value,
+        array &$errors
+    ): EnumeratorValueModel {
+        $model = new EnumeratorValueModel();
 
         if ($value === null) {
             $errors[] = SchemaError::paramRequired("__value__");
@@ -82,19 +92,22 @@ class UnitValueValidator extends Validator
             return $model;
         }
 
-        $model->id = $this->validValueId($unit, $value, $errors);
-        $model->value = $this->validValueValue($value, $errors);
+        $model->id = $this->validValueId($enumerator, $value, $errors);
+
+        $c = $type->column;
+        $model->$c = $this->validValueValue($type, $value, $errors);
+
         return $model;
     }
 
-    private function validValueValue(mixed $value, array &$errors): string
+    private function validValueValue(TypeModel $type, mixed $value, array &$errors): mixed
     {
         if (!isset($value['value'])) {
             $errors[] = SchemaError::paramRequired("value");
-            return "";
+            return null;
         }
 
-        $value = $this->typeValidator->validLabel($value['value'], $errors, "value");
+        $value = $this->typeValueValidator->validValue($type, $value['value'], $errors, "value");
 
         if (count($errors) === 0 && is_string($value) && strlen($value) === 0) {
             $errors[] = SchemaError::paramEmpty("value");
@@ -104,7 +117,7 @@ class UnitValueValidator extends Validator
         return $value;
     }
 
-    private function validValueId(?UnitModel $unit, mixed $value, array &$errors): ?int
+    private function validValueId(?EnumeratorModel $unit, mixed $value, array &$errors): ?int
     {
         if (isset($value['id'])) {
             if ($unit === null) {
@@ -117,7 +130,7 @@ class UnitValueValidator extends Validator
             $valueId = $this->validId($req, $errors);
 
             if (
-                $valueId !== 0
+                $valueId !== 0 && $unit !== null
                 && count(array_filter($unit->valueList, fn($v) => $v->id === $valueId)) === 0
             ) {
                 $errors[] = SchemaError::paramNotForeignOf("id", $unit->id);
@@ -125,8 +138,8 @@ class UnitValueValidator extends Validator
             }
 
             return $valueId;
-        } else {
-            return null;
         }
+
+        return null;
     }
 }

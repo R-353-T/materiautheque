@@ -4,10 +4,9 @@ namespace mate\controller;
 
 use mate\abstract\clazz\Controller;
 use mate\error\WPErrorBuilder;
+use mate\model\ValueDto;
 use mate\repository\UnitRepository;
-use mate\repository\UnitValueRepository;
 use mate\schema\UnitSchema;
-use mate\schema\UnitValueSchema;
 use mate\util\RestPermission;
 use mate\util\SqlSelectQueryOptions;
 use PDO;
@@ -41,50 +40,48 @@ class UnitController extends Controller
     ];
 
     private readonly UnitSchema $schema;
-    private readonly UnitValueSchema $valueSchema;
-
     private readonly UnitRepository $repository;
 
     public function __construct()
     {
         $this->schema = UnitSchema::inject();
-        $this->valueSchema = UnitValueSchema::inject();
-
         $this->repository = UnitRepository::inject();
     }
 
     public function create(WP_REST_Request $req)
     {
         $model = $this->schema->create($req);
+
         if (is_wp_error($model)) {
             return $model;
         }
 
-        $valueList = $this->valueSchema->create($req);
-        if (is_wp_error($valueList)) {
-            return $valueList;
-        } else {
-            $model->valueList = $valueList["valueList"];
-        }
+        $model = $this->repository->insert($model);
 
-        return $this->ok($this->repository->insert($model));
+        if (is_wp_error($model)) {
+            return $model;
+        } else {
+            $model->valueList = ValueDto::parseList($model->valueList);
+            return $this->ok($model);
+        }
     }
 
     public function update(WP_REST_Request $req)
     {
         $model = $this->schema->update($req);
+
         if (is_wp_error($model)) {
             return $model;
         }
 
-        $valueList = $this->valueSchema->update($req);
-        if (is_wp_error($valueList)) {
-            return $valueList;
-        } else {
-            $model->valueList = $valueList["valueList"];
-        }
+        $model = $this->repository->update($model);
 
-        return $this->ok($this->repository->update($model));
+        if (is_wp_error($model)) {
+            return $model;
+        } else {
+            $model->valueList = ValueDto::parseList($model->valueList);
+            return $this->ok($model);
+        }
     }
 
     public function list(WP_REST_Request $req)
@@ -118,7 +115,10 @@ class UnitController extends Controller
             return $model;
         }
 
-        return $this->ok($this->repository->selectById($model->id));
+        $model = $this->repository->selectById($model->id);
+        $model->valueList = ValueDto::parseList($model->valueList);
+
+        return $this->ok($model);
     }
 
     public function delete(WP_REST_Request $req)

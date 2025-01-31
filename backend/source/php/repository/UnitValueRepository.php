@@ -12,7 +12,6 @@ class UnitValueRepository extends Repository
     protected string $table = "mate_unit_value";
     protected string $model = UnitValueModel::class;
 
-
     public function insert($model): ?object
     {
         $q = <<<SQL

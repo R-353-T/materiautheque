@@ -57,9 +57,7 @@ class ImageSchema extends Schema
     public function get(WP_REST_Request $req, array $errors = []): ImageModel|WP_Error
     {
         return $this->returnModel(
-            [
-                "id" => $this->validator->validId($req, $errors)
-            ],
+            ["id" => $this->validator->validId($req, $errors)],
             ImageModel::class,
             $errors
         );
@@ -68,9 +66,7 @@ class ImageSchema extends Schema
     public function delete(WP_REST_Request $req, array $errors = []): ImageModel|WP_Error
     {
         return $this->returnModel(
-            [
-                "id" => $this->validator->validId($req, $errors)
-            ],
+            ["id" => $this->validator->validId($req, $errors)],
             ImageModel::class,
             $errors
         );
