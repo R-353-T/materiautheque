@@ -36,7 +36,7 @@ class GroupValidator extends Validator
 
         $parentId = $this->validId($req, $errors, $paramName);
 
-        if ($id !== null && !isset($errors[$paramName]) && !isset($errors["id"])) {
+        if ($id !== null && !$this->hasErrors($errors, $paramName, "id")) {
             $group = $this->repository->selectById($id);
             $parent = $this->repository->selectById($parentId);
 
@@ -75,7 +75,7 @@ class GroupValidator extends Validator
         $childGroupList = $req->get_param($paramName);
         $id = $req->get_param("id");
 
-        if (isset($errors['id']) || $childGroupList === null) {
+        if ($this->hasError($errors, "id") || $childGroupList === null) {
             return null;
         }
 
@@ -154,7 +154,7 @@ class GroupValidator extends Validator
         $fieldList = $req->get_param($paramName);
         $id = $req->get_param("id");
 
-        if (isset($errors['id']) || $fieldList === null) {
+        if ($this->hasError($errors, "id") || $fieldList === null) {
             return null;
         }
 

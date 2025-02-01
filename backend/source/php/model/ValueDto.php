@@ -44,4 +44,6 @@ class ValueDto
 
     public ?int $id;
     public mixed $value;
+
+    public ?int $unit;
 }

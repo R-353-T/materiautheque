@@ -14,7 +14,7 @@ class FieldModel extends Model
     public int $groupId;
     public int $position;
 
-    public ?int $typeId = null;
+    public ?int $typeId = null; // fix me
     public ?int $enumeratorId = null;
     public ?int $unitId = null;
 }

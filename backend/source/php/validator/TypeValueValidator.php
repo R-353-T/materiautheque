@@ -13,9 +13,14 @@ use WP_REST_Request;
 
 class TypeValueValidator extends Validator
 {
+    private readonly ImageValidator $imageValidator;
+    private readonly FormValidator $formValidator;
+
     public function __construct()
     {
         $this->repository = TypeRepository::inject();
+        $this->imageValidator = ImageValidator::inject();
+        $this->formValidator = FormValidator::inject();
     }
 
     public function validTypeEnumeration(WP_REST_Request $req, array &$errors, string $paramName): int
@@ -64,31 +69,38 @@ class TypeValueValidator extends Validator
 
     public function validValue(TypeModel $type, mixed $value, array &$errors, string $paramName): mixed
     {
-        if ($type->id === Type::LABEL) {
-            return $this->validLabel($value, $errors, $paramName);
-        }
+        switch ($type->id) {
+            case Type::LABEL:
+                return $this->validLabel($value, $errors, $paramName);
 
-        if ($type->id === Type::TEXT) {
-            return $this->validText($value, $errors, $paramName);
-        }
+            case Type::TEXT:
+                return $this->validText($value, $errors, $paramName);
 
-        if ($type->id === Type::URL) {
-            return $this->validURL($value, $errors, $paramName);
-        }
+            case Type::URL:
+                return $this->validURL($value, $errors, $paramName);
 
-        if ($type->id === Type::DATE) {
-            return $this->validDate($value, $errors, $paramName);
-        }
+            case Type::BOOLEAN:
+                return $this->validBoolean($value, $errors, $paramName);
 
-        if ($type->id === Type::MONEY) {
-            return $this->validMoney($value, $errors, $paramName);
-        }
+            case Type::NUMBER:
+                return $this->validNumber($value, $errors, $paramName);
 
-        if ($type->id === Type::NUMBER) {
-            return $this->validNumber($value, $errors, $paramName);
-        }
+            case Type::MONEY:
+                return $this->validMoney($value, $errors, $paramName);
 
-        return null;
+            case Type::DATE:
+                return $this->validDate($value, $errors, $paramName);
+
+            case Type::IMAGE:
+                return $this->validImage($value, $errors, $paramName);
+
+            case Type::FORM:
+                return $this->validForm($value, $errors, $paramName);
+
+            default:
+                $errors[] = SchemaError::paramIncorrectType($paramName, "__TYPE__");
+                return null;
+        }
     }
 
     public function validLabel(mixed $value, array &$errors, string $paramName): string
@@ -202,5 +214,57 @@ class TypeValueValidator extends Validator
             $errors[] = SchemaError::paramDateInvalid($paramName);
             return "";
         }
+    }
+
+    public function validBoolean(mixed $value, array &$errors, string $paramName): bool
+    {
+        if ($value === null) {
+            $errors[] = SchemaError::paramRequired($paramName);
+            return false;
+        }
+
+        return mate_sanitize_boolean($value);
+    }
+
+    public function validImage(mixed $value, array &$errors, string $paramName): string
+    {
+        if ($value === null) {
+            $errors[] = SchemaError::paramRequired($paramName);
+            return 0;
+        }
+
+        $vint = mate_sanitize_int($value);
+
+        if ($vint === false || $vint === 0) {
+            $errors[] = SchemaError::paramIncorrectType($paramName, "number");
+            return 0;
+        }
+
+        $rq = new WP_REST_Request();
+        $rq->set_param($paramName, $vint);
+        $this->imageValidator->validId($rq, $errors, $paramName);
+
+        return $vint;
+    }
+
+    public function validForm(mixed $value, array &$errors, string $paramName): int
+    {
+        if ($value === null) {
+            $errors[] = SchemaError::paramRequired($paramName);
+            return 0;
+        }
+
+        $vint = mate_sanitize_int($value);
+
+        if ($vint === false || $vint === 0) {
+            $errors[] = SchemaError::paramIncorrectType($paramName, "number");
+            return 0;
+        }
+
+        $rq = new WP_REST_Request();
+        $rq->set_param($paramName, $vint);
+        $this->formValidator->validId($rq, $errors, $paramName);
+
+        return $vint;
     }
 }
