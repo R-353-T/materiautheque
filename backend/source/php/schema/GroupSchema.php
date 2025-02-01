@@ -42,7 +42,8 @@ class GroupSchema extends Schema
                 "name"              => $this->validator->validName($req, $errors),
                 "description"       => $this->validator->validDescription($req, $errors),
                 "parentId"          => $this->validator->validParentId($req, $errors),
-                "childGroupList"    => $this->validator->validChildGroupList($req, $errors)
+                "childGroupList"    => $this->validator->validChildGroupList($req, $errors),
+                "fieldList"         => $this->validator->validFieldList($req, $errors)
             ],
             GroupModel::class,
             $errors
@@ -54,7 +55,7 @@ class GroupSchema extends Schema
         return $this->returnData(
             [
                 "templateId"    => $this->templateValidator->validId($req, $errors, "templateId"),
-                "id"            => $this->validator->validId($req, $errors, "id", false),
+                "parentId"      => $this->validator->validId($req, $errors, "parentId", false),
                 "search"        => $this->validator->validSearch($req),
                 "pageIndex"     => $this->validator->validPageIndex($req),
                 "pageSize"      => $this->validator->validPageSize($req)

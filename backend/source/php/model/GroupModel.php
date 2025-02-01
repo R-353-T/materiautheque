@@ -15,4 +15,7 @@ class GroupModel extends Model
 
     /** @var GroupModel[]|null */
     public ?array $childGroupList = null;
+
+    /** @var FieldModel[]|null */
+    public ?array $fieldList = null;
 }

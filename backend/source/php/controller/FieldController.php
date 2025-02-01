@@ -4,18 +4,17 @@ namespace mate\controller;
 
 use mate\abstract\clazz\Controller;
 use mate\error\WPErrorBuilder;
-use mate\model\ValueDto;
-use mate\repository\UnitRepository;
-use mate\schema\UnitSchema;
+use mate\repository\FieldRepository;
+use mate\schema\FieldSchema;
 use mate\util\RestPermission;
 use mate\util\SqlSelectQueryOptions;
 use PDO;
 use WP_REST_Request;
 use WP_REST_Server;
 
-class UnitController extends Controller
+class FieldController extends Controller
 {
-    protected string $endpoint = "unit";
+    protected string $endpoint = "field";
     protected array $routes = [
         "create" => [
             "method" => WP_REST_Server::CREATABLE,
@@ -39,13 +38,13 @@ class UnitController extends Controller
         ]
     ];
 
-    private readonly UnitSchema $schema;
-    private readonly UnitRepository $repository;
+    private readonly FieldSchema $schema;
+    private readonly FieldRepository $repository;
 
     public function __construct()
     {
-        $this->schema = UnitSchema::inject();
-        $this->repository = UnitRepository::inject();
+        $this->schema = FieldSchema::inject();
+        $this->repository = FieldRepository::inject();
     }
 
     public function create(WP_REST_Request $req)
@@ -61,7 +60,6 @@ class UnitController extends Controller
         if (is_wp_error($model)) {
             return $model;
         } else {
-            $model->valueList = ValueDto::parseList($model->valueList);
             return $this->ok($model);
         }
     }
@@ -79,7 +77,6 @@ class UnitController extends Controller
         if (is_wp_error($model)) {
             return $model;
         } else {
-            $model->valueList = ValueDto::parseList($model->valueList);
             return $this->ok($model);
         }
     }
@@ -94,6 +91,8 @@ class UnitController extends Controller
 
         $sqlOptions = new SqlSelectQueryOptions($options["pageIndex"], $options["pageSize"]);
 
+        $sqlOptions->where("groupId", "=", $options["groupId"], PDO::PARAM_INT);
+
         if ($options["search"] !== null) {
             $sqlOptions->whereRaw(
                 'LOWER(`name`) LIKE LOWER(CONCAT("%", :_search, "%"))',
@@ -101,6 +100,7 @@ class UnitController extends Controller
             );
         }
 
+        $sqlOptions->orderBy("position", "ASC");
         $total = $this->repository->getPageCount($sqlOptions);
         return ($total < $options["pageIndex"]
             ? WPErrorBuilder::notFoundError()
@@ -116,14 +116,12 @@ class UnitController extends Controller
     public function get(WP_REST_Request $req)
     {
         $model = $this->schema->get($req);
+
         if (is_wp_error($model)) {
             return $model;
         }
 
-        $model = $this->repository->selectById($model->id);
-        $model->valueList = ValueDto::parseList($model->valueList);
-
-        return $this->ok($model);
+        return $this->ok($this->repository->selectById($model->id));
     }
 
     public function delete(WP_REST_Request $req)

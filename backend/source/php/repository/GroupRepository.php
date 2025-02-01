@@ -4,6 +4,7 @@ namespace mate\repository;
 
 use mate\abstract\clazz\Repository;
 use mate\error\WPErrorBuilder;
+use mate\model\FieldModel;
 use mate\model\GroupModel;
 use PDO;
 use Throwable;
@@ -12,6 +13,14 @@ class GroupRepository extends Repository
 {
     protected string $model = GroupModel::class;
     protected string $table = "mate_template_group";
+
+    private readonly FieldRepository $fieldRepository;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->fieldRepository = FieldRepository::inject();
+    }
 
     public function insert($model): ?object
     {
@@ -57,7 +66,9 @@ class GroupRepository extends Repository
 
     public function update($model): ?object
     {
+        $previousModel = $this->selectById($model->id);
         $this->db->transaction();
+
         $q = <<<SQL
         UPDATE {$this->table}
         SET
@@ -82,8 +93,44 @@ class GroupRepository extends Repository
             $s->execute();
 
             if ($model->childGroupList !== null) {
+                $childIdList = array_map(fn($childGroup) => $childGroup->id, $model->childGroupList);
+                $originChildIdList = array_map(fn($childGroup) => $childGroup->id, $previousModel->childGroupList);
+                $missed = array_diff($originChildIdList, $childIdList);
+                if (count($missed) > 0) {
+                    $position = count($childIdList);
+                    foreach ($missed as $id) {
+                        $cg = new GroupModel();
+                        $cg->id = $id;
+                        $cg->position = $position + 1;
+                        $model->childGroupList[] = $cg;
+                        $position++;
+                    }
+                }
+
                 foreach ($model->childGroupList as $childGroup) {
                     $this->updatePositionById($childGroup->id, $childGroup->position);
+                }
+            }
+
+            if ($model->fieldList !== null) {
+                $fieldIdList = array_map(fn($field) => $field->id, $model->fieldList);
+                $originFieldIdList = array_map(fn($field) => $field->id, $previousModel->fieldList);
+
+                $missed = array_diff($originFieldIdList, $fieldIdList);
+
+                if (count($missed) > 0) {
+                    $position = count($fieldIdList);
+                    foreach ($missed as $id) {
+                        $f = new FieldModel();
+                        $f->id = $id;
+                        $f->position = $position + 1;
+                        $model->fieldList[] = $f;
+                        $position++;
+                    }
+                }
+
+                foreach ($model->fieldList as $field) {
+                    $this->fieldRepository->updatePositionById($field->id, $field->position);
                 }
             }
 
@@ -169,6 +216,7 @@ class GroupRepository extends Repository
 
         if ($model !== null) {
             $model->childGroupList = $this->selectGroupChildList($model->id);
+            $model->fieldList = $this->fieldRepository->selectByGroupId($model->id);
         }
 
         return $model;

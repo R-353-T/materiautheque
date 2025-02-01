@@ -49,3 +49,12 @@ function mate_sanitize_float(mixed $v): int|float|false
     $v = filter_var($v, FILTER_VALIDATE_FLOAT);
     return $v !== false ? $v : false;
 }
+
+function mate_sanitize_boolean(mixed $v): bool|null // - only one returning null -
+{
+    if ($v === null) {
+        return null;
+    }
+
+    return filter_var($v, FILTER_VALIDATE_BOOLEAN);
+}

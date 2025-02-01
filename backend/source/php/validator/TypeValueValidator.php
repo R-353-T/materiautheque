@@ -40,6 +40,28 @@ class TypeValueValidator extends Validator
         return $typeId;
     }
 
+    public function validTypeAllowMultipleValues(WP_REST_Request $req, array &$errors, string $paramName): int
+    {
+        $typeId = $this->validId($req, $errors, $paramName);
+
+        if (!isset($errors[$paramName])) {
+            /** @var TypeModel */
+            $type = $this->repository->selectById($typeId);
+
+            if ($type->allowMultipleValues === false) {
+                // todo - remove custom error
+                $errors[] = [
+                    "name" => $paramName,
+                    "code" => "param_type_not_multiple"
+                ];
+
+                return 0;
+            };
+        }
+
+        return $typeId;
+    }
+
     public function validValue(TypeModel $type, mixed $value, array &$errors, string $paramName): mixed
     {
         if ($type->id === Type::LABEL) {

@@ -84,6 +84,11 @@ class GroupController extends Controller
     public function list(WP_REST_Request $req)
     {
         $options = $this->schema->list($req);
+
+        if (is_wp_error($options)) {
+            return $options;
+        }
+
         $sqlOptions = new SqlSelectQueryOptions($options["pageIndex"], $options["pageSize"]);
 
         $sqlOptions->where(
@@ -94,12 +99,7 @@ class GroupController extends Controller
         );
 
         if ($options["parentId"] !== 0) {
-            $sqlOptions->where(
-                "parentId",
-                "=",
-                $options["id"],
-                PDO::PARAM_INT
-            );
+            $sqlOptions->where("parentId", "=", $options["parentId"], PDO::PARAM_INT);
         } else {
             $sqlOptions->whereRaw("parentId IS NULL");
         }

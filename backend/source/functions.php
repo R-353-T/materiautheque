@@ -11,6 +11,7 @@ spl_autoload_register(mate_autoloader(MATE_THEME_NAMESPACE, MATE_THEME_PHP_DIREC
 use mate\abstract\clazz\Controller;
 use mate\abstract\clazz\Middleware;
 use mate\controller\EnumeratorController;
+use mate\controller\FieldController;
 use mate\controller\GroupController;
 use mate\controller\ImageController;
 use mate\controller\TemplateController;
@@ -32,6 +33,7 @@ Controller::addController(UnitController::class);
 Controller::addController(EnumeratorController::class);
 Controller::addController(TemplateController::class);
 Controller::addController(GroupController::class);
+Controller::addController(FieldController::class);
 
 # Filters
 

@@ -83,6 +83,11 @@ class EnumeratorController extends Controller
     public function list(WP_REST_Request $req)
     {
         $options = $this->schema->list($req);
+
+        if (is_wp_error($options)) {
+            return $options;
+        }
+
         $sqlOptions = new SqlSelectQueryOptions($options["pageIndex"], $options["pageSize"]);
 
         if ($options["search"] !== null) {

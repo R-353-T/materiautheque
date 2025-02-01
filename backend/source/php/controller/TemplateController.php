@@ -41,7 +41,13 @@ class TemplateController extends Controller
             return $model;
         }
 
-        return $this->ok($this->repository->update($model));
+        $model = $this->repository->update($model);
+
+        if (is_wp_error($model)) {
+            return $model;
+        } else {
+            return $this->ok($model);
+        }
     }
 
     public function list(WP_REST_Request $req)
