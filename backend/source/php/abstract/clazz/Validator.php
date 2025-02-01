@@ -149,4 +149,26 @@ class Validator
 
         return $pageSize;
     }
+
+    public function hasError(array $errors, string $name): bool
+    {
+        foreach ($errors as $error) {
+            if ($error["name"] === $name) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function hasErrors(array $errors, ...$names): bool
+    {
+        foreach ($names as $name) {
+            if ($this->hasError($errors, $name)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

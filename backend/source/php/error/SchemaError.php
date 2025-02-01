@@ -95,4 +95,14 @@ class SchemaError
             "format"    => MATE_DATE_FORMAT
         ];
     }
+
+    public static function paramGroupError(string $name, int $index)
+    {
+        return [
+            "name"      => $name,
+            "index"     => $index,
+            "code"      => "param_group_error",
+            "errors"    => []
+        ];
+    }
 }

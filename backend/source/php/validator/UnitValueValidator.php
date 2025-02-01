@@ -28,7 +28,7 @@ class UnitValueValidator extends Validator
         $unitId = $req->get_param("id");
         $valueList = $req->get_param("valueList");
 
-        if (isset($errors['id'])) {
+        if ($this->hasError($errors, "id")) {
             return [];
         }
 
@@ -49,17 +49,13 @@ class UnitValueValidator extends Validator
             : null;
 
         foreach ($valueList as $valueIndex => $value) {
-            $vErrors            = [];
-            $model              = $this->validValue($unit, $value, $vErrors);
+            $vErrors            = SchemaError::paramGroupError("valueList", $valueIndex);
+            $model              = $this->validValue($unit, $value, $vErrors["errors"]);
             $model->position    = $valueIndex + 1;
             $output[]           = $model;
 
-            if (count($vErrors) > 0) {
-                if (isset($errors["valueList"])) {
-                    $errors["valueList"] = [];
-                }
-
-                $errors["valueList"][$model->position] = $vErrors;
+            if (count($vErrors["errors"]) > 0) {
+                $errors[] = $vErrors;
             }
         }
 
@@ -71,14 +67,14 @@ class UnitValueValidator extends Validator
         $model = new UnitValueModel();
 
         if ($value === null) {
-            $errors[] = SchemaError::paramRequired("__value__");
+            $errors[] = SchemaError::paramRequired("__MAIN__");
             return $model;
         }
 
         $value = mate_sanitize_array($value);
 
         if ($value === false) {
-            $errors[] = SchemaError::paramIncorrectType("__value__", "array");
+            $errors[] = SchemaError::paramIncorrectType("__MAIN__", "array");
             return $model;
         }
 

@@ -94,17 +94,13 @@ class GroupValidator extends Validator
         );
 
         foreach ($childGroupList as $groupIndex => $group) {
-            $gErrors            = [];
-            $model              = $this->validChildGroup($id, $childIdList, $group, $gErrors);
+            $gErrors            = SchemaError::paramGroupError($paramName, $groupIndex);
+            $model              = $this->validChildGroup($id, $childIdList, $group, $gErrors["errors"]);
             $model->position    = $groupIndex + 1;
             $output[]           = $model;
 
-            if (count($gErrors) > 0) {
-                if (isset($errors[$paramName])) {
-                    $errors[$paramName] = [];
-                }
-
-                $errors[$paramName][$model->position] = $gErrors;
+            if (count($gErrors["errors"]) > 0) {
+                $errors[] = $gErrors;
             }
         }
 
@@ -120,13 +116,13 @@ class GroupValidator extends Validator
         $model = new GroupModel();
 
         if ($group === null) {
-            $gErrors[] = SchemaError::paramRequired("__value__");
+            $gErrors[] = SchemaError::paramRequired("__MAIN__");
         }
 
         $group = mate_sanitize_array($group);
 
         if ($group === false) {
-            $errors[] = SchemaError::paramIncorrectType("__value__", "array");
+            $errors[] = SchemaError::paramIncorrectType("__MAIN__", "array");
             return $model;
         }
 
@@ -175,17 +171,13 @@ class GroupValidator extends Validator
         );
 
         foreach ($fieldList as $fieldIndex => $field) {
-            $gErrors            = [];
-            $model              = $this->validField($id, $fieldIdList, $field, $gErrors);
+            $fErrors            = SchemaError::paramGroupError($paramName, $fieldIndex);
+            $model              = $this->validField($id, $fieldIdList, $field, $fErrors["errors"]);
             $model->position    = $fieldIndex + 1;
             $output[]           = $model;
 
-            if (count($gErrors) > 0) {
-                if (isset($errors[$paramName])) {
-                    $errors[$paramName] = [];
-                }
-
-                $errors[$paramName][$model->position] = $gErrors;
+            if (count($fErrors["errors"]) > 0) {
+                $errors[] = $fErrors;
             }
         }
 
@@ -201,13 +193,13 @@ class GroupValidator extends Validator
         $model = new FieldModel();
 
         if ($field === null) {
-            $gErrors[] = SchemaError::paramRequired("__value__");
+            $gErrors[] = SchemaError::paramRequired("__MAIN__");
         }
 
         $field = mate_sanitize_array($field);
 
         if ($field === false) {
-            $errors[] = SchemaError::paramIncorrectType("__value__", "array");
+            $errors[] = SchemaError::paramIncorrectType("__MAIN__", "array");
             return $model;
         }
 

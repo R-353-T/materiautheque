@@ -17,7 +17,7 @@ class UnitValidator extends Validator
     public function validName(WP_REST_Request $req, array &$errors, string $paramName = "name"): string
     {
         $name = parent::validName($req, $errors, $paramName);
-        if (isset($errors[$paramName])) {
+        if ($this->hasError($errors, $paramName)) {
             return "";
         }
 

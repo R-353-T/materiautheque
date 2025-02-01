@@ -50,13 +50,12 @@ class FieldValidator extends Validator
         $allowMultipleValues = $req->get_param("allowMultipleValues");
         $allowMultipleValues = mate_sanitize_boolean($allowMultipleValues);
 
-
         if ($allowMultipleValues === null) {
             $errors[] = SchemaError::paramIncorrectType("allowMultipleValues", "boolean");
             return false;
         }
 
-        if (!isset($errors["typeId"]) && $allowMultipleValues === true) {
+        if (!$this->hasError($errors, "typeId") && $allowMultipleValues === true) {
             $this->typeValidator->validTypeAllowMultipleValues($req, $errors, "typeId");
         }
 

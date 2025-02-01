@@ -22,7 +22,7 @@ class TypeValueValidator extends Validator
     {
         $typeId = $this->validId($req, $errors, $paramName);
 
-        if (!isset($errors[$paramName])) {
+        if (!$this->hasError($errors, $paramName)) {
             /** @var TypeModel */
             $type = $this->repository->selectById($typeId);
 
@@ -44,7 +44,7 @@ class TypeValueValidator extends Validator
     {
         $typeId = $this->validId($req, $errors, $paramName);
 
-        if (!isset($errors[$paramName])) {
+        if (!$this->hasError($errors, $paramName)) {
             /** @var TypeModel */
             $type = $this->repository->selectById($typeId);
 

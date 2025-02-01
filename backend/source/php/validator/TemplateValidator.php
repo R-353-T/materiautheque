@@ -28,7 +28,7 @@ class TemplateValidator extends Validator
         $childGroupList = $req->get_param($paramName);
         $id = $req->get_param("id");
 
-        if (isset($errors['id']) || $childGroupList === null) {
+        if ($this->hasError($errors, "id") || $childGroupList === null) {
             return null;
         }
 
@@ -39,23 +39,16 @@ class TemplateValidator extends Validator
             return null;
         }
 
-        $childIdList = array_map(
-            fn($c) => $c->id,
-            $this->groupRepository->selectTemplateChildList($id)
-        );
+        $childIdList = array_map(fn($c) => $c->id, $this->groupRepository->selectTemplateChildList($id));
 
         foreach ($childGroupList as $groupIndex => $group) {
-            $gErrors            = [];
-            $model              = $this->validChildGroup($id, $childIdList, $group, $gErrors);
+            $gErrors            = SchemaError::paramGroupError($paramName, $groupIndex);
+            $model              = $this->validChildGroup($id, $childIdList, $group, $gErrors["errors"]);
             $model->position    = $groupIndex + 1;
             $output[]           = $model;
 
-            if (count($gErrors) > 0) {
-                if (isset($errors[$paramName])) {
-                    $errors[$paramName] = [];
-                }
-
-                $errors[$paramName][$model->position] = $gErrors;
+            if (count($gErrors["errors"]) > 0) {
+                $errors[] = $gErrors;
             }
         }
 
@@ -71,13 +64,13 @@ class TemplateValidator extends Validator
         $model = new GroupModel();
 
         if ($group === null) {
-            $gErrors[] = SchemaError::paramRequired("__value__");
+            $gErrors[] = SchemaError::paramRequired("__MAIN__");
         }
 
         $group = mate_sanitize_array($group);
 
         if ($group === false) {
-            $errors[] = SchemaError::paramIncorrectType("__value__", "array");
+            $errors[] = SchemaError::paramIncorrectType("__MAIN__", "array");
             return $model;
         }
 
