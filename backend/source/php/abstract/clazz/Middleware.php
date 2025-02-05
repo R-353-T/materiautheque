@@ -2,15 +2,12 @@
 
 namespace mate\abstract\clazz;
 
-use mate\abstract\trait\Singleton;
 use WP_HTTP_Response;
 use WP_REST_Request;
 use WP_REST_Server;
 
-abstract class Middleware
+abstract class Middleware extends Service
 {
-    use Singleton;
-
     protected static $MIDDLEWARE_LIST = [];
     protected static $USER_ID = null;
 

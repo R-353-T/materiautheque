@@ -2,17 +2,14 @@
 
 namespace mate\abstract\clazz;
 
-use mate\abstract\trait\Singleton;
 use mate\error\NotImplementedError;
 use mate\service\DatabaseService;
 use mate\util\HashMap;
 use mate\util\SqlSelectQueryOptions;
 use PDO;
 
-abstract class Repository
+abstract class Repository extends Service
 {
-    use Singleton;
-
     protected string $table;
     protected string $model;
     protected readonly HashMap $cache;

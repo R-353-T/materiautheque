@@ -5,10 +5,8 @@ namespace mate\abstract\clazz;
 use mate\abstract\trait\Singleton;
 use mate\error\WPErrorBuilder;
 
-class Schema
+class Schema extends Service
 {
-    use Singleton;
-
     public function returnModel(array $data, string $className, array &$errors)
     {
         if (count($errors) > 0) {

@@ -2,13 +2,10 @@
 
 namespace mate\abstract\clazz;
 
-use mate\abstract\trait\Singleton;
 use WP_REST_Response;
 
-abstract class Controller
+abstract class Controller extends Service
 {
-    use Singleton;
-
     protected static $CONTROLLER_LIST = [];
 
     public static function addController(string $controller)

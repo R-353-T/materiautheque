@@ -2,14 +2,11 @@
 
 namespace mate\abstract\clazz;
 
-use mate\abstract\trait\Singleton;
 use mate\error\SchemaError;
 use WP_REST_Request;
 
-class Validator
+class Validator extends Service
 {
-    use Singleton;
-
     protected Repository $repository;
 
     public function validRequestId(
