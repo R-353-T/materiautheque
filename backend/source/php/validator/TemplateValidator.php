@@ -79,9 +79,7 @@ class TemplateValidator extends Validator
             return $model;
         }
 
-        $req = new WP_REST_Request();
-        $req->set_param("id", $group['id']);
-        $valueId = $this->validId($req, $errors);
+        $valueId = $this->validRequestId($group['id'], $errors);
 
         if ($valueId !== 0 && count(array_filter($in, fn($v) => $v === $valueId)) === 0) {
             $errors[] = SchemaError::paramNotForeignOf("id", $parentId);

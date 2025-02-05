@@ -4,7 +4,10 @@ namespace mate\controller;
 
 use mate\abstract\clazz\Controller;
 use mate\error\WPErrorBuilder;
+use mate\model\FormModel;
+use mate\model\FormValueModel;
 use mate\repository\FormRepository;
+use mate\repository\TypeRepository;
 use mate\schema\FormSchema;
 use mate\service\FormService;
 use mate\util\RestPermission;
@@ -42,25 +45,48 @@ class FormController extends Controller
     private readonly FormSchema $schema;
     private readonly FormRepository $repository;
     private readonly FormService $service;
+    private readonly TypeRepository $typeRepository;
 
     public function __construct()
     {
         $this->schema = FormSchema::inject();
         $this->repository = FormRepository::inject();
         $this->service = FormService::inject();
+        $this->typeRepository = TypeRepository::inject();
     }
 
 
     public function create(WP_REST_Request $req)
     {
-        $model = $this->schema->create($req);
+        $data = $this->schema->create($req);
 
-        if (is_wp_error($model)) {
-            return $model;
+        if (is_wp_error($data)) {
+            return $data;
         }
 
-        $model = $this->service->buildModelFromData($model);
-        $model = $this->repository->insert($model);
+        $form = new FormModel();
+        $form->name = $data["name"];
+        $form->templateId = $data["templateId"];
+        $form->valueList = [];
+        $hashmap = $data["childGroupList"];
+
+        foreach ($hashmap as $fieldId => $fData) {
+            $type = $this->typeRepository->selectById($fData["field"]->typeId);
+            $column = $type->column;
+            foreach ($fData["valueList"] as $value) {
+                $fvModel = new FormValueModel();
+                $fvModel->id = $value["id"];
+                $fvModel->$column = $value["value"];
+
+                if (isset($value["unitValueId"])) {
+                    $fvModel->unitValueId = $value["unitValueId"];
+                }
+
+                $form->valueList[] = $fvModel;
+            }
+        }
+
+        $model = $this->repository->insert($form);
 
         if (is_wp_error($model)) {
             return $model;

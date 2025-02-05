@@ -121,9 +121,7 @@ class EnumeratorValueValidator extends Validator
                 return 0;
             }
 
-            $req = new WP_REST_Request();
-            $req->set_param("id", $value['id']);
-            $valueId = $this->validId($req, $errors);
+            $valueId = $this->validId($value['id'], $errors);
 
             if (
                 $valueId !== 0 && $unit !== null

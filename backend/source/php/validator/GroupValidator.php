@@ -34,7 +34,7 @@ class GroupValidator extends Validator
             return $parentId;
         }
 
-        $parentId = $this->validId($req, $errors, $paramName);
+        $parentId = $this->validRequestId($req, $errors, $paramName);
 
         if ($id !== null && !$this->hasErrors($errors, $paramName, "id")) {
             $group = $this->repository->selectById($id);
@@ -131,9 +131,7 @@ class GroupValidator extends Validator
             return $model;
         }
 
-        $req = new WP_REST_Request();
-        $req->set_param("id", $group['id']);
-        $groupId = $this->validId($req, $errors);
+        $groupId = $this->validId($group['id'], $errors);
 
         if ($groupId !== 0 && count(array_filter($in, fn($v) => $v === $groupId)) === 0) {
             $errors[] = SchemaError::paramNotForeignOf("id", $parentId);
@@ -208,9 +206,7 @@ class GroupValidator extends Validator
             return $model;
         }
 
-        $req = new WP_REST_Request();
-        $req->set_param("id", $field['id']);
-        $fieldId = $this->fieldValidator->validId($req, $errors);
+        $fieldId = $this->fieldValidator->validId($field['id'], $errors);
 
         if ($fieldId !== 0 && count(array_filter($in, fn($v) => $v === $fieldId)) === 0) {
             $errors[] = SchemaError::paramNotForeignOf("id", $parentId);

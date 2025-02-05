@@ -6,7 +6,7 @@ create table if not exists mate_template_field (
     `isRequired` boolean not null,
     `groupId` int unsigned not null,
     `position` int unsigned not null,
-    `typeId` int unsigned,
+    `typeId` int unsigned not null,
     `enumeratorId` int unsigned,
     `unitId` int unsigned,
 

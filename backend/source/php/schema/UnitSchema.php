@@ -37,7 +37,7 @@ class UnitSchema extends Schema
     {
         return $this->returnModel(
             [
-                "id" => $this->validator->validId($req, $errors),
+                "id" => $this->validator->validRequestId($req, $errors),
                 "name" => $this->validator->validName($req, $errors),
                 "description" => $this->validator->validDescription($req, $errors),
                 "valueList" => $this->valueValidator->validValueList($req, $errors)
@@ -62,7 +62,7 @@ class UnitSchema extends Schema
     public function get(WP_REST_Request $req, array $errors = []): UnitModel|WP_Error
     {
         return $this->returnModel(
-            ["id" => $this->validator->validId($req, $errors)],
+            ["id" => $this->validator->validRequestId($req, $errors)],
             UnitModel::class,
             $errors
         );
@@ -71,7 +71,7 @@ class UnitSchema extends Schema
     public function delete(WP_REST_Request $req, array $errors = []): UnitModel|WP_Error
     {
         return $this->returnModel(
-            ["id" => $this->validator->validId($req, $errors)],
+            ["id" => $this->validator->validRequestId($req, $errors)],
             UnitModel::class,
             $errors
         );

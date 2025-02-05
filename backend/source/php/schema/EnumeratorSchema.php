@@ -41,7 +41,7 @@ class EnumeratorSchema extends Schema
     {
         return $this->returnModel(
             [
-                "id" => $this->validator->validId($req, $errors),
+                "id" => $this->validator->validRequestId($req, $errors),
                 "name" => $this->validator->validName($req, $errors),
                 "typeId" => $this->typeValidator->validTypeEnumeration($req, $errors, "typeId"),
                 "description" => $this->validator->validDescription($req, $errors),
@@ -67,7 +67,7 @@ class EnumeratorSchema extends Schema
     public function get(WP_REST_Request $req, array $errors = []): EnumeratorModel|WP_Error
     {
         return $this->returnModel(
-            ["id" => $this->validator->validId($req, $errors)],
+            ["id" => $this->validator->validRequestId($req, $errors)],
             EnumeratorModel::class,
             $errors
         );
@@ -76,7 +76,7 @@ class EnumeratorSchema extends Schema
     public function delete(WP_REST_Request $req, array $errors = []): EnumeratorModel|WP_Error
     {
         return $this->returnModel(
-            ["id" => $this->validator->validId($req, $errors)],
+            ["id" => $this->validator->validRequestId($req, $errors)],
             EnumeratorModel::class,
             $errors
         );

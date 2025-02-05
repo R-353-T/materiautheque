@@ -12,7 +12,7 @@ class Validator
 
     protected Repository $repository;
 
-    public function validId(
+    public function validRequestId(
         WP_REST_Request $req,
         array &$errors,
         string $paramName = "id",
@@ -27,6 +27,23 @@ class Validator
             return 0;
         }
 
+        $id = mate_sanitize_int($id);
+
+        if ($id === false) {
+            $errors[] = SchemaError::paramIncorrectType($paramName, "integer");
+            return 0;
+        }
+
+        if ($this->repository->selectById($id) === null) {
+            $errors[] = SchemaError::paramNotFound($paramName);
+            return 0;
+        }
+
+        return $id;
+    }
+
+    public function validId(mixed $id, array &$errors, string $paramName = "id", bool $required = true): int
+    {
         $id = mate_sanitize_int($id);
 
         if ($id === false) {

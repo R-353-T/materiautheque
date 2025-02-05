@@ -3,6 +3,7 @@
 namespace mate\schema;
 
 use mate\abstract\clazz\Schema;
+use mate\error\WPErrorBuilder;
 use mate\model\FieldModel;
 use mate\validator\EnumeratorValidator;
 use mate\validator\FieldValidator;
@@ -31,50 +32,60 @@ class FieldSchema extends Schema
 
     public function create(WP_REST_Request $req, array $errors = []): FieldModel | WP_Error
     {
-        $this->validator->validDoubleValue($req, $errors);
-
-        return $this->returnModel(
+        $model = $this->returnModel(
             [
                 "name" => $this->validator->validName($req, $errors),
                 "description" => $this->validator->validDescription($req, $errors),
                 "isRequired" => $this->validator->validIsRequired($req, $errors),
-                "groupId" => $this->groupValidator->validId($req, $errors, "groupId"),
-                "typeId" => $this->typeValidator->validId($req, $errors, "typeId", false),
-                "enumeratorId" => $this->enumeratorValidator->validId($req, $errors, "enumeratorId", false),
-                "unitId" => $this->unitValidator->validId($req, $errors, "unitId", false),
+                "groupId" => $this->groupValidator->validRequestId($req, $errors, "groupId"),
+                "typeId" => $this->typeValidator->validRequestId($req, $errors, "typeId"),
+                "enumeratorId" => $this->enumeratorValidator->validRequestId($req, $errors, "enumeratorId", false),
+                "unitId" => $this->unitValidator->validRequestId($req, $errors, "unitId", false),
                 "allowMultipleValues" => $this->validator->validAllowMultipleValues($req, $errors),
             ],
             FieldModel::class,
             $errors
         );
+
+        if (count($errors) > 0) {
+            return WPErrorBuilder::badRequestError($errors);
+        } else {
+            return $model;
+        }
     }
 
     public function update(WP_REST_Request $req, array $errors = []): FieldModel | WP_Error
     {
-        $this->validator->validDoubleValue($req, $errors);
-
-        return $this->returnModel(
+        $model = $this->returnModel(
             [
-                "id" => $this->validator->validId($req, $errors),
+                "id" => $this->validator->validRequestId($req, $errors),
                 "name" => $this->validator->validName($req, $errors),
                 "description" => $this->validator->validDescription($req, $errors),
                 "isRequired" => $this->validator->validIsRequired($req, $errors),
-                "groupId" => $this->groupValidator->validId($req, $errors, "groupId"),
-                "typeId" => $this->typeValidator->validId($req, $errors, "typeId", false),
-                "enumeratorId" => $this->enumeratorValidator->validId($req, $errors, "enumeratorId", false),
-                "unitId" => $this->unitValidator->validId($req, $errors, "unitId", false),
+                "groupId" => $this->groupValidator->validRequestId($req, $errors, "groupId"),
+                "typeId" => $this->typeValidator->validRequestId($req, $errors, "typeId"),
+                "enumeratorId" => $this->enumeratorValidator->validRequestId($req, $errors, "enumeratorId", false),
+                "unitId" => $this->unitValidator->validRequestId($req, $errors, "unitId", false),
                 "allowMultipleValues" => $this->validator->validAllowMultipleValues($req, $errors),
             ],
             FieldModel::class,
             $errors
         );
+
+        $this->validator->validTypeEnumerator($req, $errors);
+
+        if (count($errors) > 0) {
+            return WPErrorBuilder::badRequestError($errors);
+        } else {
+            return $model;
+        }
     }
 
     public function list(WP_REST_Request $req, array $errors = []): array | WP_Error
     {
         return $this->returnData(
             [
-                "groupId" => $this->groupValidator->validId($req, $errors, "groupId"),
+                "groupId" => $this->groupValidator->validRequestId($req, $errors, "groupId"),
                 "search" => $this->validator->validSearch($req),
                 "pageIndex" => $this->validator->validPageIndex($req),
                 "pageSize" => $this->validator->validPageSize($req)
@@ -86,7 +97,7 @@ class FieldSchema extends Schema
     public function get(WP_REST_Request $req, array $errors = []): FieldModel | WP_Error
     {
         return $this->returnModel(
-            ["id" => $this->validator->validId($req, $errors)],
+            ["id" => $this->validator->validRequestId($req, $errors)],
             FieldModel::class,
             $errors
         );
@@ -95,7 +106,7 @@ class FieldSchema extends Schema
     public function delete(WP_REST_Request $req, array $errors = []): FieldModel | WP_Error
     {
         return $this->returnModel(
-            ["id" => $this->validator->validId($req, $errors)],
+            ["id" => $this->validator->validRequestId($req, $errors)],
             FieldModel::class,
             $errors
         );

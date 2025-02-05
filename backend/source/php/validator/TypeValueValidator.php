@@ -8,6 +8,8 @@ use mate\model\TypeModel;
 use mate\repository\TypeRepository;
 use mate\enumerator\Type;
 use DateTime;
+use mate\model\FieldModel;
+use mate\repository\EnumeratorRepository;
 use Throwable;
 use WP_REST_Request;
 
@@ -15,17 +17,19 @@ class TypeValueValidator extends Validator
 {
     private readonly ImageValidator $imageValidator;
     private readonly FormValidator $formValidator;
+    private readonly EnumeratorRepository $enumeratorRepository;
 
     public function __construct()
     {
         $this->repository = TypeRepository::inject();
-        $this->imageValidator = ImageValidator::inject();
-        $this->formValidator = FormValidator::inject();
+        // $this->imageValidator = ImageValidator::inject();
+        // $this->formValidator = FormValidator::inject();
+        // $this->enumeratorRepository = EnumeratorRepository::inject();
     }
 
     public function validTypeEnumeration(WP_REST_Request $req, array &$errors, string $paramName): int
     {
-        $typeId = $this->validId($req, $errors, $paramName);
+        $typeId = $this->validRequestId($req, $errors, $paramName);
 
         if (!$this->hasError($errors, $paramName)) {
             /** @var TypeModel */
@@ -47,7 +51,7 @@ class TypeValueValidator extends Validator
 
     public function validTypeAllowMultipleValues(WP_REST_Request $req, array &$errors, string $paramName): int
     {
-        $typeId = $this->validId($req, $errors, $paramName);
+        $typeId = $this->validRequestId($req, $errors, $paramName);
 
         if (!$this->hasError($errors, $paramName)) {
             /** @var TypeModel */
@@ -65,6 +69,19 @@ class TypeValueValidator extends Validator
         }
 
         return $typeId;
+    }
+
+    public function validFieldValue(FieldModel $field, mixed $value, array &$errors, string $paramName): mixed
+    {
+        $type = $this->repository->selectById($field->typeId);
+
+        switch ($type->id) {
+            case Type::ENUMERATOR:
+                return $this->validEnumeration($field->enumeratorId, $value, $errors, $paramName);
+
+            default:
+                return $this->validValue($type, $value, $errors, $paramName);
+        }
     }
 
     public function validValue(TypeModel $type, mixed $value, array &$errors, string $paramName): mixed
@@ -240,11 +257,7 @@ class TypeValueValidator extends Validator
             return 0;
         }
 
-        $rq = new WP_REST_Request();
-        $rq->set_param($paramName, $vint);
-        $this->imageValidator->validId($rq, $errors, $paramName);
-
-        return $vint;
+        return $this->imageValidator->validId($vint, $errors, $paramName);
     }
 
     public function validForm(mixed $value, array &$errors, string $paramName): int
@@ -261,9 +274,31 @@ class TypeValueValidator extends Validator
             return 0;
         }
 
-        $rq = new WP_REST_Request();
-        $rq->set_param($paramName, $vint);
-        $this->formValidator->validId($rq, $errors, $paramName);
+        return $this->formValidator->validId($vint, $errors, $paramName);
+    }
+
+    public function validEnumeration(int $enumeratorId, mixed $value, array &$errors, string $paramName): int
+    {
+        $enumerator = $this->enumeratorRepository->selectById($enumeratorId);
+
+        if ($value === null) {
+            $errors[] = SchemaError::paramRequired($paramName);
+            return 0;
+        }
+
+        $vint = mate_sanitize_int($value);
+
+        if ($vint === false || $vint === 0) {
+            $errors[] = SchemaError::paramIncorrectType($paramName, "number");
+            return 0;
+        }
+
+        $enumeratorValueIdList = array_map(fn($eV) => $eV->id, $enumerator->valueList);
+
+        if (!in_array($vint, $enumeratorValueIdList)) {
+            $errors[] = SchemaError::paramNotForeignOf($value, $enumerator->name);
+            return 0;
+        }
 
         return $vint;
     }

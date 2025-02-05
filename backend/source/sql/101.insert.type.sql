@@ -14,4 +14,5 @@ values
 (6,     'Argent'        , 'text'    , TRUE  , TRUE  ),
 (7,     'Date'          , 'date'    , TRUE  , TRUE  ),
 (8,     'Image'         , 'exId'    , FALSE , TRUE  ),
-(9,     'Formulaire'    , 'exId'    , FALSE , TRUE  );
+(9,     'Formulaire'    , 'exId'    , FALSE , TRUE  ),
+(10,    'Enumerateur'   , 'exId'    , FALSE , TRUE  );

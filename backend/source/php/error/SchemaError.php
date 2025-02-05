@@ -105,4 +105,12 @@ class SchemaError
             "errors"    => []
         ];
     }
+
+    public static function paramFieldNotInTemplate(string $name)
+    {
+        return [
+            "name"      => $name,
+            "code"      => "param_field_not_in_template"
+        ];
+    }
 }

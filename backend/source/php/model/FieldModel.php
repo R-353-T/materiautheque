@@ -13,8 +13,8 @@ class FieldModel extends Model
     public bool $isRequired;
     public int $groupId;
     public int $position;
+    public int $typeId;
 
-    public ?int $typeId = null; // fix me
     public ?int $enumeratorId = null;
     public ?int $unitId = null;
 }

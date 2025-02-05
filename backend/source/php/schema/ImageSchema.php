@@ -33,7 +33,7 @@ class ImageSchema extends Schema
     {
         return $this->returnModel(
             [
-                "id" => $this->validator->validId($req, $errors),
+                "id" => $this->validator->validRequestId($req, $errors),
                 "name" => $this->validator->validName($req, $errors),
                 "file" => $this->validator->validFile(true, $errors)
             ],
@@ -57,7 +57,7 @@ class ImageSchema extends Schema
     public function get(WP_REST_Request $req, array $errors = []): ImageModel|WP_Error
     {
         return $this->returnModel(
-            ["id" => $this->validator->validId($req, $errors)],
+            ["id" => $this->validator->validRequestId($req, $errors)],
             ImageModel::class,
             $errors
         );
@@ -66,7 +66,7 @@ class ImageSchema extends Schema
     public function delete(WP_REST_Request $req, array $errors = []): ImageModel|WP_Error
     {
         return $this->returnModel(
-            ["id" => $this->validator->validId($req, $errors)],
+            ["id" => $this->validator->validRequestId($req, $errors)],
             ImageModel::class,
             $errors
         );

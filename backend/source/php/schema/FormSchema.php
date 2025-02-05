@@ -25,7 +25,7 @@ class FormSchema extends Schema
         return $this->returnData(
             [
                 "name" => $this->validator->validName($req, $errors),
-                "templateId" => $this->templateValidator->validId($req, $errors, "templateId"),
+                "templateId" => $this->templateValidator->validRequestId($req, $errors, "templateId"),
                 "childGroupList" => $this->validator->validChildGroupList($req, $errors) // return valueDtoHashMap
             ],
             $errors
@@ -36,9 +36,9 @@ class FormSchema extends Schema
     {
         return $this->returnData(
             [
-                "id" => $this->validator->validId($req, $errors),
+                "id" => $this->validator->validRequestId($req, $errors),
                 "name" => $this->validator->validName($req, $errors),
-                "templateId" => $this->templateValidator->validId($req, $errors, "templateId"),
+                "templateId" => $this->templateValidator->validRequestId($req, $errors, "templateId"),
                 "childGroupList" => $this->validator->validChildGroupList($req, $errors) // return valueDtoHashMap
             ],
             $errors
@@ -60,7 +60,7 @@ class FormSchema extends Schema
     public function get(WP_REST_Request $req, array $errors = []): FormModel|WP_Error
     {
         return $this->returnModel(
-            ["id" => $this->validator->validId($req, $errors)],
+            ["id" => $this->validator->validRequestId($req, $errors)],
             FormModel::class,
             $errors
         );
@@ -69,7 +69,7 @@ class FormSchema extends Schema
     public function delete(WP_REST_Request $req, array $errors = []): FormModel|WP_Error
     {
         return $this->returnModel(
-            ["id" => $this->validator->validId($req, $errors)],
+            ["id" => $this->validator->validRequestId($req, $errors)],
             FormModel::class,
             $errors
         );

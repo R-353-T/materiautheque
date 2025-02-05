@@ -3,6 +3,7 @@
 namespace mate\validator;
 
 use mate\abstract\clazz\Validator;
+use mate\enumerator\Type;
 use mate\error\SchemaError;
 use mate\repository\FieldRepository;
 use WP_REST_Request;
@@ -13,33 +14,29 @@ class FieldValidator extends Validator
 
     public function __construct()
     {
-        $this->repository = FieldRepository::inject();
-        $this->typeValidator = TypeValueValidator::inject();
+        // $this->repository = FieldRepository::inject();
+        // $this->typeValidator = TypeValueValidator::inject();
     }
 
-    public function validDoubleValue(WP_REST_Request $req, array &$errors): bool
+    public function validTypeEnumerator(WP_REST_Request $req, array &$errors): bool
     {
-        $typeId = $req->get_param("typeId");
-        $enumeratorId = $req->get_param("enumeratorId");
-
-        if ($typeId === null && $enumeratorId === null) {
-            $errors[] = SchemaError::paramRequired("typeId");
-            $errors[] = SchemaError::paramRequired("enumeratorId");
+        if ($this->hasError($errors, "typeId", "enumeratorId")) {
             return false;
         }
 
-        if ($typeId !== null && $enumeratorId !== null) {
+        $typeId = $req->get_param("typeId");
+        $enumeratorId = $req->get_param("enumeratorId");
+
+        if ($enumeratorId !== null && $typeId !== Type::ENUMERATOR) {
             // todo - remove custom error
             $errors[] = [
                 "name" => "typeId",
-                "code" => "param_double_value"
+                "code" => "param_field_malformed"
             ];
-            // todo - remove custom error
-            $errors[] = [
-                "name" => "enumId",
-                "code" => "param_double_value"
-            ];
-            return false;
+        }
+
+        if ($typeId === Type::ENUMERATOR && $enumeratorId === null) {
+            $errors[] = SchemaError::paramRequired("enumeratorId");
         }
 
         return true;

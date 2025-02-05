@@ -20,7 +20,7 @@ class TemplateSchema extends Schema
     {
         return $this->returnModel(
             [
-                "id" => $this->validator->validId($req, $errors),
+                "id" => $this->validator->validRequestId($req, $errors),
                 "childGroupList" => $this->validator->validChildGroupList($req, $errors)
             ],
             TemplateModel::class,
@@ -31,7 +31,7 @@ class TemplateSchema extends Schema
     public function get(WP_REST_Request $req, array $errors = [])
     {
         return $this->returnModel(
-            ["id" => $this->validator->validId($req, $errors)],
+            ["id" => $this->validator->validRequestId($req, $errors)],
             TemplateModel::class,
             $errors
         );

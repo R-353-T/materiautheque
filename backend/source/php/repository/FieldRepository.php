@@ -159,4 +159,20 @@ class FieldRepository extends Repository
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS, $this->model);
     }
+
+    public function selectByTemplate(int $templateId): array
+    {
+        $q = <<<SQL
+        SELECT mtf.*
+        FROM {$this->table} mtf 
+        LEFT JOIN mate_template_group mtg ON mtg.id = mtf.groupId
+        LEFT JOIN mate_template mt ON mt.id  = mtg.templateId
+        WHERE mt.id  = 2
+        SQL;
+
+        $stmt = $this->db->prepare($q);
+        $stmt->bindValue(":templateId", $templateId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_CLASS, $this->model);
+    }
 }

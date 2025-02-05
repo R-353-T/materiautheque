@@ -26,7 +26,7 @@ class GroupSchema extends Schema
             [
                 "name"          => $this->validator->validName($req, $errors),
                 "description"   => $this->validator->validDescription($req, $errors),
-                "templateId"    => $this->templateValidator->validId($req, $errors, "templateId"),
+                "templateId"    => $this->templateValidator->validRequestId($req, $errors, "templateId"),
                 "parentId"      => $this->validator->validParentId($req, $errors)
             ],
             GroupModel::class,
@@ -38,7 +38,7 @@ class GroupSchema extends Schema
     {
         return $this->returnModel(
             [
-                "id"                => $this->validator->validId($req, $errors),
+                "id"                => $this->validator->validRequestId($req, $errors),
                 "name"              => $this->validator->validName($req, $errors),
                 "description"       => $this->validator->validDescription($req, $errors),
                 "parentId"          => $this->validator->validParentId($req, $errors),
@@ -54,8 +54,8 @@ class GroupSchema extends Schema
     {
         return $this->returnData(
             [
-                "templateId"    => $this->templateValidator->validId($req, $errors, "templateId"),
-                "parentId"      => $this->validator->validId($req, $errors, "parentId", false),
+                "templateId"    => $this->templateValidator->validRequestId($req, $errors, "templateId"),
+                "parentId"      => $this->validator->validRequestId($req, $errors, "parentId", false),
                 "search"        => $this->validator->validSearch($req),
                 "pageIndex"     => $this->validator->validPageIndex($req),
                 "pageSize"      => $this->validator->validPageSize($req)
@@ -67,7 +67,7 @@ class GroupSchema extends Schema
     public function get(WP_REST_Request $req, array $errors = []): GroupModel|WP_Error
     {
         return $this->returnModel(
-            ["id" => $this->validator->validId($req, $errors)],
+            ["id" => $this->validator->validRequestId($req, $errors)],
             GroupModel::class,
             $errors
         );
@@ -76,7 +76,7 @@ class GroupSchema extends Schema
     public function delete(WP_REST_Request $req, array $errors = []): GroupModel|WP_Error
     {
         return $this->returnModel(
-            ["id" => $this->validator->validId($req, $errors)],
+            ["id" => $this->validator->validRequestId($req, $errors)],
             GroupModel::class,
             $errors
         );

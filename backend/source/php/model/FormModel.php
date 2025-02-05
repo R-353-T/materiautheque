@@ -10,6 +10,6 @@ class FormModel extends Model
     public string $name = "";
     public int $templateId;
 
-    /** @var FormValueModel[]|null */
+    /** @var FormValueModel[]|ValueDto[]|null */
     public ?array $valueList = null;
 }

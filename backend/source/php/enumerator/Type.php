@@ -13,4 +13,5 @@ class Type
     public const DATE = 7;
     public const IMAGE = 8;
     public const FORM = 9;
+    public const ENUMERATOR = 10;
 }
