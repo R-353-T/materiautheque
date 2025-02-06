@@ -6,7 +6,6 @@ use mate\abstract\clazz\Schema;
 use mate\error\WPErrorBuilder;
 use mate\model\UnitModel;
 use mate\validator\UnitValidator;
-use WP_Error;
 use WP_REST_Request;
 
 class UnitSchema extends Schema
@@ -18,7 +17,7 @@ class UnitSchema extends Schema
         $this->validator = UnitValidator::inject();
     }
 
-    public function create(WP_REST_Request $req, array $errors = []): UnitModel|WP_Error
+    public function create(WP_REST_Request $req, array $errors = [])
     {
         $name = $this->validator->validRequestName($req, $errors);
         $description = $this->validator->validRequestDescription($req, $errors);

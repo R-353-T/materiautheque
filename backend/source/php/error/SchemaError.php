@@ -63,6 +63,35 @@ class SchemaError
     }
 
     // ---------------------------------------------------- //
+    // ---------------------------------------------------- //
+
+    public static function notForeignOf(string $name, string $foreign)
+    {
+        return [
+            "name"      => $name,
+            "code"      => "param_not_foreign_of",
+            "foreign"   => $foreign
+        ];
+    }
+
+    public static function invalidDate(string $name)
+    {
+        return [
+            "name"      => $name,
+            "code"      => "param_invalid_date",
+            "format"    => MATE_DATE_FORMAT
+        ];
+    }
+
+    public static function notImplemented()
+    {
+        return [
+            "code"      => "param_not_implemented"
+        ];
+    }
+
+    // ---------------------------------------------------- //
+    // ---------------------------------------------------- //
 
     public static function fileNotSupported(string $name)
     {
@@ -77,24 +106,6 @@ class SchemaError
         return [
             "name"      => $name,
             "code"      => "param_file_too_big"
-        ];
-    }
-
-    public static function notForeignOf(string $name, string $foreign)
-    {
-        return [
-            "name"      => $name,
-            "code"      => "param_not_foreign_of",
-            "foreign"   => $foreign
-        ];
-    }
-
-    public static function dateInvalid(string $name)
-    {
-        return [
-            "name"      => $name,
-            "code"      => "param_date_invalid",
-            "format"    => MATE_DATE_FORMAT
         ];
     }
 

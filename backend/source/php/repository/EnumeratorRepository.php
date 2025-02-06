@@ -128,4 +128,15 @@ class EnumeratorRepository extends Repository
 
         return $m;
     }
+
+    public function containsValueById(int $id, int $valueId): bool
+    {
+        $enumerator = $this->selectById($id);
+
+        if ($enumerator === null) {
+            return false;
+        } else {
+            return count(array_filter($enumerator->valueList, fn($v) => $v->id === $valueId)) > 0;
+        }
+    }
 }

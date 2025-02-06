@@ -2,11 +2,86 @@
 
 namespace mate\validator;
 
+use DateTime;
 use mate\abstract\clazz\Validator;
+use mate\enumerator\Type;
 use mate\error\SchemaError;
+use mate\model\TypeModel;
+use mate\repository\TypeRepository;
+use Throwable;
 
 class TypeValidator extends Validator
 {
+    private readonly TypeRepository $typeRepository;
+
+    private readonly ImageValidator $imageValidator;
+    private readonly FormValidator $formValidator;
+
+    public function __construct()
+    {
+        $this->repository = TypeRepository::inject();
+
+        $this->typeRepository = TypeRepository::inject();
+        $this->formValidator = FormValidator::inject();
+    }
+
+    public function typeIdIsEnumerable(mixed $typeId, string $paramName): int|array
+    {
+        $errors = [];
+        $typeId = $this->validId($typeId, $errors, $paramName);
+
+        if (count($errors) > 0) {
+            $typeId = $errors[0];
+        } else {
+            /** @var TypeModel */
+            $type = $this->typeRepository->selectById($typeId);
+            if ($type->allowEnumeration === false) {
+                // todo - remove custom error
+                $typeId = [
+                    "name" => $paramName,
+                    "code" => "param_not_enumerable"
+                ];
+            };
+        }
+
+        return $typeId;
+    }
+
+    public function validValue(int $typeId, mixed $value, string $paramName)
+    {
+        switch ($typeId) {
+            case Type::LABEL:
+                return $this->validLabel($value, $paramName);
+
+            case Type::TEXT:
+                return $this->validText($value, $paramName);
+
+            case Type::URL:
+                return $this->validURL($value, $paramName);
+
+            case Type::BOOLEAN:
+                return $this->validBoolean($value, $paramName);
+
+            case Type::NUMBER:
+                return $this->validNumber($value, $paramName);
+
+            case Type::MONEY:
+                return $this->validMoney($value, $paramName);
+
+            case Type::DATE:
+                return $this->validDate($value, $paramName);
+
+            case Type::IMAGE:
+                return $this->validImage($value, $paramName);
+
+            case Type::FORM:
+                return $this->validForm($value, $paramName);
+
+            default:
+                return SchemaError::notImplemented();
+        }
+    }
+
     public function validLabel(mixed $value, string $paramName): string|array
     {
         if ($value === null) {
@@ -15,6 +90,117 @@ class TypeValidator extends Validator
             $value = SchemaError::incorrectType($paramName, "string");
         } elseif (strlen(trim($value)) > 255) {
             $value = SchemaError::tooLong($paramName, 255);
+        }
+
+        return $value;
+    }
+
+
+    public function validText(mixed $value, string $paramName): string|array
+    {
+        if ($value === null) {
+            $value = SchemaError::required($paramName);
+        } elseif (mate_sanitize_string($value) === false) {
+            $value = SchemaError::incorrectType($paramName, "string");
+        } elseif (strlen(trim($value)) > 65535) {
+            $value = SchemaError::tooLong($paramName, 65535);
+        }
+
+        return $value;
+    }
+
+    public function validURL(mixed $value, string $paramName): string|array
+    {
+        if ($value === null) {
+            $value = SchemaError::required($paramName);
+        } elseif (mate_sanitize_url($value) === false) {
+            $value = SchemaError::incorrectType($paramName, "url");
+        } elseif (strlen($value) > 4096) {
+            $value = SchemaError::tooLong($paramName, 4096);
+        }
+
+        return $value;
+    }
+
+    public function validNumber(mixed $value, string $paramName): int|float|array
+    {
+        if ($value === null) {
+            $value = SchemaError::required($paramName);
+        } else {
+            $int = mate_sanitize_int($value);
+            $float = mate_sanitize_float($value);
+
+            if ($int !== false) {
+                $value = $int;
+            } elseif ($float !== false) {
+                $value = $float;
+            } else {
+                $value = SchemaError::incorrectType($paramName, "float");
+            }
+        }
+
+        return $value;
+    }
+
+    public function validMoney(mixed $value, string $paramName): int|float|string
+    {
+        $err = $this->validNumber($value, $paramName);
+
+        if (is_array($err)) {
+            return $err;
+        } else {
+            return filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT);
+        }
+    }
+
+    public function validDate(mixed $value, string $paramName): string|array
+    {
+        if ($value === null) {
+            $value = SchemaError::required($paramName);
+        } elseif (mate_sanitize_string($value) === false) {
+            $value = SchemaError::incorrectType($paramName, "string");
+        } else {
+            try {
+                date_default_timezone_set(MATE_TIMEZONE);
+                DateTime::createFromFormat(MATE_DATE_FORMAT, $value);
+            } catch (Throwable $exception) {
+                $value = SchemaError::invalidDate($paramName);
+            }
+        }
+
+        return $value;
+    }
+
+    public function validBoolean(mixed $value, string $paramName): bool|array
+    {
+        $value = mate_sanitize_boolean($value);
+
+        if ($value === null) {
+            $value = SchemaError::required($paramName);
+        }
+
+        return $value;
+    }
+
+    public function validImage(mixed $value, string $paramName): int|array
+    {
+        $errors = [];
+        $value = $this->imageValidator->validId($value, $errors, $paramName);
+
+        if (count($errors) > 0) {
+            $value = $errors[0];
+        }
+
+        return $value;
+    }
+
+    public function validForm(mixed $value, string $paramName): int|array
+    {
+        $errors = [];
+        $value = $this->formValidator->validId($value, $errors, $paramName);
+
+        if (count($errors) > 0) {
+            $value = $errors[0];
         }
 
         return $value;

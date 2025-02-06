@@ -26,9 +26,7 @@ class UnitValidator extends Validator
         if ($this->hasError($errors, $paramName)) {
             $name = null;
         } else {
-            /** @var UnitRepository */
-            $repository = $this->repository;
-            $model = $repository->selectByName($name);
+            $model = $this->unitRepository->selectByName($name);
 
             if ($model !== null && $model->id !== $req->get_param("id")) {
                 $errors[] = SchemaError::unique($paramName);

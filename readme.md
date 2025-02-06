@@ -46,12 +46,12 @@ Duplicate `config.template.yml` as `config.dev.yml` and edit is with your own da
 {
     "success": boolean,
     "data": {
-            pid: number,
-            id: number,
-            name: string,
-            column: string,
-            allowEnumeration: boolean,
-            allowMultipleValues: boolean
+        "pid": number,
+        "id": number,
+        "name": string,
+        "column": string,
+        "allowEnumeration": boolean,
+        "allowMultipleValues": boolean
     }[]
 }
 ```
@@ -79,10 +79,7 @@ Duplicate `config.template.yml` as `config.dev.yml` and edit is with your own da
         "id": number,
         "name": string,
         "description": string,
-        "valueList": {
-            "id": number,
-            "value": string
-        }[]
+        "valueList": null
     }[],
     "pagination": {
         "index": number, // current page index
@@ -103,6 +100,23 @@ Duplicate `config.template.yml` as `config.dev.yml` and edit is with your own da
 ```
 
 - id: `required` | `incorrect_type` | `not_found` 
+
+##### Response:
+
+```json
+{
+    "success": boolean,
+    "data": {
+        "id": number,
+        "name": string,
+        "description": string,
+        "valueList": {
+            "id": number,
+            "value": string
+        }[]
+    }
+}
+```
 
 #### **`/unit/delete`**
 
@@ -134,7 +148,6 @@ Duplicate `config.template.yml` as `config.dev.yml` and edit is with your own da
     "name": string,
     "description": string,
     "valueList": {
-        "id": number,
         "value": string
     }[]
 }
@@ -153,13 +166,14 @@ Duplicate `config.template.yml` as `config.dev.yml` and edit is with your own da
 {
     "success": boolean,
     "data": {
-            pid: number,
-            id: number,
-            name: string,
-            column: string,
-            allowEnumeration: boolean,
-            allowMultipleValues: boolean
-    }[]
+        "id": number,
+        "name": string,
+        "description": string,
+        "valueList": {
+            "id": number,
+            "value": string
+        }[]
+    }
 }
 ```
 
@@ -168,12 +182,12 @@ Duplicate `config.template.yml` as `config.dev.yml` and edit is with your own da
 ##### Request:
 
 ```json
-{``
+{
     "id": number,
     "name": string,
     "description": string,
     "valueList": {
-        "id": number,
+        "id": number|null,
         "value": string
     }[]
 }
@@ -192,13 +206,190 @@ Duplicate `config.template.yml` as `config.dev.yml` and edit is with your own da
 {
     "success": boolean,
     "data": {
-            pid: number,
-            id: number,
-            name: string,
-            column: string,
-            allowEnumeration: boolean,
-            allowMultipleValues: boolean
+        "id": number,
+        "name": string,
+        "description": string,
+        "valueList": {
+            "id": number,
+            "value": string
+        }[]
     }[]
+}
+```
+
+### 3) Enumerator
+
+#### **`/enumerator/list`**
+
+##### Request:
+
+```json
+{
+    "index": number|null, // default: 1
+    "size": number|null, // default: 32
+    "search": string|null, // default: null
+    "typeId": int|null // default: null
+}
+```
+
+- typeId: `incorrect_type` | `not_found` | `not_enumerable`
+
+##### Response:
+
+```json
+{
+    "success": boolean,
+    "data": {
+        "id": number,
+        "name": string,
+        "description": string,
+        "typeId": number,
+        "valueList": null
+    }[],
+    "pagination": {
+        "index": number, // current page index
+        "size": number, // current page size
+        "total": number // last page index
+    }
+}
+```
+
+
+#### **`/enumerator/get`**
+
+##### Request:
+
+```json
+{
+    "id": number
+}
+```
+
+- id: `required` | `incorrect_type` | `not_found` 
+
+##### Response:
+
+```json
+{
+    "success": boolean,
+    "data": {
+        "id": number,
+        "name": string,
+        "description": string,
+        "typeId": number,
+        "valueList": {
+            "id": number,
+            "value": any
+        }[]
+    }
+}
+```
+
+- id: `required` | `incorrect_type` | `not_found` 
+
+#### **`/enumerator/delete`**
+
+##### Request:
+
+```json
+{
+    "id": number
+}
+```
+
+- id: `required` | `incorrect_type` | `not_found` 
+
+##### Response:
+
+```json
+{
+    "success": boolean,
+    "data": boolean
+}
+```
+
+#### **`/enumerator/create`**
+
+##### Request:
+
+```json
+{
+    "name": string,
+    "description": string,
+    "typeId": number,
+    "valueList": {
+        "id": number,
+        "value": any
+    }[]
+}
+```
+
+- name: `required` | `incorrect_type` | `empty` | `too_long` | `unique`*
+- description: `required` | `incorrect_type` | `too_long`
+- typeId: `required` | `incorrect_type` | `not_found` | `not_enumerable`
+- valueList: `required` | `incorrect_type`
+- Dto: `incorrect_type`
+    - id: `not_foreign_of` | 
+    - value : `required` | `incorrect_type` | `empty` | `too_long` | `invalid_date` | `not_found`
+
+##### Response:
+
+```json
+{
+    "success": boolean,
+    "data": {
+        "id": number,
+        "name": string,
+        "description": string,
+        "typeId": number,
+        "valueList": {
+            "id": number,
+            "value": any
+        }[]
+    }
+}
+```
+
+#### **`/enumerator/update`**
+
+##### Request:
+
+```json
+{``
+    "id": number,
+    "name": string,
+    "description": string,
+    "typeId": number,
+    "valueList": {
+        "id": number,
+        "value": any
+    }[]
+}
+```
+
+- name: `required` | `incorrect_type` | `empty` | `too_long` | `unique`*
+- description: `required` | `incorrect_type` | `too_long`
+- typeId: `required` | `incorrect_type` | `not_found` | `not_enumerable`
+- valueList: `required` | `incorrect_type`
+- Dto: `incorrect_type`
+    - id: `not_foreign_of` | 
+    - value : `required` | `incorrect_type` | `empty` | `too_long` | `invalid_date` | `not_found`
+
+##### Response:
+
+```json
+{
+    "success": boolean,
+    "data": {
+        "id": number,
+        "name": string,
+        "description": string,
+        "typeId": number,
+        "valueList": {
+            "id": number,
+            "value": any
+        }[]
+    }
 }
 ```
 

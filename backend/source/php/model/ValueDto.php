@@ -6,7 +6,7 @@ use mate\repository\TypeRepository;
 
 class ValueDto
 {
-    public static function build(int $typeId, object $data)
+    public static function parseTyped(int $typeId, object $data)
     {
         /** @var TypeRepository */
         $repository = TypeRepository::inject();
@@ -19,11 +19,11 @@ class ValueDto
         return $valueDto;
     }
 
-    public static function buildList(int $typeId, array $data)
+    public static function parseTypedList(int $typeId, array $data)
     {
         return array_map(
             function ($value) use ($typeId) {
-                return ValueDto::build($typeId, $value);
+                return ValueDto::parseTyped($typeId, $value);
             },
             $data
         );
