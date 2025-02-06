@@ -106,4 +106,15 @@ class UnitRepository extends Repository
 
         return $m;
     }
+
+    public function containsValueById(int $id, int $valueId): bool
+    {
+        $unit = $this->selectById($id);
+
+        if ($unit === null) {
+            return false;
+        } else {
+            return count(array_filter($unit->valueList, fn($v) => $v->id === $valueId)) > 0;
+        }
+    }
 }

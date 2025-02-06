@@ -4,7 +4,7 @@ namespace mate\error;
 
 class SchemaError
 {
-    public static function paramRequired(string $name)
+    public static function required(string $name)
     {
         return [
             "name"  => $name,
@@ -12,7 +12,7 @@ class SchemaError
         ];
     }
 
-    public static function paramEmpty(string $name)
+    public static function empty(string $name)
     {
         return [
             "name"  => $name,
@@ -20,15 +20,15 @@ class SchemaError
         ];
     }
 
-    public static function paramNotUnique(string $name)
+    public static function unique(string $name)
     {
         return [
             "name"  => $name,
-            "code"  => "param_not_unique"
+            "code"  => "param_unique"
         ];
     }
 
-    public static function paramTooLong(string $name, int $max)
+    public static function tooLong(string $name, int $max)
     {
         return [
             "name"  => $name,
@@ -37,7 +37,7 @@ class SchemaError
         ];
     }
 
-    public static function paramMalformed(string $name)
+    public static function malformed(string $name)
     {
         return [
             "name"      => $name,
@@ -45,7 +45,7 @@ class SchemaError
         ];
     }
 
-    public static function paramIncorrectType(string $name, string $type)
+    public static function incorrectType(string $name, string $type)
     {
         return [
             "name"      => $name,
@@ -54,23 +54,7 @@ class SchemaError
         ];
     }
 
-    public static function paramFileNotSupported(string $name)
-    {
-        return [
-            "name"      => $name,
-            "code"      => "param_file_not_supported"
-        ];
-    }
-
-    public static function paramFileTooLarge(string $name)
-    {
-        return [
-            "name"      => $name,
-            "code"      => "param_file_too_big"
-        ];
-    }
-
-    public static function paramNotFound(string $name)
+    public static function notFound(string $name)
     {
         return [
             "name"      => $name,
@@ -78,7 +62,25 @@ class SchemaError
         ];
     }
 
-    public static function paramNotForeignOf(string $name, string $foreign)
+    // ---------------------------------------------------- //
+
+    public static function fileNotSupported(string $name)
+    {
+        return [
+            "name"      => $name,
+            "code"      => "param_file_not_supported"
+        ];
+    }
+
+    public static function fileTooLarge(string $name)
+    {
+        return [
+            "name"      => $name,
+            "code"      => "param_file_too_big"
+        ];
+    }
+
+    public static function notForeignOf(string $name, string $foreign)
     {
         return [
             "name"      => $name,
@@ -87,7 +89,7 @@ class SchemaError
         ];
     }
 
-    public static function paramDateInvalid(string $name)
+    public static function dateInvalid(string $name)
     {
         return [
             "name"      => $name,
@@ -96,7 +98,7 @@ class SchemaError
         ];
     }
 
-    public static function paramGroupError(string $name, int $index)
+    public static function groupError(string $name, int $index)
     {
         return [
             "name"      => $name,
@@ -106,7 +108,7 @@ class SchemaError
         ];
     }
 
-    public static function paramFieldNotInTemplate(string $name)
+    public static function fieldNotInTemplate(string $name)
     {
         return [
             "name"      => $name,

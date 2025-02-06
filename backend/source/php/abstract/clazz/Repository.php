@@ -76,13 +76,7 @@ abstract class Repository extends Service
         $options->applyWhereBinds($s);
 
         $s->execute();
-        $r = $s->fetchAll(PDO::FETCH_CLASS, $this->model);
-
-        foreach ($r as $model) {
-            $this->cache->set($model->id, $model);
-        }
-
-        return $r;
+        return $s->fetchAll(PDO::FETCH_CLASS, $this->model);
     }
 
     public function deleteById(int $id): bool
@@ -90,6 +84,11 @@ abstract class Repository extends Service
         $s = $this->db->prepare("DELETE FROM {$this->table} WHERE `id` = :id");
         $s->bindValue(":id", $id, PDO::PARAM_INT);
         $s->execute();
+
+        if ($this->cache->has($id)) {
+            $this->cache->remove($id);
+        }
+
         return $s->rowCount() > 0;
     }
 

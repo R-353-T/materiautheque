@@ -13,105 +13,91 @@ class Validator extends Service
         WP_REST_Request $req,
         array &$errors,
         string $paramName = "id",
-        bool $required = true
-    ): int {
+        array $options = []
+    ): int|null {
+        if (isset($options['required']) === false) {
+            $options['required'] = true;
+        }
+
         $id = $req->get_param($paramName);
 
         if ($id === null) {
-            if ($required) {
-                $errors[] = SchemaError::paramRequired($paramName);
+            if ($options['required'] === true) {
+                $errors[] = SchemaError::required($paramName);
             }
-            return 0;
-        }
+        } else {
+            $id = mate_sanitize_int($id);
 
-        $id = mate_sanitize_int($id);
-
-        if ($id === false) {
-            $errors[] = SchemaError::paramIncorrectType($paramName, "integer");
-            return 0;
-        }
-
-        if ($this->repository->selectById($id) === null) {
-            $errors[] = SchemaError::paramNotFound($paramName);
-            return 0;
+            if ($id === false) {
+                $errors[] = SchemaError::incorrectType($paramName, "integer");
+                $id = null;
+            } elseif ($this->repository->selectById($id) === null) {
+                $errors[] = SchemaError::notFound($paramName);
+                $id = null;
+            }
         }
 
         return $id;
     }
 
-    public function validId(mixed $id, array &$errors, string $paramName = "id", bool $required = true): int
+    public function validId(mixed $id, array &$errors, string $paramName = "id"): int|null
     {
         $id = mate_sanitize_int($id);
 
         if ($id === false) {
-            $errors[] = SchemaError::paramIncorrectType($paramName, "integer");
-            return 0;
-        }
-
-        if ($this->repository->selectById($id) === null) {
-            $errors[] = SchemaError::paramNotFound($paramName);
-            return 0;
+            $errors[] = SchemaError::incorrectType($paramName, "integer");
+            $id = null;
+        } elseif ($this->repository->selectById($id) === null) {
+            $errors[] = SchemaError::notFound($paramName);
+            $id = null;
         }
 
         return $id;
     }
 
-    public function validName(WP_REST_Request $req, array &$errors, string $paramName = "name"): string
+    public function validRequestName(WP_REST_Request $req, array &$errors, string $paramName = "name"): string|null
     {
         $name = $req->get_param($paramName);
 
         if ($name === null) {
-            $errors[] = SchemaError::paramRequired($paramName);
-            return "";
-        }
+            $errors[] = SchemaError::required($paramName);
+        } else {
+            $name = mate_sanitize_string($name);
 
-        $name = mate_sanitize_string($name);
-
-        if ($name === false) {
-            $errors[] = SchemaError::paramIncorrectType($paramName, "string");
-            return "";
-        }
-
-        $l = strlen($name);
-
-        if ($l === 0) {
-            $errors[] = SchemaError::paramEmpty($paramName);
-            return "";
-        }
-
-        if ($l > 255) {
-            $errors[] = SchemaError::paramTooLong($paramName, 255);
-            return "";
+            if ($name === false) {
+                $errors[] = SchemaError::incorrectType($paramName, "string");
+                $name = null;
+            } elseif (strlen($name) === 0) {
+                $errors[] = SchemaError::empty($paramName);
+                $name = null;
+            } elseif (strlen($name) > 255) {
+                $errors[] = SchemaError::tooLong($paramName, 255);
+                $name = null;
+            }
         }
 
         return $name;
     }
 
-    public function validDescription(WP_REST_Request $req, array &$errors, string $paramName = "description"): string
-    {
+    public function validRequestDescription(
+        WP_REST_Request $req,
+        array &$errors,
+        string $paramName = "description"
+    ): string|null {
         $description = $req->get_param($paramName);
 
         if ($description === null) {
-            $errors[] = SchemaError::paramRequired($paramName);
-            return "";
-        }
+            $errors[] = SchemaError::required($paramName);
+        } else {
+            $description = mate_sanitize_string($description);
 
-        $description = mate_sanitize_string($description);
-
-        if ($description === false) {
-            $errors[] = SchemaError::paramIncorrectType($paramName, "string");
-            return "";
-        }
-
-        $l = strlen($description);
-        if ($l === 0) {
-            $errors[] = SchemaError::paramEmpty($paramName);
-            return "";
-        }
-
-        if ($l > 4096) {
-            $errors[] = SchemaError::paramTooLong($paramName, 4096);
-            return "";
+            if ($description === false) {
+                $errors[] = SchemaError::incorrectType($paramName, "string");
+                $description = null;
+            } elseif (strlen($description) > 4096) {
+                $errors[] = SchemaError::tooLong($paramName, 4096);
+                $description = null;
+            }
         }
 
         return $description;
@@ -121,47 +107,42 @@ class Validator extends Service
     {
         $search = $req->get_param($paramName);
 
-        if ($search === null) {
-            return null;
-        }
+        if ($search !== null) {
+            $search = mate_sanitize_string($search);
 
-        $search = mate_sanitize_string($search);
-
-        if ($search === false) {
-            return null;
+            if ($search === false) {
+                $search = null;
+            }
         }
 
         return $search;
     }
 
-    public function validPageIndex(WP_REST_Request $req, string $paramName = "pageIndex"): int
+    public function validPageIndex(WP_REST_Request $req, string $paramName = "index"): int
     {
-        $pageIndex = mate_sanitize_int($req->get_param($paramName));
+        $index = $req->get_param($paramName);
+        $index = mate_sanitize_int($index);
 
-        if ($pageIndex === false || $pageIndex < 1) {
-            return 1;
+        if ($index === false || $index < 1) {
+            $index = 1;
         }
 
-        return $pageIndex;
+        return $index;
     }
 
-    public function validPageSize(WP_REST_Request $req, string $paramName = "pageSize"): int
+    public function validPageSize(WP_REST_Request $req, string $paramName = "size"): int
     {
-        $pageSize = mate_sanitize_int($req->get_param($paramName));
+        $size = mate_sanitize_int($req->get_param($paramName));
 
-        if ($pageSize === false) {
-            return MATE_THEME_API_DEFAULT_PAGE_SIZE;
+        if ($size === false) {
+            $size = MATE_THEME_API_DEFAULT_PAGE_SIZE;
+        } elseif ($size <= 0) {
+            $size = MATE_THEME_API_DEFAULT_PAGE_SIZE;
+        } elseif ($size > MATE_THEME_API_MAX_PAGE_SIZE) {
+            $size = MATE_THEME_API_MAX_PAGE_SIZE;
         }
 
-        if ($pageSize <= 0) {
-            return MATE_THEME_API_DEFAULT_PAGE_SIZE;
-        }
-
-        if ($pageSize > MATE_THEME_API_MAX_PAGE_SIZE) {
-            return MATE_THEME_API_MAX_PAGE_SIZE;
-        }
-
-        return $pageSize;
+        return $size;
     }
 
     public function hasError(array $errors, string $name): bool

@@ -8,6 +8,7 @@ class ValueDto
 {
     public static function build(int $typeId, object $data)
     {
+        /** @var TypeRepository */
         $repository = TypeRepository::inject();
         $column = $repository->selectById($typeId)->column;
 

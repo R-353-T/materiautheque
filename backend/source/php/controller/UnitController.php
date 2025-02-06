@@ -3,7 +3,6 @@
 namespace mate\controller;
 
 use mate\abstract\clazz\Controller;
-use mate\error\WPErrorBuilder;
 use mate\model\ValueDto;
 use mate\repository\UnitRepository;
 use mate\schema\UnitSchema;
@@ -52,88 +51,79 @@ class UnitController extends Controller
     {
         $model = $this->schema->create($req);
 
-        if (is_wp_error($model)) {
-            return $model;
+        if (is_wp_error($model) === false) {
+            $model = $this->repository->insert($model);
+
+            if (is_wp_error($model) === false) {
+                $model->valueList = ValueDto::parseList($model->valueList);
+                return $this->ok($model);
+            }
         }
 
-        $model = $this->repository->insert($model);
-
-        if (is_wp_error($model)) {
-            return $model;
-        } else {
-            $model->valueList = ValueDto::parseList($model->valueList);
-            return $this->ok($model);
-        }
+        return $model;
     }
 
     public function update(WP_REST_Request $req)
     {
         $model = $this->schema->update($req);
 
-        if (is_wp_error($model)) {
-            return $model;
+        if (is_wp_error($model) === false) {
+            $model = $this->repository->update($model);
+
+            if (is_wp_error($model) === false) {
+                $model->valueList = ValueDto::parseList($model->valueList);
+                return $this->ok($model);
+            }
         }
 
-        $model = $this->repository->update($model);
-
-        if (is_wp_error($model)) {
-            return $model;
-        } else {
-            $model->valueList = ValueDto::parseList($model->valueList);
-            return $this->ok($model);
-        }
+        return $model;
     }
 
     public function list(WP_REST_Request $req)
     {
         $options = $this->schema->list($req);
 
-        if (is_wp_error($options)) {
-            return $options;
+        if (is_wp_error($options) === false) {
+            $sqlOptions = new SqlSelectQueryOptions($options["index"], $options["size"]);
+
+            if ($options["search"] !== null) {
+                $searchQuery = 'LOWER(`name`) LIKE LOWER(CONCAT("%", :_search, "%"))';
+                $sqlOptions->whereRaw(
+                    $searchQuery,
+                    [[":_search", $options["search"], PDO::PARAM_STR]]
+                );
+            }
+
+            $data = $this->repository->selectAll($sqlOptions);
+            $total = $this->repository->getPageCount($sqlOptions);
+            return $this->page($data, $options["index"], $options["size"], $total);
         }
 
-        $sqlOptions = new SqlSelectQueryOptions($options["pageIndex"], $options["pageSize"]);
-
-        if ($options["search"] !== null) {
-            $sqlOptions->whereRaw(
-                'LOWER(`name`) LIKE LOWER(CONCAT("%", :_search, "%"))',
-                [[":_search", $options["search"], PDO::PARAM_STR]]
-            );
-        }
-
-        $total = $this->repository->getPageCount($sqlOptions);
-        return ($total < $options["pageIndex"]
-            ? WPErrorBuilder::notFoundError()
-            : $this->page(
-                $this->repository->selectAll($sqlOptions),
-                $options["pageIndex"],
-                $options["pageSize"],
-                $total
-            )
-        );
+        return $options;
     }
 
     public function get(WP_REST_Request $req)
     {
         $model = $this->schema->get($req);
-        if (is_wp_error($model)) {
-            return $model;
+
+        if (is_wp_error($model) === false) {
+            $model = $this->repository->selectById($model->id);
+            $model->valueList = ValueDto::parseList($model->valueList);
+            return $this->ok($model);
         }
 
-        $model = $this->repository->selectById($model->id);
-        $model->valueList = ValueDto::parseList($model->valueList);
-
-        return $this->ok($model);
+        return $model;
     }
 
     public function delete(WP_REST_Request $req)
     {
         $model = $this->schema->delete($req);
 
-        if (is_wp_error($model)) {
-            return $model;
+        if (is_wp_error($model) === false) {
+            $deleted = $this->repository->deleteById($model->id);
+            return $this->ok($deleted);
         }
 
-        return $this->ok($this->repository->deleteById($model->id));
+        return $model;
     }
 }

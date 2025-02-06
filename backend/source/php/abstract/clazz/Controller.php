@@ -2,6 +2,7 @@
 
 namespace mate\abstract\clazz;
 
+use mate\error\WPErrorBuilder;
 use WP_REST_Response;
 
 abstract class Controller extends Service
@@ -51,6 +52,10 @@ abstract class Controller extends Service
 
     protected function page(array $data, int $pageIndex = null, int $pageSize = null, int $total = null)
     {
+        if ($total < $pageIndex) {
+            return WPErrorBuilder::notFoundError();
+        }
+
         return new WP_REST_Response(
             [
                 "success" => true,
