@@ -20,11 +20,11 @@ class SchemaError
         ];
     }
 
-    public static function unique(string $name)
+    public static function duplicate(string $name)
     {
         return [
             "name"  => $name,
-            "code"  => "param_unique"
+            "code"  => "param_duplicate"
         ];
     }
 

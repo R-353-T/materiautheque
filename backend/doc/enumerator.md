@@ -106,12 +106,12 @@
 }
 ```
 
-- name: `required` | `incorrect_type` | `empty` | `too_long` | `unique`*
+- name: `required` | `incorrect_type` | `empty` | `too_long` | `duplicate`*
 - description: `required` | `incorrect_type` | `too_long`
 - typeId: `required` | `incorrect_type` | `not_found` | `not_enumerable`
 - valueList: `required` | `incorrect_type`
-- Dto: `incorrect_type`
-    - id: `not_foreign_of` | 
+- DTO: `incorrect_type`
+    - id: `incorrect_type` | `not_foreign_of`
     - value : `required` | `incorrect_type` | `empty` | `too_long` | `invalid_date` | `not_found`
 
 ##### Response:
@@ -150,12 +150,12 @@
 ```
 
 - id: `required` | `incorrect_type` | `not_found` 
-- name: `required` | `incorrect_type` | `empty` | `too_long` | `unique`*
+- name: `required` | `incorrect_type` | `empty` | `too_long` | `duplicate`*
 - description: `required` | `incorrect_type` | `too_long`
 - typeId: `required` | `incorrect_type` | `not_found` | `not_enumerable`
 - valueList: `required` | `incorrect_type`
-- Dto: `incorrect_type`
-    - id: `not_foreign_of` | 
+- DTO: `incorrect_type`
+    - id: `incorrect_type` | `not_foreign_of` 
     - value : `required` | `incorrect_type` | `empty` | `too_long` | `invalid_date` | `not_found`
 
 ##### Response:

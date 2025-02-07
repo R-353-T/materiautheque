@@ -139,4 +139,51 @@ class SQL
             `relative` = :relative
         WHERE `id` = :id
         SQL;
+
+    // ----------------------------------------
+    // TEMPLATE
+    // ----------------------------------------
+
+    // ----------------------------------------
+    // GROUP
+    // ----------------------------------------
+
+    public const GROUP_INSERT = <<<SQL
+        INSERT INTO mate_group
+        (
+            `name`,
+            `description`,
+            `position`,
+            `templateId`,
+            `parentId`
+        )
+        VALUES
+        (
+            :name,
+            :description,
+            0,
+            :templateId,
+            :parentId
+        )
+        SQL;
+
+    public const GROUP_UPDATE = <<<SQL
+        UPDATE mate_group
+        SET
+            `name` = :name,
+            `description` = :description,
+            `parentId` = :parentId
+        WHERE `id` = :id
+        SQL;
+
+    public const GROUP_SELECT_BY_TEMPLATE_ID = <<<SQL
+        SELECT * FROM mate_group
+        WHERE `templateId` = :templateId
+        AND `parentId` IS NULL
+        SQL;
+
+    public const GROUP_SELECT_BY_PARENT_ID = <<<SQL
+        SELECT * FROM mate_group
+        WHERE `parentId` = :parentId
+        SQL;
 }

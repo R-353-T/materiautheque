@@ -10,5 +10,5 @@ class TemplateModel extends Model
     public string $name;
 
     /** @var GroupModel[]|null */
-    public ?array $childGroupList = null;
+    public ?array $groupList = null;
 }

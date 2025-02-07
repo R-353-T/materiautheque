@@ -6,6 +6,7 @@ use mate\abstract\clazz\Repository;
 use mate\error\WPErrorBuilder;
 use mate\model\FieldModel;
 use mate\model\GroupModel;
+use mate\SQL;
 use PDO;
 use Throwable;
 
@@ -24,77 +25,53 @@ class GroupRepository extends Repository
 
     public function insert($model): ?object
     {
-        $this->db->transaction();
-        $q = <<<SQL
-        INSERT INTO {$this->table} (
-            `name`,
-            `description`,
-            `position`,
-            `templateId`,
-            `parentId`
-        ) VALUES (
-            :name,
-            :description,
-            0,
-            :templateId,
-            :parentId
-        )
-        SQL;
+        $result = null;
+        $parentIdArr = $model->parentId !== null
+            ? [$model->parentId, PDO::PARAM_INT]
+            : [null, PDO::PARAM_INT];
 
         try {
-            $s = $this->db->prepare($q);
+            $this->db->transaction();
+            $s = $this->db->prepare(SQL::GROUP_INSERT);
             $s->bindValue(":name", $model->name, PDO::PARAM_STR);
             $s->bindValue(":description", $model->description, PDO::PARAM_STR);
             $s->bindValue(":templateId", $model->templateId, PDO::PARAM_INT);
-
-            if ($model->parentId !== null) {
-                $s->bindValue(":parentId", $model->parentId, PDO::PARAM_INT);
-            } else {
-                $s->bindValue(":parentId", null, PDO::PARAM_INT);
-            }
-
+            $s->bindValue(":parentId", ...$parentIdArr);
             $s->execute();
             $model->id = $this->db->lastInsertId();
-
             $this->db->commit();
-            return $this->selectById($model->id, false);
+            $result = $this->selectById($model->id, false);
         } catch (Throwable $err) {
             $this->db->rollback();
-            return WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
+            $result = WPErrorBuilder::internalServerError(
+                $err->getMessage(),
+                $err->getTraceAsString()
+            );
         }
+
+        return $result;
     }
 
     public function update($model): ?object
     {
+        $result = null;
         $previousModel = $this->selectById($model->id);
-        $this->db->transaction();
-
-        $q = <<<SQL
-        UPDATE {$this->table}
-        SET
-        `name`          = :name,
-        `description`   = :description,
-        `parentId`      = :parentId
-        WHERE `id` = :id
-        SQL;
+        $parentIdArr = $model->parentId !== null
+            ? [$model->parentId, PDO::PARAM_INT]
+            : [null, PDO::PARAM_INT];
 
         try {
-            $s = $this->db->prepare($q);
+            $this->db->transaction();
+            $s = $this->db->prepare(SQL::GROUP_UPDATE);
             $s->bindValue(":name", $model->name, PDO::PARAM_STR);
             $s->bindValue(":description", $model->description, PDO::PARAM_STR);
-
-            if ($model->parentId !== null) {
-                $s->bindValue(":parentId", $model->parentId, PDO::PARAM_INT);
-            } else {
-                $s->bindValue(":parentId", null, PDO::PARAM_INT);
-            }
-
+            $s->bindValue(":parentId", ...$parentIdArr);
             $s->bindValue(":id", $model->id, PDO::PARAM_INT);
             $s->execute();
 
-            if ($model->childGroupList !== null) {
-                $childIdList = array_map(fn($childGroup) => $childGroup->id, $model->childGroupList);
-                $originChildIdList = array_map(fn($childGroup) => $childGroup->id, $previousModel->childGroupList);
+            if ($model->groupList !== null) {
+                $childIdList = array_map(fn($childGroup) => $childGroup->id, $model->groupList);
+                $originChildIdList = array_map(fn($childGroup) => $childGroup->id, $previousModel->groupList);
                 $missed = array_diff($originChildIdList, $childIdList);
                 if (count($missed) > 0) {
                     $position = count($childIdList);
@@ -102,12 +79,12 @@ class GroupRepository extends Repository
                         $cg = new GroupModel();
                         $cg->id = $id;
                         $cg->position = $position + 1;
-                        $model->childGroupList[] = $cg;
+                        $model->groupList[] = $cg;
                         $position++;
                     }
                 }
 
-                foreach ($model->childGroupList as $childGroup) {
+                foreach ($model->groupList as $childGroup) {
                     $this->updatePositionById($childGroup->id, $childGroup->position);
                 }
             }
@@ -135,14 +112,16 @@ class GroupRepository extends Repository
             }
 
             $this->db->commit();
-            return $this->selectById($model->id, false);
+            $result = $this->selectById($model->id, false);
         } catch (Throwable $err) {
             $this->db->rollback();
-            return WPErrorBuilder::internalServerError(
+            $result = WPErrorBuilder::internalServerError(
                 $err->getMessage(),
                 $err->getTraceAsString()
             );
         }
+
+        return $result;
     }
 
     public function updatePositionById(int $id, int $position)
@@ -158,56 +137,36 @@ class GroupRepository extends Repository
         $s->execute();
     }
 
-    public function selectTemplateChildList(int $templateId, bool $recursive = false)
+    public function selectGroupListByTemplateId(int $templateId, bool $recursive = false)
     {
-        $output = [];
-        $q = <<<SQL
-        SELECT * FROM {$this->table}
-        WHERE `templateId` = :templateId
-        AND `parentId` IS NULL
-        SQL;
-
-        $s = $this->db->prepare($q);
+        $s = $this->db->prepare(SQL::GROUP_SELECT_BY_TEMPLATE_ID);
         $s->bindValue(":templateId", $templateId, PDO::PARAM_INT);
         $s->execute();
-
         $groupList = $s->fetchAll(PDO::FETCH_CLASS, $this->model);
 
         foreach ($groupList as $group) {
-            $this->cache->set($group->id, $group);
-            $output[] = $group;
             if ($recursive) {
-                array_push($output, ...$this->selectGroupChildList($group->id, $recursive));
+                array_push($groupList, ...$this->selectGroupListByTemplateId($group->id, $recursive));
             }
         }
 
-        return $output;
+        return $groupList;
     }
 
-    public function selectGroupChildList(int $groupId, bool $recursive = false)
+    public function selectGroupListByGroupId(int $groupId, bool $recursive = false)
     {
-        $output = [];
-        $q = <<<SQL
-        SELECT * FROM {$this->table}
-        WHERE `parentId` = :groupId
-        ORDER BY `position` ASC, `name` ASC
-        SQL;
-
-        $s = $this->db->prepare($q);
+        $s = $this->db->prepare(SQL::GROUP_SELECT_BY_PARENT_ID);
         $s->bindValue(":groupId", $groupId);
         $s->execute();
-
         $groupList = $s->fetchAll(PDO::FETCH_CLASS, $this->model);
 
         foreach ($groupList as $group) {
-            $this->cache->set($group->id, $group);
-            $output[] = $group;
             if ($recursive) {
-                array_push($output, ...$this->selectGroupChildList($group->id, $recursive));
+                array_push($groupList, ...$this->selectGroupListByGroupId($group->id, $recursive));
             }
         }
 
-        return $output;
+        return $groupList;
     }
 
     public function selectById(int $id, bool $cache = true): ?object
@@ -215,10 +174,19 @@ class GroupRepository extends Repository
         $model = parent::selectById($id, $cache);
 
         if ($model !== null) {
-            $model->childGroupList = $this->selectGroupChildList($model->id);
+            $model->groupList = $this->selectGroupListByGroupId($model->id);
             $model->fieldList = $this->fieldRepository->selectByGroupId($model->id);
         }
 
         return $model;
+    }
+
+    public function containsGroupId(int $id, int $groupId): bool
+    {
+        $model = $this->selectById($id);
+
+        return $model !== null
+            ? count(array_filter($model->groupList, fn($g) => $g->id === $groupId)) > 0
+            : false;
     }
 }

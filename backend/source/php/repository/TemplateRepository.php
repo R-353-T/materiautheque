@@ -22,9 +22,9 @@ class TemplateRepository extends Repository
 
     public function update($model): ?object
     {
-        if ($model->childGroupList !== null) {
-            foreach ($model->childGroupList as $childGroup) {
-                $this->groupRepository->updatePositionById($childGroup->id, $childGroup->position);
+        if ($model->groupList !== null) {
+            foreach ($model->groupList as $group) {
+                $this->groupRepository->updatePositionById($group->id, $group->position);
             }
         }
 
@@ -36,11 +36,11 @@ class TemplateRepository extends Repository
         $model = parent::selectById($id, $cache);
 
         if ($model !== null) {
-            $model->childGroupList = $this->groupRepository->selectTemplateChildList($model->id);
+            $model->groupList = $this->groupRepository->selectGroupListByTemplateId($model->id);
 
-            foreach ($model->childGroupList as $childGroup) {
-                $childGroup->fieldList = $this->fieldRepository->selectByGroupId($childGroup->id);
-                $this->treeGroupChildList($childGroup);
+            foreach ($model->groupList as $group) {
+                $group->fieldList = $this->fieldRepository->selectByGroupId($group->id);
+                $this->treeGroupChildList($group);
             }
         }
 
@@ -49,11 +49,20 @@ class TemplateRepository extends Repository
 
     private function treeGroupChildList(GroupModel &$group): void
     {
-        $group->childGroupList = $this->groupRepository->selectGroupChildList($group->id);
+        $group->groupList = $this->groupRepository->selectGroupListByGroupId($group->id);
 
-        foreach ($group->childGroupList as $childGroup) {
+        foreach ($group->groupList as $childGroup) {
             $childGroup->fieldList = $this->fieldRepository->selectByGroupId($childGroup->id);
             $this->treeGroupChildList($childGroup);
         }
+    }
+
+    public function containsGroupId(int $id, int $groupId): bool
+    {
+        $model = $this->selectById($id);
+
+        return $model !== null
+            ? count(array_filter($model->groupList, fn($g) => $g->id === $groupId)) > 0
+            : false;
     }
 }

@@ -96,11 +96,11 @@
 }
 ```
 
-- name: `required` | `incorrect_type` | `empty` | `too_long` | `unique`*
+- name: `required` | `incorrect_type` | `empty` | `too_long` | `duplicate`*
 - description: `required` | `incorrect_type` | `too_long`
 - valueList: `required` | `incorrect_type`
 - Dto: `incorrect_type`
-    - id: `not_foreign_of` | 
+    - id: `incorrect_type` | `not_foreign_of` 
     - value : `required` | `incorrect_type` | `empty` | `too_long`
 
 ##### Response:
@@ -137,11 +137,11 @@
 ```
 
 - id: `required` | `incorrect_type` | `not_found` 
-- name: `required` | `incorrect_type` | `empty` | `too_long` | `unique`*
+- name: `required` | `incorrect_type` | `empty` | `too_long` | `duplicate`*
 - description: `required` | `incorrect_type` | `too_long`
 - valueList: `required` | `incorrect_type`
 - Dto: `incorrect_type`
-    - id: `not_foreign_of` | 
+    - id: `incorrect_type` | `not_foreign_of`
     - value : `required` | `incorrect_type` | `empty` | `too_long`
 
 ##### Response:

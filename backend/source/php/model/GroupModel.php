@@ -14,7 +14,7 @@ class GroupModel extends Model
     public ?int $parentId = null;
 
     /** @var GroupModel[]|null */
-    public ?array $childGroupList = null;
+    public ?array $groupList = null;
 
     /** @var FieldModel[]|null */
     public ?array $fieldList = null;

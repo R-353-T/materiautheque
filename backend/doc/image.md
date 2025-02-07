@@ -92,7 +92,7 @@
 }
 ```
 
-- name: `required` | `incorrect_type` | `empty` | `too_long` | `unique`*
+- name: `required` | `incorrect_type` | `empty` | `too_long`
 - file: `required` | `incorrect_type` | `file_not_supported`* | `file_too_large`*
 
 ##### Response:
@@ -123,7 +123,7 @@
 ```
 
 - id: `required` | `incorrect_type` | `not_found` 
-- name: `required` | `incorrect_type` | `empty` | `too_long` | `unique`*
+- name: `required` | `incorrect_type` | `empty` | `too_long`
 - file: `incorrect_type` | `file_not_supported`* | `file_too_large`*
 
 ##### Response:

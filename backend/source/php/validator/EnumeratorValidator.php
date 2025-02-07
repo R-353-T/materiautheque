@@ -34,7 +34,7 @@ class EnumeratorValidator extends Validator
             $model = $this->enumeratorRepository->selectByName($name);
 
             if ($model !== null && $model->id !== $req->get_param("id")) {
-                $errors[] = SchemaError::unique($paramName);
+                $errors[] = SchemaError::duplicate($paramName);
                 $name = null;
             }
         }
@@ -152,6 +152,12 @@ class EnumeratorValidator extends Validator
             if ($model !== null && isset($dto["id"])) {
                 if ($options["enumeratorId"] === null) {
                     $err = SchemaError::notForeignOf($paramName, "null");
+                    $err["index"] = $options["index"];
+                    $err["property"] = "id";
+                    $errors[] = $err;
+                    $model = null;
+                } elseif (mate_sanitize_int($dto["id"]) === false) {
+                    $err = SchemaError::incorrectType($paramName, "integer");
                     $err["index"] = $options["index"];
                     $err["property"] = "id";
                     $errors[] = $err;
