@@ -19,34 +19,37 @@ class ImageValidator extends Validator
         $this->repository = ImageRepository::inject();
     }
 
-    public function validFile(bool $required, array &$errors): array|null
+    public function validRequestFile(array $req, array &$errors, array $options = []): array|null
     {
-        if ((!isset($_FILES["file"]) || empty($_FILES["file"]))) {
-            if ($required) {
-                $errors[] = SchemaError::paramRequired("file");
+        $file = null;
+
+        if (!isset($options["required"])) {
+            $options["required"] = true;
+        }
+
+        if ((!isset($req["file"]))) {
+            if ($options["required"] === true) {
+                $errors[] = SchemaError::required("file");
             }
-            return null;
-        }
+        } else {
+            $metadata = wp_check_filetype($req["file"]["name"]);
 
-        $file = $_FILES["file"];
-        $metadata = wp_check_filetype($file["name"]);
+            $incorrect = isset($metadata["ext"]) === false
+            || isset($metadata["type"]) === false
+            || isset($req["file"]["size"]) === false;
 
-        $ok = isset($metadata["ext"]) && isset($metadata["type"]) && isset($file["size"]);
-        if (!$ok) {
-            $errors[] = SchemaError::paramMalformed("file");
-            return null;
-        }
-
-        $ok = isset(self::$MIME_LIST[$metadata["ext"]]) && $metadata["type"] === self::$MIME_LIST[$metadata["ext"]];
-        if (!$ok) {
-            $errors[] = SchemaError::paramFileNotSupported("file");
-            return null;
-        }
-
-        $ok = $file["size"] <= MATE_THEME_API_IMAGE_MAX_SIZE;
-        if (!$ok) {
-            $errors[] = SchemaError::paramFileTooLarge("file");
-            return null;
+            if ($incorrect) {
+                $errors[] = SchemaError::incorrectType("file", "file");
+            } elseif (
+                isset(self::$MIME_LIST[$metadata["ext"]]) === false
+                || $metadata["type"] !== self::$MIME_LIST[$metadata["ext"]]
+            ) {
+                $errors[] = SchemaError::fileNotSupported("file");
+            } elseif ($req["file"]["size"] > MATE_THEME_API_IMAGE_MAX_SIZE) {
+                $errors[] = SchemaError::fileTooLarge("file");
+            } else {
+                $file = $req["file"];
+            }
         }
 
         return $file;

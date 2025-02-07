@@ -4,6 +4,7 @@ namespace mate\repository;
 
 use mate\abstract\clazz\Repository;
 use mate\model\UnitValueModel;
+use mate\SQL;
 use mate\util\SqlSelectQueryOptions;
 use PDO;
 
@@ -14,12 +15,7 @@ class UnitValueRepository extends Repository
 
     public function insert($model): ?object
     {
-        $q = <<<SQL
-        INSERT INTO {$this->table} (`value`, `unitId`, `position`)
-        VALUES (:value, :unitId, :position)
-        SQL;
-
-        $s = $this->db->prepare($q);
+        $s = $this->db->prepare(SQL::UNIT_VALUE_INSERT);
         $s->bindValue(":value", $model->value, PDO::PARAM_STR);
         $s->bindValue(":unitId", $model->unitId, PDO::PARAM_INT);
         $s->bindValue(":position", $model->position, PDO::PARAM_INT);
@@ -30,13 +26,7 @@ class UnitValueRepository extends Repository
 
     public function update($model): ?object
     {
-        $q = <<<SQL
-        UPDATE {$this->table}
-        SET `value` = :value, `position` = :position
-        WHERE `id` = :id
-        SQL;
-
-        $s = $this->db->prepare($q);
+        $s = $this->db->prepare(SQL::UNIT_VALUE_UPDATE);
         $s->bindValue(":value", $model->value, PDO::PARAM_STR);
         $s->bindValue(":position", $model->position, PDO::PARAM_INT);
         $s->bindValue(":id", $model->id, PDO::PARAM_INT);

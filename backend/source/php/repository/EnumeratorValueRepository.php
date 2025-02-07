@@ -4,6 +4,7 @@ namespace mate\repository;
 
 use mate\abstract\clazz\Repository;
 use mate\model\EnumeratorValueModel;
+use mate\SQL;
 use mate\util\SqlSelectQueryOptions;
 use PDO;
 
@@ -14,24 +15,7 @@ class EnumeratorValueRepository extends Repository
 
     public function insert($model): ?object
     {
-        $q = <<<SQL
-        INSERT INTO {$this->table} (
-            `enumeratorId`,
-            `position`,
-            `text`,
-            `number`,
-            `date`
-        )
-        VALUES (
-            :enumeratorId,
-            :position,
-            :text,
-            :number,
-            :date
-        )
-        SQL;
-
-        $s = $this->db->prepare($q);
+        $s = $this->db->prepare(SQL::ENUMERATOR_VALUE_INSERT);
         $s->bindValue(":enumeratorId", $model->enumeratorId, PDO::PARAM_INT);
         $s->bindValue(":position", $model->position, PDO::PARAM_INT);
         $s->bindValue(":text", $model->text, PDO::PARAM_STR);
@@ -44,18 +28,7 @@ class EnumeratorValueRepository extends Repository
 
     public function update($model): ?object
     {
-        $q = <<<SQL
-        UPDATE {$this->table}
-        SET
-        `enumeratorId` = :enumeratorId,
-        `position` = :position,
-        `text` = :text,
-        `number` = :number,
-        `date` = :date
-        WHERE `id` = :id
-        SQL;
-
-        $s = $this->db->prepare($q);
+        $s = $this->db->prepare(SQL::ENUMERATOR_VALUE_UPDATE);
         $s->bindValue(":enumeratorId", $model->enumeratorId, PDO::PARAM_INT);
         $s->bindValue(":position", $model->position, PDO::PARAM_INT);
         $s->bindValue(":text", $model->text, PDO::PARAM_STR);
@@ -76,11 +49,7 @@ class EnumeratorValueRepository extends Repository
 
     public function deleteByEnumeratorId(int $enumeratorId): void
     {
-        $q = <<<SQL
-        DELETE FROM {$this->table}
-        WHERE `enumeratorId` = :enumeratorId
-        SQL;
-        $s = $this->db->prepare($q);
+        $s = $this->db->prepare(SQL::ENUMERATOR_VALUE_DELETE_BY_ENUMERATOR_ID);
         $s->bindValue(":enumeratorId", $enumeratorId, PDO::PARAM_INT);
         $s->execute();
     }

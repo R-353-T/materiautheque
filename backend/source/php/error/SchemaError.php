@@ -37,14 +37,6 @@ class SchemaError
         ];
     }
 
-    public static function malformed(string $name)
-    {
-        return [
-            "name"      => $name,
-            "code"      => "param_malformed"
-        ];
-    }
-
     public static function incorrectType(string $name, string $type)
     {
         return [
@@ -63,6 +55,7 @@ class SchemaError
     }
 
     // ---------------------------------------------------- //
+    // CUSTOM
     // ---------------------------------------------------- //
 
     public static function notForeignOf(string $name, string $foreign)
@@ -91,6 +84,7 @@ class SchemaError
     }
 
     // ---------------------------------------------------- //
+    // FILE
     // ---------------------------------------------------- //
 
     public static function fileNotSupported(string $name)
@@ -105,25 +99,7 @@ class SchemaError
     {
         return [
             "name"      => $name,
-            "code"      => "param_file_too_big"
-        ];
-    }
-
-    public static function groupError(string $name, int $index)
-    {
-        return [
-            "name"      => $name,
-            "index"     => $index,
-            "code"      => "param_group_error",
-            "errors"    => []
-        ];
-    }
-
-    public static function fieldNotInTemplate(string $name)
-    {
-        return [
-            "name"      => $name,
-            "code"      => "param_field_not_in_template"
+            "code"      => "param_file_too_large"
         ];
     }
 }

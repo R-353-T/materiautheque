@@ -6,6 +6,7 @@ use mate\abstract\clazz\Repository;
 use mate\abstract\trait\SelectByName;
 use mate\error\WPErrorBuilder;
 use mate\model\EnumeratorModel;
+use mate\SQL;
 use PDO;
 use Throwable;
 
@@ -26,22 +27,11 @@ class EnumeratorRepository extends Repository
 
     public function insert($model): ?object
     {
-        $this->db->transaction();
-        $q = <<<SQL
-        INSERT INTO {$this->table} (
-            `name`,
-            `description`,
-            `typeId`
-        )
-        VALUES (
-            :name,
-            :description,
-            :typeId
-        )
-        SQL;
+        $result = null;
 
         try {
-            $s = $this->db->prepare($q);
+            $this->db->transaction();
+            $s = $this->db->prepare(SQL::ENUMERATOR_INSERT);
             $s->bindValue(":name", $model->name, PDO::PARAM_STR);
             $s->bindValue(":description", $model->description, PDO::PARAM_STR);
             $s->bindValue(":typeId", $model->typeId, PDO::PARAM_INT);
@@ -54,47 +44,43 @@ class EnumeratorRepository extends Repository
             }
 
             $this->db->commit();
-            return $this->selectById($model->id, false);
+            $result = $this->selectById($model->id, false);
         } catch (Throwable $err) {
             $this->db->rollback();
-            return WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
+            $result = WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
         }
+
+        return $result;
     }
 
     public function update($model): ?object
     {
-        $this->db->transaction();
+        $result = null;
         $previousModel = $this->selectById($model->id);
-        $updateType = $previousModel->typeId !== $model->typeId;
-
-        $q = <<<SQL
-        UPDATE {$this->table}
-        SET
-        `name` = :name,
-        `description` = :description,
-        `typeId` = :typeId
-        WHERE `id` = :id
-        SQL;
-
+        $hasNewType = $previousModel->typeId !== $model->typeId;
         $newValueIdList = array_map(fn($nv) => $nv->id, $model->valueList);
         $previousValueIdList = array_map(fn($ov) => $ov->id, $previousModel->valueList);
+        $toDeleteIdList = array_filter($previousValueIdList, fn($id) => !in_array($id, $newValueIdList));
 
         try {
-            $s = $this->db->prepare($q);
+            $this->db->transaction();
+            $s = $this->db->prepare(SQL::ENUMERATOR_UPDATE);
             $s->bindValue(":name", $model->name, PDO::PARAM_STR);
             $s->bindValue(":description", $model->description, PDO::PARAM_STR);
             $s->bindValue(":typeId", $model->typeId, PDO::PARAM_INT);
             $s->bindValue(":id", $model->id, PDO::PARAM_INT);
             $s->execute();
 
-            if ($updateType) {
+            if ($hasNewType) {
                 $this->valueRepository->deleteByEnumeratorId($model->id);
+            } else {
+                array_map([$this->valueRepository, "deleteById"], $toDeleteIdList);
             }
 
             foreach ($model->valueList as $value) {
                 $value->enumeratorId = $model->id;
                 if ($value->id !== null) {
-                    if ($updateType === false) {
+                    if ($hasNewType === false) {
                         $this->valueRepository->update($value);
                     }
                 } else {
@@ -102,20 +88,15 @@ class EnumeratorRepository extends Repository
                 }
             }
 
-            if ($updateType === false) {
-                array_map(
-                    [$this->valueRepository, "deleteById"],
-                    array_filter($previousValueIdList, fn($id) => !in_array($id, $newValueIdList))
-                );
-            }
-
             $this->db->commit();
-            return $this->selectById($model->id, false);
+            $result = $this->selectById($model->id, false);
         } catch (Throwable $err) {
             $this->db->rollback();
 
-            return WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
+            $result = WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
         }
+
+        return $result;
     }
 
     public function selectById(int $id, bool $cache = true): ?object
@@ -131,12 +112,10 @@ class EnumeratorRepository extends Repository
 
     public function containsValueById(int $id, int $valueId): bool
     {
-        $enumerator = $this->selectById($id);
+        $model = $this->selectById($id);
 
-        if ($enumerator === null) {
-            return false;
-        } else {
-            return count(array_filter($enumerator->valueList, fn($v) => $v->id === $valueId)) > 0;
-        }
+        return $model !== null
+            ? count(array_filter($model->valueList, fn($v) => $v->id === $valueId)) > 0
+            : false;
     }
 }

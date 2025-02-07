@@ -30,8 +30,8 @@ DbMigrationService::addDirectory(MATE_THEME_SQL_DIRECTORY);
 Controller::addController(TypeController::class);
 Controller::addController(UnitController::class);
 Controller::addController(EnumeratorController::class);
+Controller::addController(ImageController::class);
 
-// Controller::addController(ImageController::class);
 // Controller::addController(TemplateController::class);
 // Controller::addController(GroupController::class);
 // Controller::addController(FieldController::class);

@@ -6,6 +6,7 @@ use mate\abstract\clazz\Repository;
 use mate\error\WPErrorBuilder;
 use mate\model\ImageModel;
 use mate\service\ImageService;
+use mate\SQL;
 use PDO;
 use Throwable;
 
@@ -14,7 +15,7 @@ class ImageRepository extends Repository
     protected string $table = "mate_image";
     protected string $model = ImageModel::class;
 
-    private ImageService $service;
+    private readonly ImageService $service;
 
     public function __construct()
     {
@@ -24,93 +25,97 @@ class ImageRepository extends Repository
 
     public function insert($model): ?object
     {
+        $result = null;
+
         $this->db->transaction();
-        $uploadErr = null;
-        $q = <<<SQL
-        INSERT INTO {$this->table} (`name`, `relative`)
-        VALUES (:name, :relative)
-        SQL;
 
         try {
-            $uploadErr = $this->service->upload($model);
-            if (is_wp_error($uploadErr)) {
-                return $uploadErr;
-            } else {
-                $s = $this->db->prepare($q);
+            $result = $this->service->upload($model);
+
+            if (is_wp_error($result) === false) {
+                $s = $this->db->prepare(SQL::IMAGE_INSERT);
                 $s->bindValue(":name", $model->name, PDO::PARAM_STR);
                 $s->bindValue(":relative", $model->relative, PDO::PARAM_STR);
                 $s->execute();
                 $model->id = $this->db->lastInsertId();
                 $this->db->commit();
-                return $this->selectById($model->id, false);
+                $result = $this->selectById($model->id, false);
             }
         } catch (Throwable $err) {
             $this->db->rollback();
 
-            if ($uploadErr === null) {
+            if ($result === null) {
                 $this->service->delete($model->relative);
             }
 
-            return WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
+            $result = WPErrorBuilder::internalServerError(
+                $err->getMessage(),
+                $err->getTraceAsString()
+            );
         }
+
+        return $result;
     }
 
     public function update($model): ?object
     {
+        $result = null;
+        $oldModel = $this->selectById($model->id);
+
         $this->db->transaction();
-        $previousModel = $this->selectById($model->id);
-        $uploadErr = null;
-        $deleteErr = null;
-        $q = <<<SQL
-        UPDATE {$this->table}
-        SET `name` = :name, `relative` = :relative
-        WHERE `id` = :id
-        SQL;
 
         try {
             if ($model->file !== null) {
-                $uploadErr = $this->service->upload($model);
+                $uploaded = $this->service->upload($model);
+                $result = $uploaded;
             } else {
-                $model->relative = $previousModel->relative;
+                $model->relative = $oldModel->relative;
             }
 
-            if (is_wp_error($uploadErr)) {
-                return $uploadErr;
-            } else {
-                $s = $this->db->prepare($q);
+            if (is_wp_error($result) === false) {
+                $s = $this->db->prepare(SQL::IMAGE_UPDATE);
                 $s->bindValue(":id", $model->id, PDO::PARAM_INT);
                 $s->bindValue(":name", $model->name, PDO::PARAM_STR);
                 $s->bindValue(":relative", $model->relative, PDO::PARAM_STR);
                 $s->execute();
 
-                if ($model->file !== null) {
-                    $deleteErr = $this->service->delete($previousModel->relative);
-                }
+                $deleted = $model->file !== null
+                    ? $this->service->delete($oldModel->relative)
+                    : null;
 
-                if (is_wp_error($deleteErr)) {
-                    $this->db->rollback();
-                    return $deleteErr;
-                } else {
+                if (is_wp_error($deleted) === false) {
                     $this->db->commit();
-                    return $this->selectById($model->id, false);
+                    $result = $this->selectById($model->id, false);
+                } else {
+                    $this->db->rollback();
+                    $result = $deleted;
                 }
             }
         } catch (Throwable $err) {
             $this->db->rollback();
 
-            if ($model->file !== null && $uploadErr === null) {
+            if ($model->file !== null && $uploaded === null) {
                 $this->service->delete($model->relative);
             }
 
-            return WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
+            $result = WPErrorBuilder::internalServerError(
+                $err->getMessage(),
+                $err->getTraceAsString()
+            );
         }
+
+        return $result;
     }
 
     public function selectById(int $id, bool $cache = true): ?object
     {
         $model = parent::selectById($id, $cache);
-        $model->url = site_url($model->relative);
-        unset($model->file);
+
+        if ($model !== null) {
+            $model->url = site_url($model->relative);
+            unset($model->file);
+        }
+
         return $model;
     }
 }
