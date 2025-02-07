@@ -5,6 +5,7 @@ namespace mate\repository;
 use mate\abstract\clazz\Repository;
 use mate\error\WPErrorBuilder;
 use mate\model\FieldModel;
+use mate\SQL;
 use PDO;
 use Throwable;
 
@@ -15,162 +16,101 @@ class FieldRepository extends Repository
 
     public function insert($model): ?object
     {
-        $this->db->transaction();
-        $q = <<<SQL
-        INSERT INTO {$this->table} (
-            `name`,
-            `description`,
-            `allowMultipleValues`,
-            `isRequired`,
-            `groupId`,
-            `position`,
+        $result = null;
 
-            `typeId`,
-            `enumeratorId`,
-            `unitId`
-        ) VALUES (
-            :name,
-            :description,
-            :allowMultipleValues,
-            :isRequired,
-            :groupId,
-            0,
+        $typeIdArr = $model->typeId !== null
+            ? [$model->typeId, PDO::PARAM_INT]
+            : [null, PDO::PARAM_INT];
 
-            :typeId,
-            :enumeratorId,
-            :unitId
-        )
-        SQL;
+        $enumeratorIdArr = $model->enumeratorId !== null
+            ? [$model->enumeratorId, PDO::PARAM_INT]
+            : [null, PDO::PARAM_INT];
+
+        $unitIdArr = $model->unitId !== null
+            ? [$model->unitId, PDO::PARAM_INT]
+            : [null, PDO::PARAM_INT];
 
         try {
-            $s = $this->db->prepare($q);
+            $this->db->transaction();
+            $s = $this->db->prepare(SQL::FIELD_INSERT);
             $s->bindValue(":name", $model->name, PDO::PARAM_STR);
             $s->bindValue(":description", $model->description, PDO::PARAM_STR);
             $s->bindValue(":allowMultipleValues", $model->allowMultipleValues, PDO::PARAM_BOOL);
             $s->bindValue(":isRequired", $model->isRequired, PDO::PARAM_BOOL);
             $s->bindValue(":groupId", $model->groupId, PDO::PARAM_INT);
-
-            $s->bindValue(
-                ":typeId",
-                ($model->typeId !== 0 ? $model->typeId : null),
-                ($model->typeId !== 0 ? PDO::PARAM_INT : PDO::PARAM_NULL)
-            );
-
-            $s->bindValue(
-                ":enumeratorId",
-                ($model->enumeratorId !== 0 ? $model->enumeratorId : null),
-                ($model->enumeratorId !== 0 ? PDO::PARAM_INT : PDO::PARAM_NULL)
-            );
-
-            $s->bindValue(
-                ":unitId",
-                ($model->unitId !== 0 ? $model->unitId : null),
-                ($model->unitId !== 0 ? PDO::PARAM_INT : PDO::PARAM_NULL)
-            );
-
+            $s->bindValue(":typeId", ...$typeIdArr);
+            $s->bindValue(":enumeratorId", ...$enumeratorIdArr);
+            $s->bindValue(":unitId", ...$unitIdArr);
             $s->execute();
             $model->id = $this->db->lastInsertId();
-
             $this->db->commit();
-            return $model;
+            $result = $this->selectById($model->id, false);
         } catch (Throwable $err) {
             $this->db->rollback();
-            return WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
+            $result = WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
         }
+
+        return $result;
     }
 
     public function update($model): ?object
     {
-        $this->db->transaction();
-        $q = <<<SQL
-        UPDATE {$this->table}
-        SET `name` = :name,
-            `description` = :description,
-            `allowMultipleValues` = :allowMultipleValues,
-            `isRequired` = :isRequired,
-            `groupId` = :groupId,
-            `typeId` = :typeId,
-            `enumeratorId` = :enumeratorId,
-            `unitId` = :unitId
-        WHERE `id` = :id
-        SQL;
+        $result = null;
+
+        $typeIdArr = $model->typeId !== null
+            ? [$model->typeId, PDO::PARAM_INT]
+            : [null, PDO::PARAM_INT];
+
+        $enumeratorIdArr = $model->enumeratorId !== null
+            ? [$model->enumeratorId, PDO::PARAM_INT]
+            : [null, PDO::PARAM_INT];
+
+        $unitIdArr = $model->unitId !== null
+            ? [$model->unitId, PDO::PARAM_INT]
+            : [null, PDO::PARAM_INT];
 
         try {
-            $stmt = $this->db->prepare($q);
+            $this->db->transaction();
+            $stmt = $this->db->prepare(SQL::FIELD_UPDATE);
             $stmt->bindValue(":name", $model->name, PDO::PARAM_STR);
             $stmt->bindValue(":description", $model->description, PDO::PARAM_STR);
             $stmt->bindValue(":allowMultipleValues", $model->allowMultipleValues, PDO::PARAM_BOOL);
             $stmt->bindValue(":isRequired", $model->isRequired, PDO::PARAM_BOOL);
             $stmt->bindValue(":groupId", $model->groupId, PDO::PARAM_INT);
-
-            $stmt->bindValue(
-                ":typeId",
-                $model->typeId,
-                ($model->typeId ? PDO::PARAM_INT : PDO::PARAM_NULL)
-            );
-
-            $stmt->bindValue(
-                ":enumeratorId",
-                $model->enumeratorId,
-                ($model->enumeratorId ? PDO::PARAM_INT : PDO::PARAM_NULL)
-            );
-
-            $stmt->bindValue(
-                ":unitId",
-                $model->unitId,
-                ($model->unitId ? PDO::PARAM_INT : PDO::PARAM_NULL)
-            );
-
+            $stmt->bindValue(":typeId", ...$typeIdArr);
+            $stmt->bindValue(":enumeratorId", ...$enumeratorIdArr);
+            $stmt->bindValue(":unitId", ...$unitIdArr);
             $stmt->bindValue(":id", $model->id, PDO::PARAM_INT);
             $stmt->execute();
-
             $this->db->commit();
-            return $model;
+            $result = $this->selectById($model->id, false);
         } catch (Throwable $err) {
             $this->db->rollback();
-            return WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
+            $result = WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
         }
+
+        return $result;
     }
 
     public function updatePositionById(int $id, int $position)
     {
-        $q = <<<SQL
-        UPDATE {$this->table}
-        SET `position` = :position
-        WHERE `id` = :id
-        SQL;
-        $s = $this->db->prepare($q);
+        $s = $this->db->prepare(SQL::FIELD_UPDATE_POSITION);
         $s->bindValue(":position", $position, PDO::PARAM_INT);
         $s->bindValue(":id", $id, PDO::PARAM_INT);
         $s->execute();
     }
 
-    public function selectByGroupId(int $groupId): array
+    public function selectFieldListByGroupId(int $groupId): array
     {
-        $q = <<<SQL
-        SELECT *
-        FROM {$this->table}
-        WHERE `groupId` = :groupId
-        ORDER BY `position` ASC
-        SQL;
-
-        $stmt = $this->db->prepare($q);
+        $stmt = $this->db->prepare(SQL::FIELD_SELECT_BY_GROUP_ID);
         $stmt->bindValue(":groupId", $groupId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS, $this->model);
     }
 
-    public function selectByTemplate(int $templateId): array
+    public function selectFieldListByTemplateId(int $templateId): array
     {
-        $q = <<<SQL
-        SELECT mtf.*
-        FROM {$this->table} mtf 
-        LEFT JOIN mate_template_group mtg ON mtg.id = mtf.groupId
-        LEFT JOIN mate_template mt ON mt.id  = mtg.templateId
-        WHERE mt.id  = 2
-        SQL;
-
-        $stmt = $this->db->prepare($q);
+        $stmt = $this->db->prepare(SQL::FIELD_SELECT_BY_TEMPLATE_ID);
         $stmt->bindValue(":templateId", $templateId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS, $this->model);

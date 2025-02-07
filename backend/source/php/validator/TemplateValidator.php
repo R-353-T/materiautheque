@@ -31,7 +31,7 @@ class TemplateValidator extends Validator
 
             if ($dtoList === null) {
                 $errors[] = SchemaError::required($paramName);
-            } elseif (mate_sanitize_array($groupList) === false) {
+            } elseif (mate_sanitize_array($dtoList) === false) {
                 $errors[] = SchemaError::incorrectType($paramName, "array");
             } else {
                 foreach ($dtoList as $dtoIndex => $dto) {

@@ -6,213 +6,197 @@ use mate\abstract\clazz\Validator;
 use mate\error\SchemaError;
 use mate\model\FieldModel;
 use mate\model\GroupModel;
-use mate\repository\FieldRepository;
 use mate\repository\GroupRepository;
 use WP_REST_Request;
 
 class GroupValidator extends Validator
 {
-    private readonly FieldRepository $fieldRepository;
-    private readonly FieldValidator $fieldValidator;
+    private readonly GroupRepository $groupRepository;
 
     public function __construct()
     {
         $this->repository = GroupRepository::inject();
-        $this->fieldRepository = FieldRepository::inject();
-        $this->fieldValidator = FieldValidator::inject();
+        $this->groupRepository = GroupRepository::inject();
     }
 
-    public function validParentId(
+    public function validRequestParentId(
         WP_REST_Request $req,
         array &$errors,
         string $paramName = "parentId"
     ): int|null {
-        $id = $req->get_param("id");
-        $parentId = $req->get_param($paramName);
+        $parentId = null;
 
-        if ($parentId === null) {
-            return $parentId;
-        }
-
-        $parentId = $this->validRequestId($req, $errors, $paramName);
-
-        if ($id !== null && !$this->hasErrors($errors, $paramName, "id")) {
-            $group = $this->repository->selectById($id);
+        if (
+            $this->validRequestId($req, $errors, $paramName, ["required" => false]) !== null
+            && $this->hasError($errors, "id", "templateId") === false
+        ) {
+            $id = $req->get_param("id");
+            $parentId = (int) $req->get_param($paramName);
             $parent = $this->repository->selectById($parentId);
 
-            if ($group->templateId !== $parent->templateId) {
-                // todo - remove custom error
-                $errors[] = [
-                    "name" => $paramName,
-                    "code" => "param_template_mismatch"
-                ];
-            }
+            if ($id !== null) {
+                $group = $this->repository->selectById($id);
 
-            /** @var GroupRepository */
-            $repository = $this->repository;
-            $childList = $repository->selectGroupChildList($id, true);
-            $childIdList = array_map(fn($c) => $c->id, $childList);
-            $childIdList[] = $id;
+                if ($group->templateId !== $parent->templateId) {
+                    $errors[] = SchemaError::templateGroupMissmatch($paramName);
+                } elseif ($this->groupRepository->circularParentId($id, $parentId)) {
+                    $errors[] = SchemaError::templateParentCircular($paramName);
+                }
+            } else {
+                $templateId = (int) $req->get_param("templateId");
 
-            if (in_array($parentId, $childIdList)) {
-                // todo - remove custom error
-                $errors[] = [
-                    "name" => $paramName,
-                    "code" => "param_parent_circular"
-                ];
+                if ($templateId !== $parent->templateId) {
+                    $errors[] = SchemaError::templateGroupMissmatch($paramName);
+                }
             }
         }
 
         return $parentId;
     }
 
-    public function validChildGroupList(
+    public function validRequestGroupList(
         WP_REST_Request $req,
         array &$errors,
-        string $paramName = "childGroupList"
-    ): array|null {
-        $output = [];
-        $childGroupList = $req->get_param($paramName);
+        string $paramName = "groupList"
+    ): array {
+        $groupList = [];
         $id = $req->get_param("id");
+        $dtoList = $req->get_param($paramName);
 
-        if ($this->hasError($errors, "id") || $childGroupList === null) {
-            return null;
-        }
-
-        $childGroupList = mate_sanitize_array($childGroupList);
-
-        if ($childGroupList === false) {
-            $errors[] = SchemaError::paramIncorrectType($paramName, "array");
-            return null;
-        }
-
-        /** @var GroupRepository */
-        $repository = $this->repository;
-        $childIdList = array_map(
-            fn($c) => $c->id,
-            $repository->selectGroupChildList($id)
-        );
-
-        foreach ($childGroupList as $groupIndex => $group) {
-            $gErrors            = SchemaError::paramGroupError($paramName, $groupIndex);
-            $model              = $this->validChildGroup($id, $childIdList, $group, $gErrors["errors"]);
-            $model->position    = $groupIndex + 1;
-            $output[]           = $model;
-
-            if (count($gErrors["errors"]) > 0) {
-                $errors[] = $gErrors;
+        if ($this->hasError($errors, "id") !== false) {
+            if ($dtoList === null) {
+                $errors[] = SchemaError::required($paramName);
+            } elseif (mate_sanitize_array($dtoList) === false) {
+                $errors[] = SchemaError::incorrectType($paramName, "array");
+            } else {
+                foreach ($dtoList as $dtoIndex => $dto) {
+                    $groupList[$dtoIndex] = $this->validGroupDto(
+                        $dto,
+                        $errors,
+                        $paramName,
+                        [
+                            "groupId" => $id,
+                            "index" => $dtoIndex
+                        ]
+                    );
+                }
             }
         }
 
-        return $output;
+        return $groupList;
     }
 
-    private function validChildGroup(
-        int $parentId,
-        array $in,
-        mixed $group,
-        array &$errors
+    private function validGroupDto(
+        mixed $dto,
+        array &$errors,
+        string $paramName,
+        array $options
     ): GroupModel {
         $model = new GroupModel();
 
-        if ($group === null) {
-            $gErrors[] = SchemaError::paramRequired("__MAIN__");
-        }
-
-        $group = mate_sanitize_array($group);
-
-        if ($group === false) {
-            $errors[] = SchemaError::paramIncorrectType("__MAIN__", "array");
-            return $model;
-        }
-
-        if (!isset($group['id'])) {
-            $errors[] = SchemaError::paramRequired("id");
-            return $model;
-        }
-
-        $groupId = $this->validId($group['id'], $errors);
-
-        if ($groupId !== 0 && count(array_filter($in, fn($v) => $v === $groupId)) === 0) {
-            $errors[] = SchemaError::paramNotForeignOf("id", $parentId);
-            return $model;
+        if (mate_sanitize_array($dto) === false) {
+            $err = SchemaError::incorrectType($paramName, "array");
+            $err["index"] = $options["index"];
+            $errors[] = $err;
+            $model = null;
         } else {
-            $model->id = $group['id'];
+            // valid - id
+
+            if (isset($dto["id"]) === false) {
+                $err = SchemaError::required($paramName);
+                $err["index"] = $options["index"];
+                $err["property"] = "id";
+                $errors[] = $err;
+                $model = null;
+            } elseif (mate_sanitize_int($dto["id"]) === false) {
+                $err = SchemaError::incorrectType($paramName, "integer");
+                $err["index"] = $options["index"];
+                $err["property"] = "id";
+                $errors[] = $err;
+                $model = null;
+            } elseif ($this->groupRepository->containsGroupId($options["groupId"], $dto["id"]) === false) {
+                $err = SchemaError::notForeignOf($paramName, $options["groupId"]);
+                $err["index"] = $options["index"];
+                $err["property"] = "id";
+                $errors[] = $err;
+                $model = null;
+            } else {
+                $model->id = $dto["id"];
+            }
         }
 
         return $model;
     }
 
-    public function validFieldList(
+    public function validRequestFieldList(
         WP_REST_Request $req,
         array &$errors,
         string $paramName = "fieldList"
-    ): array|null {
-        $output = [];
-        $fieldList = $req->get_param($paramName);
+    ): array {
+        $fieldList = [];
         $id = $req->get_param("id");
+        $dtoList = $req->get_param($paramName);
 
-        if ($this->hasError($errors, "id") || $fieldList === null) {
-            return null;
-        }
-
-        $fieldList = mate_sanitize_array($fieldList);
-
-        if ($fieldList === false) {
-            $errors[] = SchemaError::paramIncorrectType($paramName, "array");
-            return null;
-        }
-
-        $fieldIdList = array_map(
-            fn($c) => $c->id,
-            $this->fieldRepository->selectByGroupId($id)
-        );
-
-        foreach ($fieldList as $fieldIndex => $field) {
-            $fErrors            = SchemaError::paramGroupError($paramName, $fieldIndex);
-            $model              = $this->validField($id, $fieldIdList, $field, $fErrors["errors"]);
-            $model->position    = $fieldIndex + 1;
-            $output[]           = $model;
-
-            if (count($fErrors["errors"]) > 0) {
-                $errors[] = $fErrors;
+        if ($this->hasError($errors, "id") !== false) {
+            if ($dtoList === null) {
+                $errors[] = SchemaError::required($paramName);
+            } elseif (mate_sanitize_array($dtoList) === false) {
+                $errors[] = SchemaError::incorrectType($paramName, "array");
+            } else {
+                foreach ($dtoList as $dtoIndex => $dto) {
+                    $fieldList[$dtoIndex] = $this->validFieldDto(
+                        $dto,
+                        $errors,
+                        $paramName,
+                        [
+                            "groupId" => $id,
+                            "index" => $dtoIndex
+                        ]
+                    );
+                }
             }
         }
 
-        return $output;
+        return $fieldList;
     }
 
-    private function validField(
-        int $parentId,
-        array $in,
-        mixed $field,
-        array &$errors
+    private function validFieldDto(
+        mixed $dto,
+        array &$errors,
+        string $paramName,
+        array $options
     ): FieldModel {
         $model = new FieldModel();
 
-        if ($field === null) {
-            $gErrors[] = SchemaError::paramRequired("__MAIN__");
-        }
-
-        $field = mate_sanitize_array($field);
-
-        if ($field === false) {
-            $errors[] = SchemaError::paramIncorrectType("__MAIN__", "array");
-            return $model;
-        }
-
-        if (!isset($field['id'])) {
-            $errors[] = SchemaError::paramRequired("id");
-            return $model;
-        }
-
-        $fieldId = $this->fieldValidator->validId($field['id'], $errors);
-
-        if ($fieldId !== 0 && count(array_filter($in, fn($v) => $v === $fieldId)) === 0) {
-            $errors[] = SchemaError::paramNotForeignOf("id", $parentId);
-            return $model;
+        if (mate_sanitize_array($dto) === false) {
+            $err = SchemaError::incorrectType($paramName, "array");
+            $err["index"] = $options["index"];
+            $errors[] = $err;
+            $model = null;
         } else {
-            $model->id = $field['id'];
+            // valid - id
+
+            if (isset($dto["id"]) === false) {
+                $err = SchemaError::required($paramName);
+                $err["index"] = $options["index"];
+                $err["property"] = "id";
+                $errors[] = $err;
+                $model = null;
+            } elseif (mate_sanitize_int($dto["id"]) === false) {
+                $err = SchemaError::incorrectType($paramName, "integer");
+                $err["index"] = $options["index"];
+                $err["property"] = "id";
+                $errors[] = $err;
+                $model = null;
+            } elseif ($this->groupRepository->containsFieldId($options["groupId"], $dto["id"]) === false) {
+                $err = SchemaError::notForeignOf($paramName, $options["groupId"]);
+                $err["index"] = $options["index"];
+                $err["property"] = "id";
+                $errors[] = $err;
+                $model = null;
+            } else {
+                $model->id = $dto["id"];
+            }
         }
 
         return $model;

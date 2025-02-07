@@ -102,4 +102,24 @@ class SchemaError
             "code"      => "param_file_too_large"
         ];
     }
+
+    // ---------------------------------------------------- //
+    // TEMPLATE
+    // ---------------------------------------------------- //
+
+    public static function templateGroupMissmatch(string $name)
+    {
+        [
+            "name" => $name,
+            "code" => "param_template_group_missmatch"
+        ];
+    }
+
+    public static function templateParentCircular(string $name)
+    {
+        return [
+            "name" => $name,
+            "code" => "param_parent_circular"
+        ];
+    }
 }

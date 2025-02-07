@@ -18,7 +18,4 @@ class GroupModel extends Model
 
     /** @var FieldModel[]|null */
     public ?array $fieldList = null;
-
-    /** @var FormValueModel[]|null */
-    public ?array $valueList = null;
 }

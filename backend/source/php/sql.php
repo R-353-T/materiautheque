@@ -186,4 +186,76 @@ class SQL
         SELECT * FROM mate_group
         WHERE `parentId` = :parentId
         SQL;
+
+    public const GROUP_UPDATE_POSITION = <<<SQL
+        UPDATE mate_group
+        SET `position` = :position
+        WHERE `id` = :id
+        SQL;
+
+    // ----------------------------------------
+    // FIELD
+    // ----------------------------------------
+
+    public const FIELD_INSERT = <<<SQL
+        INSERT INTO mate_field
+        (
+            `name`,
+            `description`,
+            `groupId`,
+            `position`,
+            `isRequired`,
+            `allowMultipleValues`,
+            `typeId`,
+            `enumeratorId`,
+            `unitId`
+        )
+        VALUES
+        (
+            :name,
+            :description,
+            :groupId,
+            0,
+            :isRequired,
+            :allowMultipleValues,
+            :typeId,
+            :enumeratorId,
+            :unitId
+        )
+        SQL;
+
+    public const FIELD_UPDATE = <<<SQL
+        UPDATE mate_field
+        SET
+            `name` = :name,
+            `description` = :description,
+            `groupId` = :groupId,
+            `isRequired` = :isRequired,
+            `allowMultipleValues` = :allowMultipleValues,
+            `typeId` = :typeId,
+            `enumeratorId` = :enumeratorId,
+            `unitId` = :unitId
+        WHERE `id` = :id
+        SQL;
+
+    public const FIELD_UPDATE_POSITION = <<<SQL
+        UPDATE mate_field
+        SET `position` = :position
+        WHERE `id` = :id
+        SQL;
+
+    public const FIELD_SELECT_BY_GROUP_ID = <<<SQL
+        SELECT * FROM mate_field
+        WHERE `groupId` = :groupId
+        ORDER BY `position` ASC
+        SQL;
+
+    public const FIELD_SELECT_BY_TEMPLATE_ID = <<<SQL
+        SELECT mtf.*
+        FROM mate_field mtf 
+        LEFT JOIN mate_template_group mtg ON mtg.id = mtf.groupId
+        LEFT JOIN mate_template mt ON mt.id  = mtg.templateId
+        WHERE mt.id  = :templateId
+        ORDER BY mtf.position ASC
+        SQL;
 }

@@ -126,12 +126,7 @@ class GroupRepository extends Repository
 
     public function updatePositionById(int $id, int $position)
     {
-        $q = <<<SQL
-        UPDATE {$this->table}
-        SET `position` = :position
-        WHERE `id` = :id
-        SQL;
-        $s = $this->db->prepare($q);
+        $s = $this->db->prepare(SQL::GROUP_UPDATE_POSITION);
         $s->bindValue(":position", $position, PDO::PARAM_INT);
         $s->bindValue(":id", $id, PDO::PARAM_INT);
         $s->execute();
@@ -175,7 +170,7 @@ class GroupRepository extends Repository
 
         if ($model !== null) {
             $model->groupList = $this->selectGroupListByGroupId($model->id);
-            $model->fieldList = $this->fieldRepository->selectByGroupId($model->id);
+            $model->fieldList = $this->fieldRepository->selectFieldListByGroupId($model->id);
         }
 
         return $model;
@@ -188,5 +183,23 @@ class GroupRepository extends Repository
         return $model !== null
             ? count(array_filter($model->groupList, fn($g) => $g->id === $groupId)) > 0
             : false;
+    }
+
+    public function containsFieldId(int $id, int $fieldId): bool
+    {
+        $model = $this->selectById($id);
+
+        return $model !== null
+            ? count(array_filter($model->fieldList, fn($f) => $f->id === $fieldId)) > 0
+            : false;
+    }
+
+    public function circularParentId(int $groupId, int $parentId): bool
+    {
+        $groupList = $this->selectGroupListByGroupId($groupId, true);
+        $groupIdList = array_map(fn($c) => $c->id, $groupList);
+        $groupIdList[] = $groupId;
+
+        return in_array($parentId, $groupIdList);
     }
 }
