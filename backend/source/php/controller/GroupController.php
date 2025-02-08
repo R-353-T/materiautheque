@@ -99,6 +99,8 @@ class GroupController extends Controller
                 );
             }
 
+            $sqlOptions->orderBy("position", "ASC");
+
             $data = $this->repository->selectAll($sqlOptions);
             $total = $this->repository->getPageCount($sqlOptions);
             return $this->page($data, $options["index"], $options["size"], $total);

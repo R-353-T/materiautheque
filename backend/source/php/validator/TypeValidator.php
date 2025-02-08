@@ -17,6 +17,14 @@ class TypeValidator extends Validator
     private readonly ImageValidator $imageValidator;
     private readonly FormValidator $formValidator;
 
+    // todo move into DB
+    private static array $UNITABLE = [
+        Type::LABEL,
+        Type::TEXT,
+        Type::NUMBER,
+        Type::MONEY
+    ];
+
     public function __construct()
     {
         $this->repository = TypeRepository::inject();
@@ -40,6 +48,48 @@ class TypeValidator extends Validator
                 $typeId = [
                     "name" => $paramName,
                     "code" => "param_not_enumerable"
+                ];
+            };
+        }
+
+        return $typeId;
+    }
+
+    public function typeIsMultiple(mixed $typeId, string $paramName): int|array
+    {
+        $errors = [];
+        $typeId = $this->validRequestId($typeId, $errors, $paramName);
+
+        if (count($errors) > 0) {
+            $typeId = $errors[0];
+        } else {
+            /** @var TypeModel */
+            $type = $this->repository->selectById($typeId);
+            if ($type->allowMultipleValues === false) {
+                // todo - remove custom error
+                $typeId = [
+                    "name" => $paramName,
+                    "code" => "param_not_multiple"
+                ];
+            };
+        }
+
+        return $typeId;
+    }
+
+    public function typeIsUnitable(mixed $typeId, string $paramName): int|array
+    {
+        $errors = [];
+        $typeId = $this->validRequestId($typeId, $errors, $paramName);
+
+        if (count($errors) > 0) {
+            $typeId = $errors[0];
+        } else {
+            if (in_array($typeId, self::$UNITABLE) === false) {
+                // todo - remove custom error
+                $typeId = [
+                    "name" => $paramName,
+                    "code" => "param_not_unitable"
                 ];
             };
         }

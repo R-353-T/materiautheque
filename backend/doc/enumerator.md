@@ -1,5 +1,4 @@
-
-### 3) Enumerator
+### Enumerator
 
 #### **`/enumerator/list`**
 
