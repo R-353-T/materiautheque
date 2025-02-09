@@ -94,6 +94,8 @@ class EnumeratorController extends Controller
                 );
             }
 
+            $sqlOptions->orderBy("name", "ASC");
+
             $data = $this->repository->selectAll($sqlOptions);
             $total = $this->repository->getPageCount($sqlOptions);
             return $this->page($data, $options["index"], $options["size"], $total);

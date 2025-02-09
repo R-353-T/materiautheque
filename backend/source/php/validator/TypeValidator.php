@@ -7,12 +7,14 @@ use mate\abstract\clazz\Validator;
 use mate\enumerator\Type;
 use mate\error\SchemaError;
 use mate\model\TypeModel;
+use mate\repository\EnumeratorRepository;
 use mate\repository\TypeRepository;
 use Throwable;
 
 class TypeValidator extends Validator
 {
     private readonly TypeRepository $typeRepository;
+    private readonly EnumeratorRepository $enumeratorRepository;
 
     private readonly ImageValidator $imageValidator;
     private readonly FormValidator $formValidator;
@@ -28,9 +30,10 @@ class TypeValidator extends Validator
     public function __construct()
     {
         $this->repository = TypeRepository::inject();
+        $this->formValidator = FormValidator::inject();
 
         $this->typeRepository = TypeRepository::inject();
-        $this->formValidator = FormValidator::inject();
+        $this->enumeratorRepository = EnumeratorRepository::inject();
     }
 
     public function typeIdIsEnumerable(mixed $typeId, string $paramName): int|array
@@ -97,7 +100,7 @@ class TypeValidator extends Validator
         return $typeId;
     }
 
-    public function validValue(int $typeId, mixed $value, string $paramName)
+    public function validValue(int $typeId, mixed $value, string $paramName, array $options = [])
     {
         switch ($typeId) {
             case Type::LABEL:
@@ -126,6 +129,9 @@ class TypeValidator extends Validator
 
             case Type::FORM:
                 return $this->validForm($value, $paramName);
+
+            case Type::ENUMERATOR:
+                return $this->validEnumeration($value, $paramName, $options["enumeratorId"]);
 
             default:
                 return SchemaError::notImplemented();
@@ -251,6 +257,19 @@ class TypeValidator extends Validator
 
         if (count($errors) > 0) {
             $value = $errors[0];
+        }
+
+        return $value;
+    }
+
+    public function validEnumeration(mixed $value, string $paramName, int $enumeratorId): int|array
+    {
+        $value = mate_sanitize_int($value);
+
+        if ($value === false || $value === 0) {
+            $value = SchemaError::incorrectType($paramName, "number");
+        } elseif ($this->enumeratorRepository->containsValueById($enumeratorId, $value) === false) {
+            $value = SchemaError::notForeignOf($paramName, $enumeratorId);
         }
 
         return $value;

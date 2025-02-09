@@ -3,13 +3,8 @@
 namespace mate\controller;
 
 use mate\abstract\clazz\Controller;
-use mate\error\WPErrorBuilder;
-use mate\model\FormModel;
-use mate\model\FormValueModel;
 use mate\repository\FormRepository;
-use mate\repository\TypeRepository;
 use mate\schema\FormSchema;
-use mate\service\FormService;
 use mate\util\RestPermission;
 use mate\util\SqlSelectQueryOptions;
 use PDO;
@@ -44,121 +39,92 @@ class FormController extends Controller
 
     private readonly FormSchema $schema;
     private readonly FormRepository $repository;
-    private readonly FormService $service;
-    private readonly TypeRepository $typeRepository;
 
     public function __construct()
     {
         $this->schema = FormSchema::inject();
         $this->repository = FormRepository::inject();
-        $this->service = FormService::inject();
-        $this->typeRepository = TypeRepository::inject();
     }
-
 
     public function create(WP_REST_Request $req)
     {
-        $data = $this->schema->create($req);
+        $model = $this->schema->create($req);
 
-        if (is_wp_error($data)) {
-            return $data;
-        }
+        if (is_wp_error($model) === false) {
+            $model = $this->repository->insert($model);
 
-        $form = new FormModel();
-        $form->name = $data["name"];
-        $form->templateId = $data["templateId"];
-        $form->valueList = [];
-        $hashmap = $data["childGroupList"];
-
-        foreach ($hashmap as $fieldId => $fData) {
-            $type = $this->typeRepository->selectById($fData["field"]->typeId);
-            $column = $type->column;
-            foreach ($fData["valueList"] as $value) {
-                $fvModel = new FormValueModel();
-                $fvModel->id = $value["id"];
-                $fvModel->$column = $value["value"];
-
-                if (isset($value["unitValueId"])) {
-                    $fvModel->unitValueId = $value["unitValueId"];
-                }
-
-                $form->valueList[] = $fvModel;
+            if (is_wp_error($model) === false) {
+                // $model->valueList = ValueDto::parseList($model->valueList);
+                return $this->ok($model);
             }
         }
 
-        $model = $this->repository->insert($form);
-
-        if (is_wp_error($model)) {
-            return $model;
-        } else {
-            return $this->ok($model);
-        }
+        return $model;
     }
 
     public function update(WP_REST_Request $req)
     {
         $model = $this->schema->update($req);
 
-        if (is_wp_error($model)) {
-            return $model;
+        if (is_wp_error($model) === false) {
+            $model = $this->repository->update($model);
+
+            if (is_wp_error($model) === false) {
+                // $model->valueList = ValueDto::parseList($model->valueList);
+                return $this->ok($model);
+            }
         }
 
-        $model = $this->repository->update($model);
-
-        if (is_wp_error($model)) {
-            return $model;
-        } else {
-            return $this->ok($model);
-        }
+        return $model;
     }
 
     public function list(WP_REST_Request $req)
     {
         $options = $this->schema->list($req);
 
-        if (is_wp_error($options)) {
-            return $options;
+        if (is_wp_error($options) === false) {
+            $sqlOptions = new SqlSelectQueryOptions($options["index"], $options["size"]);
+
+            $sqlOptions->where("templateId", "=", $options["templateId"], PDO::PARAM_INT);
+
+            if ($options["search"] !== null) {
+                $searchQuery = 'LOWER(`name`) LIKE LOWER(CONCAT("%", :_search, "%"))';
+                $sqlOptions->whereRaw(
+                    $searchQuery,
+                    [[":_search", $options["search"], PDO::PARAM_STR]]
+                );
+            }
+
+            $data = $this->repository->selectAll($sqlOptions);
+            $total = $this->repository->getPageCount($sqlOptions);
+            return $this->page($data, $options["index"], $options["size"], $total);
         }
 
-        $sqlOptions = new SqlSelectQueryOptions($options["pageIndex"], $options["pageSize"]);
-
-        if ($options["search"] !== null) {
-            $sqlOptions->whereRaw(
-                'LOWER(`name`) LIKE LOWER(CONCAT("%", :_search, "%"))',
-                [[":_search", $options["search"], PDO::PARAM_STR]]
-            );
-        }
-
-        $total = $this->repository->getPageCount($sqlOptions);
-        return ($total < $options["pageIndex"]
-            ? WPErrorBuilder::notFoundError()
-            : $this->page(
-                $this->repository->selectAll($sqlOptions),
-                $options["pageIndex"],
-                $options["pageSize"],
-                $total
-            )
-        );
+        return $options;
     }
 
     public function get(WP_REST_Request $req)
     {
         $model = $this->schema->get($req);
-        if (is_wp_error($model)) {
-            return $model;
+
+        if (is_wp_error($model) === false) {
+            $model = $this->repository->selectById($model->id);
+            // $model->valueList = ValueDto::parseList($model->valueList);
+            return $this->ok($model);
         }
 
-        return $this->ok($this->repository->selectById($model->id));
+        return $model;
     }
 
     public function delete(WP_REST_Request $req)
     {
         $model = $this->schema->delete($req);
 
-        if (is_wp_error($model)) {
-            return $model;
+        if (is_wp_error($model) === false) {
+            $deleted = $this->repository->deleteById($model->id);
+            return $this->ok($deleted);
         }
 
-        return $this->ok($this->repository->deleteById($model->id));
+        return $model;
     }
 }

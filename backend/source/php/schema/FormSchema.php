@@ -3,6 +3,7 @@
 namespace mate\schema;
 
 use mate\abstract\clazz\Schema;
+use mate\error\WPErrorBuilder;
 use mate\model\FormModel;
 use mate\validator\FormValidator;
 use mate\validator\TemplateValidator;
@@ -22,36 +23,46 @@ class FormSchema extends Schema
 
     public function create(WP_REST_Request $req, array $errors = []): array|WP_Error
     {
-        return $this->returnData(
-            [
-                "name" => $this->validator->validName($req, $errors),
-                "templateId" => $this->templateValidator->validRequestId($req, $errors, "templateId"),
-                "childGroupList" => $this->validator->validChildGroupList($req, $errors) // return valueDtoHashMap
-            ],
-            $errors
-        );
+        $name = $this->validator->validRequestName($req, $errors);
+        $templateId = $this->templateValidator->validRequestId($req, $errors, "templateId");
+        $valueList = $this->validator->validRequestValueList($req, $errors);
+
+        if (count($errors) > 0) {
+            return WPErrorBuilder::badRequestError($errors);
+        } else {
+            $model = new FormModel();
+            $model->name = $name;
+            $model->templateId = $templateId;
+            $model->valueList = $valueList;
+            return $model;
+        }
     }
 
     public function update(WP_REST_Request $req, array $errors = []): array|WP_Error
     {
-        return $this->returnData(
-            [
-                "id" => $this->validator->validRequestId($req, $errors),
-                "name" => $this->validator->validName($req, $errors),
-                "templateId" => $this->templateValidator->validRequestId($req, $errors, "templateId"),
-                "childGroupList" => $this->validator->validChildGroupList($req, $errors) // return valueDtoHashMap
-            ],
-            $errors
-        );
+        $id = $this->validator->validRequestId($req, $errors);
+        $name = $this->validator->validRequestName($req, $errors);
+        $valueList = $this->validator->validRequestValueList($req, $errors);
+
+        if (count($errors) > 0) {
+            return WPErrorBuilder::badRequestError($errors);
+        } else {
+            $model = new FormModel();
+            $model->id = $id;
+            $model->name = $name;
+            $model->valueList = $valueList;
+            return $model;
+        }
     }
 
     public function list(WP_REST_Request $req, array $errors = []): array|WP_Error
     {
         return $this->returnData(
             [
+                "templateId" => $this->templateValidator->validRequestId($req, $errors, "templateId"),
                 "search" => $this->validator->validSearch($req),
-                "pageIndex" => $this->validator->validPageIndex($req),
-                "pageSize" => $this->validator->validPageSize($req)
+                "index" => $this->validator->validPageIndex($req),
+                "size" => $this->validator->validPageSize($req)
             ],
             $errors
         );
@@ -59,19 +70,27 @@ class FormSchema extends Schema
 
     public function get(WP_REST_Request $req, array $errors = []): FormModel|WP_Error
     {
-        return $this->returnModel(
-            ["id" => $this->validator->validRequestId($req, $errors)],
-            FormModel::class,
-            $errors
-        );
+        $id = $this->validator->validRequestId($req, $errors);
+
+        if (count($errors) > 0) {
+            return WPErrorBuilder::badRequestError($errors);
+        } else {
+            $model = new FormModel();
+            $model->id = $id;
+            return $model;
+        }
     }
 
     public function delete(WP_REST_Request $req, array $errors = []): FormModel|WP_Error
     {
-        return $this->returnModel(
-            ["id" => $this->validator->validRequestId($req, $errors)],
-            FormModel::class,
-            $errors
-        );
+        $id = $this->validator->validRequestId($req, $errors);
+
+        if (count($errors) > 0) {
+            return WPErrorBuilder::badRequestError($errors);
+        } else {
+            $model = new FormModel();
+            $model->id = $id;
+            return $model;
+        }
     }
 }

@@ -122,4 +122,12 @@ class SchemaError
             "code" => "param_parent_circular"
         ];
     }
+
+    public static function templateFieldMissMatch(string $name)
+    {
+        return [
+            "name" => $name,
+            "code" => "param_field_missmatch"
+        ];
+    }
 }

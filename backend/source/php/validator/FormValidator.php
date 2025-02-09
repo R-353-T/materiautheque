@@ -4,218 +4,216 @@ namespace mate\validator;
 
 use mate\abstract\clazz\Validator;
 use mate\error\SchemaError;
-use mate\model\FieldModel;
-use mate\model\UnitModel;
+use mate\model\FormValueModel;
+use mate\repository\FieldRepository;
 use mate\repository\FormRepository;
+use mate\repository\FormValueRepository;
+use mate\repository\TypeRepository;
 use mate\repository\UnitRepository;
-use mate\service\FormService;
 use WP_REST_Request;
 
 class FormValidator extends Validator
 {
-    // private readonly FieldValidator $fieldValidator;
-    // private readonly UnitValidator $unitValidator;
-    // private readonly TypeValueValidator $typeValidator;
+    private readonly TypeValidator $typeValidator;
+    private readonly FieldValidator $fieldValidator;
 
-    // private readonly UnitRepository $unitRepository;
+    private readonly FormRepository $formRepository;
+    private readonly FormValueRepository $formValueRepository;
 
-    // private readonly FormService $formService;
+    private readonly FieldRepository $fieldRepository;
+    private readonly TypeRepository $typeRepository;
+    private readonly UnitRepository $unitRepository;
 
     public function __construct()
     {
-        // $this->fieldValidator = FieldValidator::inject();
-        // $this->typeValidator = TypeValueValidator::inject();
-        // $this->unitValidator = UnitValidator::inject();
+        $this->repository = FormRepository::inject();
+        $this->formValueRepository = FormValueRepository::inject();
 
-        // $this->repository = FormRepository::inject();
-        // $this->unitRepository = UnitRepository::inject();
+        $this->formRepository = FormRepository::inject();
+        $this->typeValidator = TypeValidator::inject();
+        $this->fieldValidator = FieldValidator::inject();
 
-        // $this->formService = FormService::inject();
+        $this->fieldRepository = FieldRepository::inject();
+        $this->typeRepository = TypeRepository::inject();
+        $this->unitRepository = UnitRepository::inject();
     }
 
-    // public function validChildGroupList(WP_REST_Request $req, array &$errors): array
-    // {
-    //     if ($this->hasErrors($errors, "id", "templateId")) {
-    //         return [];
-    //     }
+    public function validRequestValueList(
+        WP_REST_Request $req,
+        array &$errors,
+        string $paramName = "valueList"
+    ): array|null {
+        $valueList = [];
 
-    //     $templateId = (int) $req->get_param("templateId");
-    //     $hashmap = $this->formService->getFieldHashMap($templateId);
-    //     // $id = (int) $req->get_param("id"); // todo add to hashmap current stored values
+        if ($this->hasError($errors, "id", "templateId") === false) {
+            $dtoList = $req->get_param($paramName);
+            $formId = $req->get_param("id");
+            $templateId = $formId !== null
+            ? $this->formRepository->selectById($formId)->templateId
+            : $req->get_param("templateId");
 
-    //     $childGroupList = $req->get_param("childGroupList");
-    //     $childGroupList = mate_sanitize_array($childGroupList);
+            if ($dtoList === null) {
+                $errors[] = SchemaError::required($paramName);
+            } elseif (mate_sanitize_array($valueList) === false) {
+                $errors[] = SchemaError::incorrectType($paramName, "array");
+            } else {
+                foreach ($dtoList as $dtoIndex => $dto) {
+                    $model = new FormValueModel();
 
-    //     if ($childGroupList === false) {
-    //         $errors[] = SchemaError::paramIncorrectType("childGroupList", "array");
-    //         return [];
-    //     }
+                    $this->validDto(
+                        $dto,
+                        $errors,
+                        $paramName,
+                        [
+                            "formId" => $formId,
+                            "index" => $dtoIndex,
+                            "templateId" => $templateId,
+                            "model" => $model
+                        ]
+                    );
 
-    //     foreach ($childGroupList as $groupIndex => $group) {
-    //         $gErrors = SchemaError::paramGroupError("childGroupList", $groupIndex);
-    //         $this->validGroup($group, $hashmap, $gErrors["errors"]);
+                    $valueList[$dtoIndex] = $model;
+                }
+            }
+        }
 
-    //         if (count($gErrors["errors"]) > 0) {
-    //             $errors[] = $gErrors;
-    //         }
-    //     }
+        return $valueList;
+    }
 
-    //     if (count($errors) > 0) {
-    //         return [];
-    //     }
+    private function validDto(
+        mixed $dto,
+        array &$errors,
+        string $paramName,
+        array &$options
+    ): void {
+        if (mate_sanitize_array($dto) === false) {
+            $err = SchemaError::incorrectType($paramName, "array");
+            $err["index"] = $options["index"];
+            $errors[] = $err;
+        } else {
+            $this->validDtoFieldId($dto, $errors, $paramName, $options);
+            $this->validDtoId($dto, $errors, $paramName, $options);
+            $this->validDtoValue($dto, $errors, $paramName, $options);
+            $this->validDtoUnit($dto, $errors, $paramName, $options);
+        }
+    }
 
-    //     foreach ($hashmap as $fieldValue) {
-    //         /** @var FieldModel */
-    //         $field = $fieldValue["field"];
-    //         $valueList = $fieldValue["valueList"];
+    private function validDtoFieldId($dto, array &$errors, string $paramName, array &$options): void
+    {
+        $err = [];
 
-    //         // Valid multiple
+        if (isset($dto["fieldId"]) === false || $dto["fieldId"] === null) {
+            $err = SchemaError::required($paramName);
+            $err["index"] = $options["index"];
+            $err["property"] = "fieldId";
+            $errors[] = $err;
+        } elseif ($this->fieldValidator->validId($dto["fieldId"], $err, $paramName) === null) {
+            $errors[] = $err[0];
+        } else {
+            $field = $this->fieldRepository->selectById($dto["fieldId"]);
 
-    //         if ($field->allowMultipleValues === false && count($valueList) > 1) {
-    //             foreach ($valueList as $vI => $v) {
-    //                 $errors[] = [
-    //                     "name"  => $field->name,
-    //                     "fieldId" => $field->id,
-    //                     "valueId" => isset($v["id"]) ? $v["id"] : null,
-    //                     "code"  => "param_field_not_multiple"
-    //                 ];
-    //             }
-    //         }
+            if ($field->templateId !== $options["templateId"]) {
+                $err = SchemaError::templateFieldMissMatch($paramName);
+                $err["index"] = $options["index"];
+                $err["property"] = "fieldId";
+                $errors[] = $err;
+            } else {
+                $options["model"]->fieldId = $dto["fieldId"];
+            }
+        }
+    }
 
-    //         // Valid required
+    private function validDtoId(array $dto, array &$errors, string $paramName, array &$options): void
+    {
+        if (isset($dto["id"]) !== false) {
+            if ($options["formId"] === null) {
+                $err = SchemaError::notForeignOf($paramName, "null");
+                $err["index"] = $options["index"];
+                $err["property"] = "id";
+                $errors[] = $err;
+            } elseif (mate_sanitize_int($dto["id"]) === false) {
+                $err = SchemaError::incorrectType($paramName, "integer");
+                $err["index"] = $options["index"];
+                $err["property"] = "id";
+                $errors[] = $err;
+            } elseif ($this->formRepository->containsValueById($options["formId"], $dto["id"]) === false) {
+                $err = SchemaError::notForeignOf($paramName, $options["formId"]);
+                $err["index"] = $options["index"];
+                $err["property"] = "id";
+                $errors[] = $err;
+            } else {
+                if ($this->hasError($errors, "fieldId") === false) {
+                    $value = $this->formValueRepository->selectById($dto["id"]);
 
-    //         $sV2L = array_map(fn($v2) => $v2["value"] !== null, $valueList);
+                    if ($value->fieldId !== $options["model"]->fieldId) {
+                        $err = SchemaError::templateFieldMissMatch($paramName);
+                        $err["index"] = $options["index"];
+                        $err["property"] = "id";
+                        $errors[] = $err;
+                    } else {
+                        $options["model"]->id = $dto["id"];
+                    }
+                }
+            }
+        }
+    }
 
-    //         if ($field->isRequired === true && count($sV2L) === 0) {
-    //             $errors[] = [
-    //                 "name"  => $field->name,
-    //                 "fieldId" => $field->id,
-    //                 "valueId" => null,
-    //                 "code"  => "param_field_value_required"
-    //             ];
-    //         }
+    private function validDtoValue(array $dto, array &$errors, string $paramName, array &$options): void
+    {
+        if (isset($dto["value"]) === false) {
+            $err = SchemaError::required($paramName);
+            $err["index"] = $options["index"];
+            $err["property"] = "value";
+            $errors[] = $err;
+        } elseif ($this->hasError($errors, "fieldId") === false) {
+            $field = $this->fieldRepository->selectById($options["model"]->fieldId);
 
-    //         return $hashmap;
-    //     }
-    // }
+            if ($dto["value"] !== null) {
+                $value = $this->typeValidator->validValue(
+                    $field->typeId,
+                    $dto["value"],
+                    $paramName,
+                    [ "enumeratorId" => $field->enumeratorId ]
+                );
 
-    // public function validGroup(mixed $group, array &$hashmap, array &$errors): void
-    // {
-    //     $ok = mate_sanitize_array($group);
+                if (is_array($value)) {
+                    $value["index"] = $options["index"];
+                    $value["property"] = "value";
+                    $errors[] = $value;
+                } else {
+                    $type = $this->typeRepository->selectById($field->typeId);
+                    $column = $type->column;
+                    $options["model"]->$column = $value;
+                }
+            }
+        }
+    }
 
-    //     if ($ok === false) {
-    //         $errors[] = SchemaError::paramIncorrectType("__MAIN__", "array");
-    //         return;
-    //     }
+    private function validDtoUnit($dto, $errors, $paramName, $options)
+    {
+        if ($this->hasError($errors, "fieldId") === false) {
+            $field = $this->fieldRepository->selectById($options["model"]->fieldId);
 
-    //     // Valid values
-
-    //     if (isset($group['valueList'])) {
-    //         $valueList = mate_sanitize_array($group['valueList']);
-
-    //         if ($valueList === false) {
-    //             $errors[] = SchemaError::paramIncorrectType("valueList", "array");
-    //             return;
-    //         }
-
-    //         foreach ($valueList as $valueIndex => $value) {
-    //             $vErrors = SchemaError::paramGroupError("valueList", $valueIndex);
-    //             $this->validValue($value, $hashmap, $vErrors["errors"]);
-    //         }
-    //     }
-
-    //     // Valid child group
-
-    //     if (isset($group['childGroupList'])) {
-    //         $groupList = mate_sanitize_array($group['childGroupList']);
-
-    //         if ($groupList === false) {
-    //             $errors[] = SchemaError::paramIncorrectType("childGroupList", "array");
-    //             return;
-    //         }
-
-    //         foreach ($groupList as $groupIndex => $group) {
-    //             $gErrors = SchemaError::paramGroupError("childGroupList", $groupIndex);
-    //             $this->validGroup($group, $hashmap, $gErrors["errors"]);
-
-    //             if (count($gErrors["errors"]) > 0) {
-    //                 $errors[] = $gErrors;
-    //             }
-    //         }
-    //     }
-    // }
-
-    // public function validValue(mixed $value, array &$hashmap, array &$errors): void
-    // {
-    //     $ok = mate_sanitize_array($value);
-
-    //     if ($ok === false) {
-    //         $errors[] = SchemaError::paramIncorrectType("__MAIN__", "array");
-    //         return;
-    //     }
-
-    //     // Validate field id
-
-    //     if (!isset($value['fieldId'])) {
-    //         $errors[] = SchemaError::paramRequired("fieldId");
-    //         return;
-    //     }
-
-    //     $fieldId = $this->fieldValidator->validId($value['fieldId'], $errors, "fieldId");
-
-    //     if (!in_array($fieldId, array_keys($hashmap))) {
-    //         $errors[] = SchemaError::paramFieldNotInTemplate("fieldId");
-    //         return;
-    //     }
-
-    //     /** @var FieldModel */
-    //     $field = $hashmap[$fieldId]["field"];
-
-    //     // Valid unit
-
-    //     if ($field->unitId !== null) {
-    //         if (!isset($value['unitValueId'])) {
-    //             $errors[] = SchemaError::paramRequired("unitValueId");
-    //             return;
-    //         }
-
-    //         $unitId = $this->unitValidator->validId($value['unitValueId'], $errors, "unitId");
-
-    //         if ($unitId === 0) {
-    //             $errors[] = SchemaError::paramRequired("unitValueId");
-    //             return;
-    //         }
-
-    //         /** @var UnitModel */
-    //         $unit = $this->unitRepository->selectById($field->unitId);
-    //         $unitValueIdList = array_map(fn($v) => $v->id, $unit->valueList);
-
-    //         if (!in_array($unitId, $unitValueIdList)) {
-    //             $errors[] = SchemaError::paramNotForeignOf("unitId", $unit->name);
-    //             return;
-    //         }
-    //     }
-
-    //     // Valid Value
-
-    //     if (isset($value['value'])) {
-    //         if ($value['value'] !== null) {
-    //             $this->typeValidator->validFieldValue($field, $value['value'], $errors, "value");
-
-    //             if (
-    //                 $field->isRequired
-    //                 && count($errors) === 0
-    //                 && is_string($value['value'])
-    //                 && strlen($value['value']) === 0
-    //             ) {
-    //                 $errors[] = SchemaError::paramEmpty("value");
-    //             }
-    //         }
-    //     } else {
-    //         $errors[] = SchemaError::paramRequired("value");
-    //         return;
-    //     }
-
-    //     $hashmap[$fieldId]["valueList"][] = $value;
-    // }
+            if ($field->unitId !== null) {
+                if (isset($dto["unit"]) === false) {
+                    $err = SchemaError::required($paramName);
+                    $err["index"] = $options["index"];
+                    $err["property"] = "unit";
+                    $errors[] = $err;
+                } elseif (mate_sanitize_int($dto["unit"]) === false) {
+                    $err = SchemaError::incorrectType($paramName, "integer");
+                    $err["index"] = $options["index"];
+                    $err["property"] = "unit";
+                    $errors[] = $err;
+                } elseif ($this->unitRepository->containsValueById($field->unitId, $dto["unit"]) === false) {
+                    $err = SchemaError::notForeignOf($paramName, $field->unitId);
+                    $err["index"] = $options["index"];
+                    $err["property"] = "unit";
+                    $errors[] = $err;
+                } else {
+                    $options["model"]->unitValueId = $dto["unit"];
+                }
+            }
+        }
+    }
 }

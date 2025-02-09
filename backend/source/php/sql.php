@@ -258,4 +258,67 @@ class SQL
         WHERE mt.id  = :templateId
         ORDER BY mtf.position ASC
         SQL;
+
+    // ----------------------------------------
+    // FORM
+    // ----------------------------------------
+
+    public const FORM_INSERT = <<<SQL
+        INSERT INTO mate_form
+        (
+            `name`,
+            `templateId`
+        )
+        VALUES
+        (
+            :name,
+            :templateId
+        )
+        SQL;
+
+    public const FORM_UPDATE = <<<SQL
+        UPDATE mate_form
+        SET
+            `name` = :name
+        WHERE `id` = :id
+        SQL;
+
+    public const FORM_VALUE_INSERT = <<<SQL
+        INSERT INTO mate_form_value
+        (
+            `formId`,
+            `fieldId`,
+            `unitValueId`,
+
+            `text`,
+            `number`,
+            `boolean`,
+            `date`,
+            `exId`
+        )
+        VALUES
+        (
+            :formId,
+            :fieldId,
+            :unitValueId,
+
+            :text,
+            :number,
+            :boolean,
+            :date,
+            :exId
+        )
+        SQL;
+
+    public const FORM_VALUE_UPDATE = <<<SQL
+        UPDATE mate_form_value
+        SET
+            `unitValueId` = :unitValueId,
+            `text` = :text,
+            `number` = :number,
+            `boolean` = :boolean,
+            `date` = :date,
+            `exId` = :exId
+        WHERE `id` = :id
+        SQL;
 }
