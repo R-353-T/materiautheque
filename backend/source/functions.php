@@ -17,6 +17,8 @@ use mate\controller\ImageController;
 use mate\controller\TemplateController;
 use mate\controller\TypeController;
 use mate\controller\UnitController;
+use mate\middleware\AuthMiddleware;
+use mate\middleware\BucketMiddleware;
 use mate\service\DbMigrationService;
 
 # Services Configuration
@@ -24,6 +26,11 @@ use mate\service\DbMigrationService;
 ## Database
 
 DbMigrationService::addDirectory(MATE_THEME_SQL_DIRECTORY);
+
+## Middleware
+
+Middleware::addMiddleware(BucketMiddleware::class);
+Middleware::addMiddleware(AuthMiddleware::class);
 
 ## Controllers
 

@@ -11,22 +11,9 @@ abstract class Middleware extends Service
     protected static $MIDDLEWARE_LIST = [];
     protected static $USER_ID = null;
 
-    protected static function addMiddleware(string $middleware)
+    public static function addMiddleware(string $middleware)
     {
         self::$MIDDLEWARE_LIST[] = $middleware;
-    }
-
-    protected static function isWpRequest(WP_REST_Request $request): bool
-    {
-        return str_starts_with($request->get_route(), "/wp/");
-    }
-
-    protected static function getUserId()
-    {
-        if (self::$USER_ID === null) {
-            self::$USER_ID = md5($_SERVER["REMOTE_ADDR"] . $_SERVER["HTTP_USER_AGENT"]);
-        }
-        return self::$USER_ID;
     }
 
     public static function preFilter(
@@ -117,5 +104,18 @@ abstract class Middleware extends Service
         WP_REST_Request $request
     ): WP_HTTP_Response {
         return $response;
+    }
+
+    protected static function isWpRequest(WP_REST_Request $request): bool
+    {
+        return str_starts_with($request->get_route(), "/wp/");
+    }
+
+    protected static function getUserId()
+    {
+        if (self::$USER_ID === null) {
+            self::$USER_ID = md5($_SERVER["REMOTE_ADDR"] . $_SERVER["HTTP_USER_AGENT"]);
+        }
+        return self::$USER_ID;
     }
 }
