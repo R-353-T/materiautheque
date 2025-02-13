@@ -17,7 +17,6 @@ class TypeValidator extends Validator
     private readonly EnumeratorRepository $enumeratorRepository;
 
     private readonly ImageValidator $imageValidator;
-    private readonly FormValidator $formValidator;
 
     // todo move into DB
     private static array $UNITABLE = [
@@ -30,8 +29,6 @@ class TypeValidator extends Validator
     public function __construct()
     {
         $this->repository = TypeRepository::inject();
-        $this->formValidator = FormValidator::inject();
-
         $this->typeRepository = TypeRepository::inject();
         $this->enumeratorRepository = EnumeratorRepository::inject();
     }
@@ -252,8 +249,11 @@ class TypeValidator extends Validator
 
     public function validForm(mixed $value, string $paramName): int|array
     {
+        /** @var FormValidator */
+        $formValidator = FormValidator::inject();
+
         $errors = [];
-        $value = $this->formValidator->validId($value, $errors, $paramName);
+        $value = $formValidator->validId($value, $errors, $paramName);
 
         if (count($errors) > 0) {
             $value = $errors[0];

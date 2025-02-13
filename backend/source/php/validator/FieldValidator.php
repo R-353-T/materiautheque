@@ -11,13 +11,11 @@ use WP_REST_Request;
 class FieldValidator extends Validator
 {
     private readonly TypeValidator $typeValidator;
-    private readonly FieldRepository $fieldRepository;
 
     public function __construct()
     {
         $this->repository = FieldRepository::inject();
-        $this->fieldRepository = FieldRepository::inject();
-        $this->typeValidator = TypeValueValidator::inject();
+        $this->typeValidator = TypeValidator::inject();
     }
 
     public function validRequestTypeEnumerator(

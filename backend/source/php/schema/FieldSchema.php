@@ -8,7 +8,7 @@ use mate\model\FieldModel;
 use mate\validator\EnumeratorValidator;
 use mate\validator\FieldValidator;
 use mate\validator\GroupValidator;
-use mate\validator\TypeValueValidator;
+use mate\validator\TypeValidator;
 use mate\validator\UnitValidator;
 use WP_Error;
 use WP_REST_Request;
@@ -17,7 +17,7 @@ class FieldSchema extends Schema
 {
     private readonly FieldValidator $validator;
     private readonly GroupValidator $groupValidator;
-    private readonly TypeValueValidator $typeValidator;
+    private readonly TypeValidator $typeValidator;
     private readonly EnumeratorValidator $enumeratorValidator;
     private readonly UnitValidator $unitValidator;
 
@@ -25,7 +25,7 @@ class FieldSchema extends Schema
     {
         $this->validator = FieldValidator::inject();
         $this->groupValidator = GroupValidator::inject();
-        $this->typeValidator = TypeValueValidator::inject();
+        $this->typeValidator = TypeValidator::inject();
         $this->enumeratorValidator = EnumeratorValidator::inject();
         $this->unitValidator = UnitValidator::inject();
     }
