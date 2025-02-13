@@ -7,6 +7,7 @@ use mate\error\WPErrorBuilder;
 use mate\model\ImageModel;
 use mate\service\ImageService;
 use mate\SQL;
+use mate\util\SqlSelectQueryOptions;
 use PDO;
 use Throwable;
 
@@ -112,10 +113,26 @@ class ImageRepository extends Repository
         $model = parent::selectById($id, $cache);
 
         if ($model !== null) {
-            $model->url = site_url($model->relative);
-            unset($model->file);
+            $this->formatImage($model);
         }
 
         return $model;
+    }
+
+    public function selectAll(?SqlSelectQueryOptions $options = null): array
+    {
+        $list = parent::selectAll($options);
+
+        foreach ($list as $image) {
+            $this->formatImage($image);
+        }
+
+        return $list;
+    }
+
+    private function formatImage(ImageModel $image)
+    {
+        $image->url = site_url($image->relative);
+        unset($image->file);
     }
 }

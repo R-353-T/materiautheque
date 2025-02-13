@@ -42,11 +42,5 @@ Duplicate `config.template.yml` as `config.dev.yml` and edit is with your own da
 ## TODO LIST
 
 - `NUMBER` type can have 17 figure maximum
-- @TODO: Fix TYPE Field (required and simplify form value validator)
-- @TODO: Refactor: "unit" (ValueDTO) to "unitValueId"                     
-- @TODO: Delete form value on:
-    - Enumerator Type Change
-    - Field Type Change
 - @TODO: Add default value on "New Required Field"
-- @TODO: Add documentation for each endpoint and specify potential return/errors
 - @TODO: Tests
