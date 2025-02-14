@@ -36,7 +36,7 @@ class BucketMiddleware extends Middleware
         $bucket = $this->getBucket();
 
         if ($response->get_status() === 429 && $bucket["count"] === 0) {
-            $response->header("Retry-After", ceil(MATE_THEME_API_BUCKET_LIMIT / MATE_THEME_API_BUCKET_TIME));
+            $response->header("Retry-After", MATE_THEME_API_BUCKET_TIME);
         }
 
         $response->header("X-RateLimit-Limit", MATE_THEME_API_BUCKET_LIMIT);
@@ -74,22 +74,28 @@ class BucketMiddleware extends Middleware
     private function updateBucket(): array
     {
         $bucket = $this->getBucket();
+
         $now = time();
-        $elapsed = $bucket["lastAddDate"] - $now;
-        $plus = floor(MATE_THEME_API_BUCKET_LIMIT / MATE_THEME_API_BUCKET_TIME * $elapsed);
-        $bucket["count"]--;
+        $elapsed = $now - $bucket["lastAddDate"];
 
-        if ($plus > 0) {
-            $bucket["count"] += $plus;
+        if ($elapsed < MATE_THEME_API_BUCKET_TIME && $bucket["count"] === 0) {
             $bucket["lastAddDate"] = $now;
+        } else {
+            $plus = floor(MATE_THEME_API_BUCKET_LIMIT / MATE_THEME_API_BUCKET_TIME) * $elapsed;
+            $bucket["count"]--;
 
-            if ($bucket["count"] > MATE_THEME_API_BUCKET_LIMIT) {
-                $bucket["count"] = MATE_THEME_API_BUCKET_LIMIT;
+            if ($plus > 0) {
+                $bucket["count"] += $plus;
+                $bucket["lastAddDate"] = $now;
+
+                if ($bucket["count"] > MATE_THEME_API_BUCKET_LIMIT) {
+                    $bucket["count"] = MATE_THEME_API_BUCKET_LIMIT;
+                }
             }
-        }
 
-        if ($bucket["count"] < 0) {
-            $bucket["count"] = 0;
+            if ($bucket["count"] < 0) {
+                $bucket["count"] = 0;
+            }
         }
 
         set_transient(
