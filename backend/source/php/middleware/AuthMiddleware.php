@@ -14,7 +14,11 @@ class AuthMiddleware extends Middleware
 
     public function pre(mixed $response, WP_REST_Server $server, WP_REST_Request $request): mixed
     {
-        if ($response === null && $request->get_route() === MATE_THEME_AUTH_ENDPOINT) {
+        if (
+            $response === null
+            && $request->get_route() === MATE_THEME_AUTH_ENDPOINT
+            && $request->get_method() !== "OPTIONS"
+        ) {
             $userInfo = $this->updateUserInfo();
 
             if ($userInfo["jailed"]) {
@@ -35,7 +39,7 @@ class AuthMiddleware extends Middleware
 
     public function post(WP_HTTP_Response $response, WP_REST_Server $server, WP_REST_Request $request): WP_HTTP_Response
     {
-        if ($request->get_route() === MATE_THEME_AUTH_ENDPOINT) {
+        if ($request->get_route() === MATE_THEME_AUTH_ENDPOINT && $request->get_method() !== "OPTIONS") {
             $rdata = $response->get_data();
             $userInfo = $this->getUserInfo();
 
@@ -73,7 +77,7 @@ class AuthMiddleware extends Middleware
         $userInfo = get_transient(self::getUserId() . AuthMiddleware::SUFFIX);
 
         if ($userInfo === false) {
-            return $this->createUserInfo();
+            $userInfo = $this->createUserInfo();
         }
 
         return $userInfo;

@@ -33,14 +33,16 @@ class BucketMiddleware extends Middleware
 
     public function post(WP_HTTP_Response $response, WP_REST_Server $server, WP_REST_Request $request): WP_HTTP_Response
     {
-        $bucket = $this->getBucket();
+        if ($request->get_method() !== "OPTIONS") {
+            $bucket = $this->getBucket();
 
-        if ($response->get_status() === 429 && $bucket["count"] === 0) {
-            $response->header("Retry-After", MATE_THEME_API_BUCKET_TIME);
+            if ($response->get_status() === 429 && $bucket["count"] === 0) {
+                $response->header("Retry-After", MATE_THEME_API_BUCKET_TIME);
+            }
+
+            $response->header("X-RateLimit-Limit", MATE_THEME_API_BUCKET_LIMIT);
+            $response->header("X-RateLimit-Remaining", $bucket["count"]);
         }
-
-        $response->header("X-RateLimit-Limit", MATE_THEME_API_BUCKET_LIMIT);
-        $response->header("X-RateLimit-Remaining", $bucket["count"]);
 
         return $response;
     }
