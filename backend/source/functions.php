@@ -29,8 +29,8 @@ DbMigrationService::addDirectory(MATE_THEME_SQL_DIRECTORY);
 
 ## Middleware
 
-Middleware::addMiddleware(BucketMiddleware::class);
 Middleware::addMiddleware(AuthMiddleware::class);
+// Middleware::addMiddleware(BucketMiddleware::class);
 
 ## Controllers
 

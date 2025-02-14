@@ -6,6 +6,7 @@ use mate\abstract\clazz\Middleware;
 use WP_HTTP_Response;
 use WP_REST_Server;
 use WP_REST_Request;
+use WP_REST_Response;
 
 class AuthMiddleware extends Middleware
 {
@@ -17,9 +18,8 @@ class AuthMiddleware extends Middleware
             $userInfo = $this->updateUserInfo();
 
             if ($userInfo["jailed"]) {
-                $response = new WP_REST_Request(
+                $response = new WP_REST_Response(
                     [
-                        "code" => "auth_forbidden",
                         "data" => [
                             "status" => 403,
                             "jailed" => true
@@ -47,7 +47,7 @@ class AuthMiddleware extends Middleware
                     break;
 
                 case 403:
-                    if ($rdata["jailed"] === true) {
+                    if ($rdata["data"]["jailed"] === true) {
                         $response->header("Retry-After", MATE_THEME_API_LOGIN_JAIL_TIME);
                     }
 
@@ -55,8 +55,10 @@ class AuthMiddleware extends Middleware
 
                     $remainingAttemps = MATE_THEME_API_MAX_LOGIN_ATTEMPS - $userInfo["connectionAttemps"];
                     $response->header("X-RateLimit-Remaining", $remainingAttemps);
-                    unset($responseData["message"]);
-                    unset($responseData["status"]);
+
+                    $rdata["code"] = "auth_forbidden";
+                    unset($rdata["message"]);
+                    unset($rdata["status"]);
                     break;
             }
 
