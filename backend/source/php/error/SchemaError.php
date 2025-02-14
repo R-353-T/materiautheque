@@ -8,7 +8,7 @@ class SchemaError
     {
         return [
             "name"  => $name,
-            "code"  => "param_required"
+            "code"  => "required"
         ];
     }
 
@@ -16,7 +16,7 @@ class SchemaError
     {
         return [
             "name"  => $name,
-            "code"  => "param_empty"
+            "code"  => "empty"
         ];
     }
 
@@ -24,7 +24,7 @@ class SchemaError
     {
         return [
             "name"  => $name,
-            "code"  => "param_duplicate"
+            "code"  => "duplicate"
         ];
     }
 
@@ -32,7 +32,7 @@ class SchemaError
     {
         return [
             "name"  => $name,
-            "code"  => "param_too_long",
+            "code"  => "too_long",
             "max"   => $max
         ];
     }
@@ -41,7 +41,7 @@ class SchemaError
     {
         return [
             "name"      => $name,
-            "code"      => "param_incorrect_type",
+            "code"      => "incorrect_type",
             "type"      => $type
         ];
     }
@@ -50,7 +50,7 @@ class SchemaError
     {
         return [
             "name"      => $name,
-            "code"      => "param_not_found"
+            "code"      => "not_found"
         ];
     }
 
@@ -62,7 +62,7 @@ class SchemaError
     {
         return [
             "name"      => $name,
-            "code"      => "param_not_foreign_of",
+            "code"      => "not_foreign_of",
             "foreign"   => $foreign
         ];
     }
@@ -71,7 +71,7 @@ class SchemaError
     {
         return [
             "name"      => $name,
-            "code"      => "param_invalid_date",
+            "code"      => "invalid_date",
             "format"    => MATE_DATE_FORMAT
         ];
     }
@@ -79,7 +79,7 @@ class SchemaError
     public static function notImplemented()
     {
         return [
-            "code"      => "param_not_implemented"
+            "code"      => "not_implemented"
         ];
     }
 
@@ -91,7 +91,7 @@ class SchemaError
     {
         return [
             "name"      => $name,
-            "code"      => "param_file_not_supported"
+            "code"      => "file_not_supported"
         ];
     }
 
@@ -99,7 +99,7 @@ class SchemaError
     {
         return [
             "name"      => $name,
-            "code"      => "param_file_too_large"
+            "code"      => "file_too_large"
         ];
     }
 
@@ -111,7 +111,7 @@ class SchemaError
     {
         [
             "name" => $name,
-            "code" => "param_template_group_missmatch"
+            "code" => "template_group_missmatch"
         ];
     }
 
@@ -119,7 +119,7 @@ class SchemaError
     {
         return [
             "name" => $name,
-            "code" => "param_parent_circular"
+            "code" => "parent_circular"
         ];
     }
 
@@ -127,7 +127,7 @@ class SchemaError
     {
         return [
             "name" => $name,
-            "code" => "param_field_missmatch"
+            "code" => "field_missmatch"
         ];
     }
 }
