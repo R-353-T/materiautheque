@@ -49,4 +49,18 @@ class FormValueRepository extends Repository
         $sqlOptions->where("formId", "=", $formId, PDO::PARAM_INT);
         return $this->selectAll($sqlOptions);
     }
+
+    public function unsetUnitValueIdByUnitId(int $unitId): void
+    {
+        $stmt = $this->db->prepare(SQL::FORM_VALUE_UNSET_UNIT_VALUE_ID_BY_UNIT_ID);
+        $stmt->bindValue(":unitId", $unitId, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+    public function unsetUnitValueIdByUnitValueId(int $unitValueId): void
+    {
+        $stmt = $this->db->prepare(SQL::FORM_VALUE_UNSET_UNIT_VALUE_ID_BY_UNIT_VALUE_ID);
+        $stmt->bindValue(":unitValueId", $unitValueId, PDO::PARAM_INT);
+        $stmt->execute();
+    }
 }

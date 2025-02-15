@@ -115,4 +115,11 @@ class FieldRepository extends Repository
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS, $this->model);
     }
+
+    public function unsetUnitIdByUnitId(int $unitId)
+    {
+        $stmt = $this->db->prepare(SQL::FIELD_UNSET_UNIT_ID_BY_UNIT_ID);
+        $stmt->bindValue(":unitId", $unitId, PDO::PARAM_INT);
+        $stmt->execute();
+    }
 }

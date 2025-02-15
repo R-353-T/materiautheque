@@ -7,11 +7,19 @@ use mate\model\UnitValueModel;
 use mate\SQL;
 use mate\util\SqlSelectQueryOptions;
 use PDO;
+use WP_Error;
 
 class UnitValueRepository extends Repository
 {
     protected string $table = "mate_unit_value";
     protected string $model = UnitValueModel::class;
+
+    private readonly FormValueRepository $formValueRepository;
+
+    public function __construct()
+    {
+        $this->formValueRepository = FormValueRepository::inject();
+    }
 
     public function insert($model): ?object
     {
@@ -40,5 +48,11 @@ class UnitValueRepository extends Repository
         $sqlOptions->where("unitId", "=", $unitId, PDO::PARAM_INT);
         $sqlOptions->orderBy("position", "ASC");
         return $this->selectAll($sqlOptions);
+    }
+
+    public function deleteById(int $id): bool|WP_Error
+    {
+        $this->formValueRepository->unsetUnitValueIdByUnitValueId($id);
+        return parent::deleteById($id);
     }
 }

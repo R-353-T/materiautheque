@@ -9,6 +9,7 @@ use mate\model\UnitModel;
 use mate\SQL;
 use PDO;
 use Throwable;
+use WP_Error;
 
 class UnitRepository extends Repository
 {
@@ -18,11 +19,15 @@ class UnitRepository extends Repository
     protected string $model = UnitModel::class;
 
     private readonly UnitValueRepository $valueRepository;
+    private readonly FieldRepository $fieldRepository;
+    private readonly FormValueRepository $formValueRepository;
 
     public function __construct()
     {
         parent::__construct();
         $this->valueRepository = UnitValueRepository::inject();
+        $this->fieldRepository = FieldRepository::inject();
+        $this->formValueRepository = FormValueRepository::inject();
     }
 
     public function insert($model): ?object
@@ -107,5 +112,20 @@ class UnitRepository extends Repository
         return $model !== null
             ? count(array_filter($model->valueList, fn($v) => $v->id === $valueId)) > 0
             : false;
+    }
+
+    public function deleteById(int $id): bool|WP_Error
+    {
+        try {
+            $this->db->transaction();
+            $this->formValueRepository->unsetUnitValueIdByUnitId($id);
+            $this->fieldRepository->unsetUnitIdByUnitId($id);
+            $output = parent::deleteById($id);
+            $this->db->commit();
+            return $output;
+        } catch (Throwable $err) {
+            $this->db->rollback();
+            return WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
+        }
     }
 }

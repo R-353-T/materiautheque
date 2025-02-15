@@ -7,6 +7,7 @@ use mate\service\DatabaseService;
 use mate\util\HashMap;
 use mate\util\SqlSelectQueryOptions;
 use PDO;
+use WP_Error;
 
 abstract class Repository extends Service
 {
@@ -79,7 +80,7 @@ abstract class Repository extends Service
         return $s->fetchAll(PDO::FETCH_CLASS, $this->model);
     }
 
-    public function deleteById(int $id): bool
+    public function deleteById(int $id): bool|WP_Error
     {
         $s = $this->db->prepare("DELETE FROM {$this->table} WHERE `id` = :id");
         $s->bindValue(":id", $id, PDO::PARAM_INT);

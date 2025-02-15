@@ -123,7 +123,12 @@ class UnitController extends Controller
 
         if (is_wp_error($model) === false) {
             $deleted = $this->repository->deleteById($model->id);
-            return $this->ok($deleted);
+
+            if (is_wp_error($deleted) === true) {
+                return $deleted;
+            } else {
+                return $this->ok($deleted);
+            }
         }
 
         return $model;

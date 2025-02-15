@@ -198,7 +198,7 @@ class SQL
     // ----------------------------------------
 
     public const FIELD_INSERT = <<<SQL
-        INSERT INTO mate_field
+        INSERT INTO mate_template_field
         (
             `name`,
             `description`,
@@ -225,7 +225,7 @@ class SQL
         SQL;
 
     public const FIELD_UPDATE = <<<SQL
-        UPDATE mate_field
+        UPDATE mate_template_field
         SET
             `name` = :name,
             `description` = :description,
@@ -239,24 +239,30 @@ class SQL
         SQL;
 
     public const FIELD_UPDATE_POSITION = <<<SQL
-        UPDATE mate_field
+        UPDATE mate_template_field
         SET `position` = :position
         WHERE `id` = :id
         SQL;
 
     public const FIELD_SELECT_BY_GROUP_ID = <<<SQL
-        SELECT * FROM mate_field
+        SELECT * FROM mate_template_field
         WHERE `groupId` = :groupId
         ORDER BY `position` ASC
         SQL;
 
     public const FIELD_SELECT_BY_TEMPLATE_ID = <<<SQL
         SELECT mtf.*
-        FROM mate_field mtf 
+        FROM mate_template_field mtf 
         LEFT JOIN mate_template_group mtg ON mtg.id = mtf.groupId
         LEFT JOIN mate_template mt ON mt.id  = mtg.templateId
         WHERE mt.id  = :templateId
         ORDER BY mtf.position ASC
+        SQL;
+
+    public const FIELD_UNSET_UNIT_ID_BY_UNIT_ID = <<<SQL
+        UPDATE mate_template_field
+        SET `unitId` = NULL
+        WHERE `unitId` = :unitId
         SQL;
 
     // ----------------------------------------
@@ -320,5 +326,21 @@ class SQL
             `date` = :date,
             `exId` = :exId
         WHERE `id` = :id
+        SQL;
+
+    public const FORM_VALUE_UNSET_UNIT_VALUE_ID_BY_UNIT_ID = <<<SQL
+        UPDATE mate_form_value
+        SET `unitValueId` = NULL
+        WHERE `unitValueId` IN (
+            SELECT id
+            FROM mate_unit_value
+            WHERE `unitId` = :unitId
+        )
+        SQL;
+
+    public const FORM_VALUE_UNSET_UNIT_VALUE_ID_BY_UNIT_VALUE_ID = <<<SQL
+        UPDATE mate_form_value
+        SET `unitValueid` = NULL
+        WHERE `unitValueId` = :unitValueId
         SQL;
 }
