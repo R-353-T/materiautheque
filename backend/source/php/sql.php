@@ -265,6 +265,11 @@ class SQL
         WHERE `unitId` = :unitId
         SQL;
 
+    public const FIELD_DELETE_BY_ENUMERATOR_ID = <<<SQL
+        DELETE FROM mate_template_field
+        WHERE `enumeratorId` = :enumeratorId
+        SQL;
+
     // ----------------------------------------
     // FORM
     // ----------------------------------------
@@ -342,5 +347,21 @@ class SQL
         UPDATE mate_form_value
         SET `unitValueid` = NULL
         WHERE `unitValueId` = :unitValueId
+        SQL;
+
+    public const FORM_VALUE_DELETE_BY_ENUMERATOR_ID = <<<SQL
+        DELETE FROM mate_form_value
+        WHERE `fieldId` IN (
+            SELECT id
+            FROM mate_template_field
+            WHERE `enumeratorId` = :enumeratorId
+        )
+        SQL;
+
+    public const FORM_VALUE_DELETE_BY_ENUMERATOR_VALUE_ID = <<<SQL
+        DELETE FROM mate_form_value mfv
+        JOIN mate_template_field mtf ON mtf.id = mfv.fieldId
+        WHERE mfv.exId = :enumeratorValueId
+        AND mtf.typeId = 10
         SQL;
 }

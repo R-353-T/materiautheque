@@ -63,4 +63,18 @@ class FormValueRepository extends Repository
         $stmt->bindValue(":unitValueId", $unitValueId, PDO::PARAM_INT);
         $stmt->execute();
     }
+
+    public function deleteByEnumeratorId(int $enumId): void
+    {
+        $stmt = $this->db->prepare(SQL::FORM_VALUE_DELETE_BY_ENUMERATOR_ID);
+        $stmt->bindValue(":enumeratorId", $enumId, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+    public function deleleteByEnumeratorValueId(int $enumValueId): void
+    {
+        $stmt = $this->db->prepare(SQL::FORM_VALUE_DELETE_BY_ENUMERATOR_VALUE_ID);
+        $stmt->bindValue(":enumValueId", $enumValueId, PDO::PARAM_INT);
+        $stmt->execute();
+    }
 }

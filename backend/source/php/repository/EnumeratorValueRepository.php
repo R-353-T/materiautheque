@@ -7,11 +7,19 @@ use mate\model\EnumeratorValueModel;
 use mate\SQL;
 use mate\util\SqlSelectQueryOptions;
 use PDO;
+use WP_Error;
 
 class EnumeratorValueRepository extends Repository
 {
     protected string $table = "mate_enumerator_value";
     protected string $model = EnumeratorValueModel::class;
+
+    private readonly FormValueRepository $formValueRepository;
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
     public function insert($model): ?object
     {
@@ -52,5 +60,11 @@ class EnumeratorValueRepository extends Repository
         $s = $this->db->prepare(SQL::ENUMERATOR_VALUE_DELETE_BY_ENUMERATOR_ID);
         $s->bindValue(":enumeratorId", $enumeratorId, PDO::PARAM_INT);
         $s->execute();
+    }
+
+    public function deleteById(int $id): bool|WP_Error
+    {
+        $this->formValueRepository->deleleteByEnumeratorValueId($id);
+        return parent::deleteById($id);
     }
 }

@@ -9,6 +9,7 @@ use mate\model\EnumeratorModel;
 use mate\SQL;
 use PDO;
 use Throwable;
+use WP_Error;
 
 class EnumeratorRepository extends Repository
 {
@@ -18,11 +19,15 @@ class EnumeratorRepository extends Repository
     protected string $model = EnumeratorModel::class;
 
     private readonly EnumeratorValueRepository $valueRepository;
+    private readonly FormValueRepository $formValueRepository;
+    private readonly FieldRepository $fieldRepository;
 
     public function __construct()
     {
         parent::__construct();
         $this->valueRepository = EnumeratorValueRepository::inject();
+        $this->formValueRepository = FormValueRepository::inject();
+        $this->fieldRepository = FieldRepository::inject();
     }
 
     public function insert($model): ?object
@@ -72,6 +77,7 @@ class EnumeratorRepository extends Repository
             $s->execute();
 
             if ($hasNewType) {
+                $this->formValueRepository->deleteByEnumeratorId($model->id);
                 $this->valueRepository->deleteByEnumeratorId($model->id);
             } else {
                 array_map([$this->valueRepository, "deleteById"], $toDeleteIdList);
@@ -117,5 +123,20 @@ class EnumeratorRepository extends Repository
         return $model !== null
             ? count(array_filter($model->valueList, fn($v) => $v->id === $valueId)) > 0
             : false;
+    }
+
+    public function deleteById(int $id): bool|WP_Error
+    {
+        try {
+            $this->db->transaction();
+            $this->formValueRepository->deleteByEnumeratorId($id);
+            $this->fieldRepository->deleteByEnumeratorId($id);
+            $output = parent::deleteById($id);
+            $this->db->commit();
+            return $output;
+        } catch (Throwable $err) {
+            $this->db->rollback();
+            return WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
+        }
     }
 }

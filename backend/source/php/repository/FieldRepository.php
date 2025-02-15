@@ -122,4 +122,11 @@ class FieldRepository extends Repository
         $stmt->bindValue(":unitId", $unitId, PDO::PARAM_INT);
         $stmt->execute();
     }
+
+    public function deleteByEnumeratorId(int $enumeratorId): void
+    {
+        $stmt = $this->db->prepare(SQL::FIELD_DELETE_BY_ENUMERATOR_ID);
+        $stmt->bindValue(":enumeratorId", $enumeratorId, PDO::PARAM_INT);
+        $stmt->execute();
+    }
 }
