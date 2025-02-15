@@ -359,9 +359,16 @@ class SQL
         SQL;
 
     public const FORM_VALUE_DELETE_BY_ENUMERATOR_VALUE_ID = <<<SQL
-        DELETE FROM mate_form_value mfv
+        DELETE mfv FROM mate_form_value mfv
         JOIN mate_template_field mtf ON mtf.id = mfv.fieldId
         WHERE mfv.exId = :enumeratorValueId
         AND mtf.typeId = 10
+        SQL;
+
+    public const FORM_VALUE_DELETE_BY_IMAGE_ID = <<<SQL
+        DELETE mfv FROM mate_form_value mfv
+        JOIN mate_template_field mtf ON mtf.id = mfv.fieldId
+        WHERE mfv.exId = :imageId
+        AND mtf.typeId = 8
         SQL;
 }

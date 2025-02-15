@@ -64,7 +64,7 @@ class EnumeratorValueRepository extends Repository
 
     public function deleteById(int $id): bool|WP_Error
     {
-        $this->formValueRepository->deleleteByEnumeratorValueId($id);
+        $this->formValueRepository->deleteByEnumeratorValueId($id);
         return parent::deleteById($id);
     }
 }

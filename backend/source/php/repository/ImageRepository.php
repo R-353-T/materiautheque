@@ -10,6 +10,7 @@ use mate\SQL;
 use mate\util\SqlSelectQueryOptions;
 use PDO;
 use Throwable;
+use WP_Error;
 
 class ImageRepository extends Repository
 {
@@ -18,10 +19,13 @@ class ImageRepository extends Repository
 
     private readonly ImageService $service;
 
+    private readonly FormValueRepository $formValueRepository;
+
     public function __construct()
     {
         parent::__construct();
         $this->service = ImageService::inject();
+        $this->formValueRepository = FormValueRepository::inject();
     }
 
     public function insert($model): ?object
@@ -128,6 +132,28 @@ class ImageRepository extends Repository
         }
 
         return $list;
+    }
+
+    public function deleteById(int $id): bool|WP_Error
+    {
+        try {
+            $this->db->transaction();
+            $this->formValueRepository->deleteByImageId($id);
+            $deleted = $this->service->delete($this->selectById($id)->relative);
+
+            if (is_wp_error($deleted) === false) {
+                $result = parent::deleteById($id);
+                $this->db->commit();
+            } else {
+                $result = $deleted;
+                $this->db->rollback();
+            }
+
+            return $result;
+        } catch (Throwable $err) {
+            $this->db->rollback();
+            return WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
+        }
     }
 
     private function formatImage(ImageModel $image)
