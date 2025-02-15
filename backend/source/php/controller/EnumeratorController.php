@@ -94,6 +94,10 @@ class EnumeratorController extends Controller
                 );
             }
 
+            if ($options["typeId"] !== null) {
+                $sqlOptions->where("typeId", "=", $options["typeId"], PDO::PARAM_INT);
+            }
+
             $sqlOptions->orderBy("name", "ASC");
 
             $data = $this->repository->selectAll($sqlOptions);
@@ -110,7 +114,7 @@ class EnumeratorController extends Controller
 
         if (is_wp_error($model) === false) {
             $model = $this->repository->selectById($model->id);
-            $model->valueList = ValueDto::parseTypedList($model->id, $model->valueList);
+            $model->valueList = ValueDto::parseTypedList($model->typeId, $model->valueList);
             return $this->ok($model);
         }
 
