@@ -21,6 +21,10 @@ class TemplateController extends Controller
         "get"   => [
             "method"        => WP_REST_Server::READABLE,
             "permission"    => RestPermission::CONTRIBUTOR
+        ],
+        "update"    => [
+            "method"        => WP_REST_Server::EDITABLE,
+            "permission"    => RestPermission::CONTRIBUTOR
         ]
     ];
 

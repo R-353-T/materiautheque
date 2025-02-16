@@ -22,6 +22,22 @@ class TemplateRepository extends Repository
 
     public function update($model): ?object
     {
+        $previousModel = $this->selectById($model->id);
+        $childIdList = array_map(fn($childGroup) => $childGroup->id, $model->groupList);
+        $originChildIdList = array_map(fn($childGroup) => $childGroup->id, $previousModel->groupList);
+        $missed = array_diff($originChildIdList, $childIdList);
+
+        if (count($missed) > 0) {
+            $position = count($childIdList);
+            foreach ($missed as $id) {
+                $cg = new GroupModel();
+                $cg->id = $id;
+                $cg->position = $position + 1;
+                $model->groupList[] = $cg;
+                $position++;
+            }
+        }
+
         if ($model->groupList !== null) {
             foreach ($model->groupList as $group) {
                 $this->groupRepository->updatePositionById($group->id, $group->position);

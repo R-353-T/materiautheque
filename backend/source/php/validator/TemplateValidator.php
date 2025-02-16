@@ -26,7 +26,7 @@ class TemplateValidator extends Validator
         $groupList = [];
         $dtoList = $req->get_param($paramName);
 
-        if ($this->hasError($errors, "id") !== false) {
+        if ($this->hasError($errors, "id") === false) {
             $id = $req->get_param("id");
 
             if ($dtoList === null) {
@@ -56,8 +56,9 @@ class TemplateValidator extends Validator
         array &$errors,
         string $paramName,
         array $options
-    ): GroupModel {
+    ): GroupModel|null {
         $model = new GroupModel();
+        $model->position = $options["index"];
 
         if (mate_sanitize_array($dto) === false) {
             $err = SchemaError::incorrectType($paramName, "array");
