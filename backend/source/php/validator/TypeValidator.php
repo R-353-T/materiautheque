@@ -44,11 +44,7 @@ class TypeValidator extends Validator
             /** @var TypeModel */
             $type = $this->typeRepository->selectById($typeId);
             if ($type->allowEnumeration === false) {
-                // todo - remove custom error
-                $typeId = [
-                    "name" => $paramName,
-                    "code" => "param_not_enumerable"
-                ];
+                $typeId = SchemaError::typeNotEnumerable($paramName);
             };
         }
 
@@ -58,7 +54,7 @@ class TypeValidator extends Validator
     public function typeIsMultiple(mixed $typeId, string $paramName): int|array
     {
         $errors = [];
-        $typeId = $this->validRequestId($typeId, $errors, $paramName);
+        $typeId = $this->validId($typeId, $errors, $paramName);
 
         if (count($errors) > 0) {
             $typeId = $errors[0];
@@ -66,11 +62,7 @@ class TypeValidator extends Validator
             /** @var TypeModel */
             $type = $this->repository->selectById($typeId);
             if ($type->allowMultipleValues === false) {
-                // todo - remove custom error
-                $typeId = [
-                    "name" => $paramName,
-                    "code" => "param_not_multiple"
-                ];
+                $typeId = SchemaError::typeNotMultiple($paramName);
             };
         }
 
@@ -86,11 +78,7 @@ class TypeValidator extends Validator
             $typeId = $errors[0];
         } else {
             if (in_array($typeId, self::$UNITABLE) === false) {
-                // todo - remove custom error
-                $typeId = [
-                    "name" => $paramName,
-                    "code" => "param_not_unitable"
-                ];
+                $typeId = SchemaError::typeNotUnitable($paramName);
             };
         }
 

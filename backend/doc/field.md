@@ -115,7 +115,7 @@
 - isRequired: `required` | `incorrect_type`
 - allowMultipleValues: `required` | `incorrect_type`
 - groupId: `required` | `incorrect_type` | `not_found`
-- typeId: `required` | `incorrect_type` | `not_found` | `not_unitable`* | `not_multiple`*
+- typeId: `required` | `incorrect_type` | `not_found` | `type_not_unitable`* | `type_not_multiple`*
 - enumeratorId: `incorrect_type` | `not_found`
 - unitId: `incorrect_type` | `not_found`
 
@@ -163,7 +163,7 @@
 - isRequired: `required` | `incorrect_type`
 - allowMultipleValues: `required` | `incorrect_type`
 - groupId: `required` | `incorrect_type` | `not_found`
-- typeId: `required` | `incorrect_type` | `not_found` | `not_unitable`* | `not_multiple`*
+- typeId: `required` | `incorrect_type` | `not_found` | `type_not_unitable`* | `type_not_multiple`*
 - enumeratorId: `incorrect_type` | `not_found`
 - unitId: `incorrect_type` | `not_found`
 

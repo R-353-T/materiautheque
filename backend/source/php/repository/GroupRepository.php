@@ -73,6 +73,7 @@ class GroupRepository extends Repository
                 $childIdList = array_map(fn($childGroup) => $childGroup->id, $model->groupList);
                 $originChildIdList = array_map(fn($childGroup) => $childGroup->id, $previousModel->groupList);
                 $missed = array_diff($originChildIdList, $childIdList);
+
                 if (count($missed) > 0) {
                     $position = count($childIdList);
                     foreach ($missed as $id) {
@@ -151,7 +152,7 @@ class GroupRepository extends Repository
     public function selectGroupListByGroupId(int $groupId, bool $recursive = false)
     {
         $s = $this->db->prepare(SQL::GROUP_SELECT_BY_PARENT_ID);
-        $s->bindValue(":groupId", $groupId);
+        $s->bindValue(":parentId", $groupId, PDO::PARAM_INT);
         $s->execute();
         $groupList = $s->fetchAll(PDO::FETCH_CLASS, $this->model);
 

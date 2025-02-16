@@ -30,14 +30,14 @@ Duplicate `config.template.yml` as `config.dev.yml` and edit is with your own da
 
 ## Endpoints
 
+* [Image](./backend/doc/image.md)
 * [Type](./backend/doc/type.md)
 * [Unit](./backend/doc/unit.md)
 * [Enumerator](./backend/doc/enumerator.md)
-* [Image](./backend/doc/image.md)
-* [Template](./backend/doc/image.md)
-    * [Group]()
-    * [Field]()
-* [Form]()
+* [Template](./backend/doc/template.md)
+    * [Group](./backend/doc/group.md)
+    * [Field](./backend/doc/field.md)
+* [Form](./backend/doc/form.md)
 
 ## TODO LIST
 

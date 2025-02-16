@@ -138,7 +138,7 @@
 }
 ```
 
-- name: `required` | `incorrect_type` | `empty` | `too_long` | `duplicate`*
+- name: `required` | `incorrect_type` | `empty` | `too_long`
 - description: `required` | `incorrect_type` | `too_long`
 - templateId: `required` | `incorrect_type` | `not_found`
 - parentId: `incorrect_type` | `not_found` | `template_group_missmatch`* | `parent_circular`*

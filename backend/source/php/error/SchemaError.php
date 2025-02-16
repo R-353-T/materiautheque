@@ -84,6 +84,34 @@ class SchemaError
     }
 
     // ---------------------------------------------------- //
+    // TYPE
+    // ---------------------------------------------------- //
+
+    public static function typeNotEnumerable(string $name)
+    {
+        return [
+            "name"      => $name,
+            "code"      => "type_not_enumerable"
+        ];
+    }
+
+    public static function typeNotMultiple(string $name)
+    {
+        return [
+            "name"      => $name,
+            "code"      => "type_not_multiple"
+        ];
+    }
+
+    public static function typeNotUnitable(string $name)
+    {
+        return [
+            "name"      => $name,
+            "code"      => "type_not_unitable"
+        ];
+    }
+
+    // ---------------------------------------------------- //
     // FILE
     // ---------------------------------------------------- //
 

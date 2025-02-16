@@ -63,7 +63,7 @@ class GroupValidator extends Validator
         $id = $req->get_param("id");
         $dtoList = $req->get_param($paramName);
 
-        if ($this->hasError($errors, "id") !== false) {
+        if ($this->hasError($errors, "id") === false) {
             if ($dtoList === null) {
                 $errors[] = SchemaError::required($paramName);
             } elseif (mate_sanitize_array($dtoList) === false) {
@@ -93,6 +93,7 @@ class GroupValidator extends Validator
         array $options
     ): GroupModel {
         $model = new GroupModel();
+        $model->position = $options["index"];
 
         if (mate_sanitize_array($dto) === false) {
             $err = SchemaError::incorrectType($paramName, "array");
@@ -137,7 +138,7 @@ class GroupValidator extends Validator
         $id = $req->get_param("id");
         $dtoList = $req->get_param($paramName);
 
-        if ($this->hasError($errors, "id") !== false) {
+        if ($this->hasError($errors, "id") === false) {
             if ($dtoList === null) {
                 $errors[] = SchemaError::required($paramName);
             } elseif (mate_sanitize_array($dtoList) === false) {
@@ -167,6 +168,7 @@ class GroupValidator extends Validator
         array $options
     ): FieldModel {
         $model = new FieldModel();
+        $model->position = $options["index"];
 
         if (mate_sanitize_array($dto) === false) {
             $err = SchemaError::incorrectType($paramName, "array");

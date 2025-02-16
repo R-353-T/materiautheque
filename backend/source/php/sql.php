@@ -149,7 +149,7 @@ class SQL
     // ----------------------------------------
 
     public const GROUP_INSERT = <<<SQL
-        INSERT INTO mate_group
+        INSERT INTO mate_template_group
         (
             `name`,
             `description`,
@@ -168,7 +168,7 @@ class SQL
         SQL;
 
     public const GROUP_UPDATE = <<<SQL
-        UPDATE mate_group
+        UPDATE mate_template_group
         SET
             `name` = :name,
             `description` = :description,
@@ -177,18 +177,20 @@ class SQL
         SQL;
 
     public const GROUP_SELECT_BY_TEMPLATE_ID = <<<SQL
-        SELECT * FROM mate_group
+        SELECT * FROM mate_template_group
         WHERE `templateId` = :templateId
         AND `parentId` IS NULL
+        ORDER BY `position` ASC
         SQL;
 
     public const GROUP_SELECT_BY_PARENT_ID = <<<SQL
-        SELECT * FROM mate_group
+        SELECT * FROM mate_template_group
         WHERE `parentId` = :parentId
+        ORDER BY `position` ASC
         SQL;
 
     public const GROUP_UPDATE_POSITION = <<<SQL
-        UPDATE mate_group
+        UPDATE mate_template_group
         SET `position` = :position
         WHERE `id` = :id
         SQL;

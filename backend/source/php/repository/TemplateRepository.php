@@ -39,7 +39,7 @@ class TemplateRepository extends Repository
             $model->groupList = $this->groupRepository->selectGroupListByTemplateId($model->id);
 
             foreach ($model->groupList as $group) {
-                $group->fieldList = $this->fieldRepository->selectByGroupId($group->id);
+                $group->fieldList = $this->fieldRepository->selectFieldListByGroupId($group->id);
                 $this->treeGroupChildList($group);
             }
         }
@@ -52,7 +52,7 @@ class TemplateRepository extends Repository
         $group->groupList = $this->groupRepository->selectGroupListByGroupId($group->id);
 
         foreach ($group->groupList as $childGroup) {
-            $childGroup->fieldList = $this->fieldRepository->selectByGroupId($childGroup->id);
+            $childGroup->fieldList = $this->fieldRepository->selectFieldListByGroupId($childGroup->id);
             $this->treeGroupChildList($childGroup);
         }
     }
