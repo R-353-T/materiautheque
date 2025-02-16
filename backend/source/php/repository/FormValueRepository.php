@@ -50,6 +50,13 @@ class FormValueRepository extends Repository
         return $this->selectAll($sqlOptions);
     }
 
+    public function deleteByFieldId(int $fieldId): void
+    {
+        $stmt = $this->db->prepare(SQL::FORM_VALUE_DELETE_BY_FIELD_ID);
+        $stmt->bindValue(":fieldId", $fieldId, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
     public function unsetUnitValueIdByUnitId(int $unitId): void
     {
         $stmt = $this->db->prepare(SQL::FORM_VALUE_UNSET_UNIT_VALUE_ID_BY_UNIT_ID);
@@ -82,6 +89,13 @@ class FormValueRepository extends Repository
     {
         $stmt = $this->db->prepare(SQL::FORM_VALUE_DELETE_BY_IMAGE_ID);
         $stmt->bindValue(":imageId", $imageId, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+    public function deleteByFormId(int $formId): void
+    {
+        $stmt = $this->db->prepare(SQL::FORM_VALUE_DELETE_BY_FORM_ID);
+        $stmt->bindValue(":formId", $formId, PDO::PARAM_INT);
         $stmt->execute();
     }
 }

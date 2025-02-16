@@ -8,6 +8,7 @@ use mate\model\FormModel;
 use mate\SQL;
 use PDO;
 use Throwable;
+use WP_Error;
 
 class FormRepository extends Repository
 {
@@ -111,5 +112,21 @@ class FormRepository extends Repository
         return $model !== null
             ? count(array_filter($model->valueList, fn($v) => $v->id === $valueId)) > 0
             : false;
+    }
+
+
+    public function deleteById(int $id): bool|WP_Error
+    {
+        try {
+            $this->db->transaction();
+            $this->valueRepository->deleteByFormId($id);
+            $result = parent::deleteById($id);
+            $this->db->commit();
+
+            return $result;
+        } catch (Throwable $err) {
+            $this->db->rollback();
+            return WPErrorBuilder::internalServerError($err->getMessage(), $err->getTraceAsString());
+        }
     }
 }

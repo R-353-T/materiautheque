@@ -373,4 +373,16 @@ class SQL
         WHERE mfv.exId = :imageId
         AND mtf.typeId = 8
         SQL;
+
+    public const FORM_VALUE_DELETE_BY_FORM_ID = <<<SQL
+        DELETE mfv FROM mate_form_value mfv
+        JOIN mate_template_field mtf ON mtf.id = mfv.fieldId
+        WHERE mfv.exId = :formId
+        AND mtf.typeId = 9
+        SQL;
+
+    public const FORM_VALUE_DELETE_BY_FIELD_ID = <<<SQL
+        DELETE FROM mate_form_value
+        WHERE `fieldId` = :fieldId
+        SQL;
 }

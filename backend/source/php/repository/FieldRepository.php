@@ -14,6 +14,14 @@ class FieldRepository extends Repository
     protected string $table = "mate_template_field";
     protected string $model = FieldModel::class;
 
+    private readonly FormValueRepository $formValueRepository;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->formValueRepository = FormValueRepository::inject();
+    }
+
     public function insert($model): ?object
     {
         $result = null;
@@ -56,6 +64,7 @@ class FieldRepository extends Repository
     public function update($model): ?object
     {
         $result = null;
+        $previousModel = $this->selectById($model->id);
 
         $typeIdArr = $model->typeId !== null
             ? [$model->typeId, PDO::PARAM_INT]
@@ -69,8 +78,15 @@ class FieldRepository extends Repository
             ? [$model->unitId, PDO::PARAM_INT]
             : [null, PDO::PARAM_INT];
 
+        $updateType = $previousModel->typeId !== $model->typeId;
+
         try {
             $this->db->transaction();
+
+            if ($updateType) {
+                $this->formValueRepository->deleteByFieldId($model->id);
+            }
+
             $stmt = $this->db->prepare(SQL::FIELD_UPDATE);
             $stmt->bindValue(":name", $model->name, PDO::PARAM_STR);
             $stmt->bindValue(":description", $model->description, PDO::PARAM_STR);
