@@ -12,6 +12,7 @@ use mate\abstract\clazz\Controller;
 use mate\abstract\clazz\Middleware;
 use mate\controller\EnumeratorController;
 use mate\controller\FieldController;
+use mate\controller\FormController;
 use mate\controller\GroupController;
 use mate\controller\ImageController;
 use mate\controller\TemplateController;
@@ -41,6 +42,7 @@ Controller::addController(EnumeratorController::class);
 Controller::addController(TemplateController::class);
 Controller::addController(GroupController::class);
 Controller::addController(FieldController::class);
+Controller::addController(FormController::class);
 
 # Filters
 

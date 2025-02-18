@@ -158,4 +158,18 @@ class SchemaError
             "code" => "field_missmatch"
         ];
     }
+
+    // ---------------------------------------------------- //
+    // FORM
+    // ---------------------------------------------------- //
+
+    public static function formFieldRequired(string $name, int $fieldId, int $groupId)
+    {
+        return [
+            "name" => $name,
+            "code" => "field_required",
+            "fieldId" => $fieldId,
+            "groupId" => $groupId
+        ];
+    }
 }

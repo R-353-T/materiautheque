@@ -4,6 +4,7 @@ namespace mate\validator;
 
 use mate\abstract\clazz\Validator;
 use mate\error\SchemaError;
+use mate\model\FieldModel;
 use mate\model\FormValueModel;
 use mate\repository\FieldRepository;
 use mate\repository\FormRepository;
@@ -38,6 +39,7 @@ class FormValidator extends Validator
         $this->unitRepository = UnitRepository::inject();
     }
 
+
     public function validRequestValueList(
         WP_REST_Request $req,
         array &$errors,
@@ -57,6 +59,8 @@ class FormValidator extends Validator
             } elseif (mate_sanitize_array($valueList) === false) {
                 $errors[] = SchemaError::incorrectType($paramName, "array");
             } else {
+                $fieldMap = [];
+
                 foreach ($dtoList as $dtoIndex => $dto) {
                     $model = new FormValueModel();
 
@@ -68,12 +72,15 @@ class FormValidator extends Validator
                             "formId" => $formId,
                             "index" => $dtoIndex,
                             "templateId" => $templateId,
-                            "model" => $model
+                            "model" => $model,
+                            "fieldMap" => $fieldMap
                         ]
                     );
 
                     $valueList[$dtoIndex] = $model;
                 }
+
+                $this->validRequiredFields($req, $errors, $valueList);
             }
         }
 
@@ -95,6 +102,7 @@ class FormValidator extends Validator
             $this->validDtoId($dto, $errors, $paramName, $options);
             $this->validDtoValue($dto, $errors, $paramName, $options);
             $this->validDtoUnit($dto, $errors, $paramName, $options);
+            $this->validDtoNotMultiple($dto, $errors, $paramName, $options);
         }
     }
 
@@ -212,6 +220,61 @@ class FormValidator extends Validator
                     $errors[] = $err;
                 } else {
                     $options["model"]->unitValueId = $dto["unit"];
+                }
+            }
+        }
+    }
+
+    private function validDtoNotMultiple(array $dto, array &$errors, string $paramName, array &$options): void
+    {
+        if ($this->hasError($errors, "fieldId") === false) {
+            if (isset($options["fieldMap"][$options["model"]->fieldId]) === false) {
+                $options["fieldMap"][$options["model"]->fieldId] = true;
+            } else {
+                $field = $this->fieldRepository->selectById($options["model"]->fieldId);
+                $err = $this->typeValidator->typeIsMultiple($field->typeId, $paramName);
+
+                if (is_array($err)) {
+                    $err["index"] = $options["index"];
+                    $err["property"] = "fieldId";
+                    $errors[] = $err;
+                }
+            }
+        }
+    }
+
+    private function validRequiredFields(
+        WP_REST_Request $req,
+        array &$errors,
+        array &$valueList,
+        string $paramName = "field"
+    ): void {
+        if ($this->hasError($errors, "id", "templateId", "valueList") === false) {
+            $templateId = $req->get_param("templateId");
+
+            /** @var FieldModel */
+            $fieldList = $this->fieldRepository->selectFieldListByTemplateId($templateId);
+            $nnValueMap = [];
+
+            foreach ($valueList as $value) {
+                /** @var FieldModel */
+                $field = $this->fieldRepository->selectById($value->fieldId);
+
+                if ($field->isRequired) {
+                    $type = $this->typeRepository->selectById($field->typeId);
+                    $column = $type->column;
+
+                    if (isset($value->$column)) {
+                        $nnValueMap[$field->id] = true;
+                    }
+                }
+            }
+
+            foreach ($fieldList as $field) {
+                if ($field->isRequired) {
+                    if (isset($nnValueMap[$field->id]) === false) {
+                        $errors[] = SchemaError::formFieldRequired($paramName, $field->id, $field->groupId);
+                    }
                 }
             }
         }
