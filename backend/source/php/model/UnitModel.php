@@ -10,6 +10,6 @@ class UnitModel extends Model
     public string $name;
     public string $description;
 
-    /** @var UnitValueModel[]|ValueDto[|null */
+    /** @var UnitValueModel[]|ValueDto[]|null */
     public ?array $valueList = null;
 }

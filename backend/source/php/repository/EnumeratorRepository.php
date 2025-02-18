@@ -109,7 +109,7 @@ class EnumeratorRepository extends Repository
     {
         $m = parent::selectById($id, $cache);
 
-        if ($m !== null) {
+        if ($m !== null && ($cache === false || $m->valueList === null)) {
             $m->valueList = $this->valueRepository->selectByEnumeratorId($m->id);
         }
 
