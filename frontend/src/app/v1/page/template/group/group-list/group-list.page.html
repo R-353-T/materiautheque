@@ -1,0 +1,70 @@
+<app-header></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="wrapper" *ngIf="template() as t">
+    <app-select-group
+      [control]="groupIdSelector"
+      [template]="t"
+      label=">"
+      class="mb-ios"
+    ></app-select-group>
+
+    <header>
+      <h2>{{ name() }}</h2>
+
+      @if(group()) {
+      <ion-button
+        *ngIf="group() as group"
+        (click)="navigationService.goToTemplateGroupEdit(group.templateId, group.id)"
+      >
+        Éditer
+      </ion-button>
+      } @else {
+      <ion-button (click)="navigationService.goToTemplateEdit(t.id)">
+        Éditer
+      </ion-button>
+      }
+    </header>
+
+    <div class="flex flex-col mb-7 gap-ios">
+      <h3>Description</h3>
+
+      <ion-text class="description" *ngIf="group() as g">
+        {{ g.description }}
+      </ion-text>
+    </div>
+
+    <header>
+      <h3>Groupes</h3>
+
+      <div class="flex gap-ios mb-ios justify-between">
+        <ion-button
+          fill="outline"
+          (click)="navigationService.goToTemplateGroupCreate(t.id, group()?.id)"
+        >
+          Ajouter
+        </ion-button>
+      </div>
+    </header>
+
+    <app-infinite-scroll [options]="groupOptions"></app-infinite-scroll>
+
+    <header *ngIf="group() as g">
+      <h3>Champs</h3>
+
+      <div class="flex gap-ios mb-ios justify-between">
+        <ion-button
+          fill="outline"
+          (click)="navigationService.goToTemplateFieldCreate(g.id)"
+        >
+          Ajouter
+        </ion-button>
+      </div>
+    </header>
+
+    <app-infinite-scroll
+      *ngIf="group() as g"
+      [options]="fieldOptions"
+    ></app-infinite-scroll>
+  </div>
+</ion-content>

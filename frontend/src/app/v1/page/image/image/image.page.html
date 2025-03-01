@@ -1,0 +1,28 @@
+<app-header></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="wrapper" *ngIf="image$ | async as image">
+    <header>
+      <h2>
+        {{ image.name }}
+        <ion-badge color="light">#{{ image.id }}</ion-badge>
+      </h2>
+
+      <ion-button
+        (click)="navigationService.goToImageEdit(image.id)"
+        [disabled]="!permissionService.hasPermission(permissionService.PERMISSION.image.update)"
+      >
+        Éditer
+      </ion-button>
+    </header>
+
+    <div class="flex">
+      <a href="{{ image.url }}" target="_blank">
+        <img
+          src="{{ image.url }}"
+          class="max-h-96 hover:opacity-90 duration-300 rounded-sm"
+        >
+      </a>
+    </div>
+  </div>
+</ion-content>

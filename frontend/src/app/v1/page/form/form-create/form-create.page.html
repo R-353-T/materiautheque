@@ -1,0 +1,15 @@
+<app-header></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="wrapper" *ngIf="template() as t">
+    <h1 class="main">Ajouter un "{{t.name}}"</h1>
+
+    <app-form-group-summary
+      [form]="form"
+      [activeGroupId]="activeGroupId"
+    ></app-form-group-summary>
+
+    <form class="form">
+    </form>
+  </div>
+</ion-content>

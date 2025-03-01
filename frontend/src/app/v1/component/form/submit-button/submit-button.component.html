@@ -1,0 +1,7 @@
+<div class="flex">
+  @if(enabled) {
+    <ion-button (click)="onSubmit()">{{ label }}</ion-button>
+  } @else {
+    <ion-spinner color="primary"></ion-spinner>
+  }
+</div>

@@ -19,6 +19,7 @@ class EnumeratorValueRepository extends Repository
     public function __construct()
     {
         parent::__construct();
+        $this->formValueRepository = FormValueRepository::inject();
     }
 
     public function insert($model): ?object

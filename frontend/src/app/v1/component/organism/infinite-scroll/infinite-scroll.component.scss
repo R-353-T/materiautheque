@@ -1,0 +1,7 @@
+ion-list {
+    ion-item {
+        &:last-child {
+            --border-width: 0 0 0 0 !important;
+        }
+    }
+}

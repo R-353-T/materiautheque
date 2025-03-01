@@ -72,7 +72,7 @@ class TypeValidator extends Validator
     public function typeIsUnitable(mixed $typeId, string $paramName): int|array
     {
         $errors = [];
-        $typeId = $this->validRequestId($typeId, $errors, $paramName);
+        $typeId = $this->validId($typeId, $errors, $paramName);
 
         if (count($errors) > 0) {
             $typeId = $errors[0];

@@ -1,0 +1,118 @@
+<app-header> </app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="wrapper">
+    <h1 class="main">Modifier un groupe</h1>
+
+    <form [formGroup]="form.formGroup" class="form" *ngIf="template() as t">
+      <div *ngIf="form.errorOf(form.formGroup)" class="f-error">
+        <p>{{ form.errorOf(form.formGroup) }}</p>
+      </div>
+
+      <ion-input
+        [formControl]="form.name"
+        type="text"
+        [label]="form.labelGroup.name"
+        [errorText]="form.errorOf(form.name)"
+      ></ion-input>
+
+      <ion-textarea
+        [formControl]="form.description"
+        type="text"
+        [label]="form.labelGroup.description"
+        [errorText]="form.errorOf(form.description)"
+      ></ion-textarea>
+
+      <app-select-group
+        [control]="form.parentId"
+        [preventRecursionId]="form.id.value"
+        [template]="t"
+        label="Parent :"
+      ></app-select-group>
+
+      <h3>Groupes</h3>
+
+      <div
+        class="flex flex-col border border-ionLight-shade rounded-ios p-ios gap-ios"
+      >
+        @for (control of this.form.groupList.controls; track $index) {
+        <div
+          class="flex flex-col border border-ionLight-shade rounded-ios p-ios"
+        >
+          <p>{{ control.value }}</p>
+
+          <div class="flex justify-between">
+            <div class="flex">
+              @if($index > 0) {
+              <ion-button
+                fill="clear"
+                size="small"
+                (click)="form.moveGroupUp($index)"
+              >
+                <ion-icon name="arrow-up"></ion-icon>
+              </ion-button>
+              } @if($index < form.groupList.length - 1) { <ion-button
+                fill="clear"
+                size="small"
+                (click)="form.moveGroupDown($index)"
+              >
+                <ion-icon name="arrow-down"></ion-icon>
+              </ion-button>
+              }
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+
+      <h3>Champs</h3>
+
+      <div
+        class="flex flex-col border border-ionLight-shade rounded-ios p-ios gap-ios"
+      >
+        @for (control of this.form.fieldList.controls; track $index) {
+        <div
+          class="flex flex-col border border-ionLight-shade rounded-ios p-ios"
+        >
+          <p>{{ control.value }}</p>
+
+          <div class="flex justify-between">
+            <div class="flex">
+              @if($index > 0) {
+              <ion-button
+                fill="clear"
+                size="small"
+                (click)="form.moveFieldUp($index)"
+              >
+                <ion-icon name="arrow-up"></ion-icon>
+              </ion-button>
+              } @if($index < form.fieldList.length - 1) { <ion-button
+                fill="clear"
+                size="small"
+                (click)="form.moveFieldDown($index)"
+              >
+                <ion-icon name="arrow-down"></ion-icon>
+              </ion-button>
+              }
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+
+      <div class="flex justify-between gap-ios">
+        <app-submit-button
+          [enabled]="form.formGroup.enabled"
+          (submit)="update()"
+          label="Modifier"
+        ></app-submit-button>
+
+        <div class="flex gap-ios" *ngIf="form.formGroup.enabled">
+          <ion-button (click)="form.reset()" color="dark"
+          >Réinitialiser</ion-button>
+          <ion-button (click)="delete()" color="danger">Supprimer</ion-button>
+        </div>
+      </div>
+    </form>
+  </div>
+</ion-content>

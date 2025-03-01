@@ -1,0 +1,31 @@
+<app-header></app-header>
+
+<ion-content [fullscreen]="true" [scrollEvents]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="wrapper">
+    <div class="row-wrapper">
+      <ion-button
+        (click)="navigationService.goToImageCreate()"
+        [disabled]="!permissionService.hasPermission(permissionService.PERMISSION.image.create)"
+      >
+        Ajouter
+      </ion-button>
+    </div>
+
+    <ion-searchbar
+      (ionInput)="search($event)"
+      [debounce]="1000"
+      placeholder="Rechercher"
+    ></ion-searchbar>
+
+    <app-infinite-scroll
+      [options]="options"
+      (load)="load($event)"
+    ></app-infinite-scroll>
+  </div>
+
+  <app-scroll-top-button [content]="content"></app-scroll-top-button>
+</ion-content>

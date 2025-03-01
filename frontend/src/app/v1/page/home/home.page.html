@@ -1,0 +1,13 @@
+<app-header></app-header>
+
+<ion-content [fullscreen]="true">
+    <div class="wrapper">
+        <h1 class="main">Bienvenue</h1>
+        <div *ngIf="index" class="backlog">
+            <h2>Backlogs</h2>
+            @for(file of index; track $index) {
+                <markdown [src]="'assets/backlog/' + file"></markdown>
+            }
+        </div>
+    </div>
+</ion-content>

@@ -1,0 +1,12 @@
+.valueList {
+    @apply flex flex-col border border-ionLight-shade px-ios rounded-ios;
+
+    .value {
+        @apply flex;
+        @apply border-b border-ionLight-shade;
+
+        &:last-child {
+            @apply border-b-0;
+        }
+    }
+}

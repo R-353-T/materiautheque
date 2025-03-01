@@ -1,0 +1,16 @@
+<div class="flex flex-col">
+  <ion-textarea
+    [formControl]="control"
+    [label]="label"
+    class="c-input"
+    [class.invalid]="errorText"
+  ></ion-textarea>
+
+  @if (errorText) {
+    <p class="i-error">{{ errorText }}</p>
+  }
+
+  @if (infoText) {
+    <p class="i-info">{{ infoText }}</p>
+  }
+</div>

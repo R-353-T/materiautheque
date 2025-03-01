@@ -1,0 +1,53 @@
+<app-header></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="wrapper" *ngIf="enumerator$ | async as enumerator">
+    <header>
+      <h2>
+        {{ enumerator.name }}
+        <ion-badge color="light">#{{ enumerator.id }}</ion-badge>
+      </h2>
+      <ion-button
+        (click)="navigationService.goToEnumeratorEdit(enumerator.id)"
+        [disabled]="!permissionService.hasPermission(permissionService.PERMISSION.enumerator.update)"
+      >
+        Éditer
+      </ion-button>
+    </header>
+
+    <div class="flex flex-col gap-ios">
+      <h3>Description</h3>
+
+      <ion-text class="description">
+        {{ enumerator.description }}
+      </ion-text>
+
+      <h3>Valeurs</h3>
+
+      <div class="valueList">
+        @for(value of enumerator.valueList; track $index) {
+        <div class="value">
+          <p
+            class="
+              font-bold
+              flex
+              justify-center
+              items-center
+              text-ionDark
+              px-ios
+              rounded-ios
+              min-w-12
+              text-sm
+            "
+          >
+            {{ $index + 1 }}.
+          </p>
+          <p class="text-ionDark p-ios text-base">{{ value.value }}</p>
+        </div>
+        } @if(enumerator.valueList.length === 0) {
+        <p class="text-ionDark p-ios text-base">Aucune valeur.</p>
+        }
+      </div>
+    </div>
+  </div>
+</ion-content>

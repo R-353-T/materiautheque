@@ -1,0 +1,195 @@
+/****************************************************************/
+/****************************************************************/
+/* Ionic overrides                                              */
+/****************************************************************/
+/****************************************************************/
+
+.ios {
+    .ion-page > ion-content {
+        --padding-start: 14px;
+        --padding-end: 14px;
+        --padding-top: 14px;
+        --padding-bottom: 14px;
+    }
+
+    ion-button {
+        @apply m-0;
+        @apply uppercase font-bold tracking-wide drop-shadow
+            hover:drop-shadow-none;
+    }
+
+    ion-input {
+        --border-color: var(--ion-color-light-shade);
+        --border-width: 1px;
+    }
+
+    ion-searchbar {
+        @apply p-0;
+    }
+
+    ion-refresher,
+    ion-refresher-content,
+    ion-datetime {
+        @apply bg-white;
+    }
+
+    ion-toolbar {
+        --background: var(--ion-color-light-tint);
+    }
+
+    // ion-list ion-item h3 {
+    //     @apply font-normal text-lg tracking-normal;
+    // }
+}
+
+/****************************************************************/
+/****************************************************************/
+/* Mate                                                         */
+/****************************************************************/
+/****************************************************************/
+
+body {
+    @apply bg-white;
+}
+
+/*––––––––––––––––––––––––––––––*/
+/* Html Elements                */
+/*––––––––––––––––––––––––––––––*/
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    @apply font-bold;
+}
+
+h1 {
+    @apply text-4xl tracking-widest;
+}
+
+h2 {
+    @apply text-2xl tracking-wider;
+}
+
+h3 {
+    @apply text-xl tracking-wide;
+}
+
+h4 {
+    @apply text-lg tracking-normal;
+}
+
+h5 {
+    @apply text-base tracking-normal;
+}
+
+/*––––––––––––––––––––––––––––––*/
+/* Custom classes               */
+/*––––––––––––––––––––––––––––––*/
+
+h1.main {
+    @apply py-7;
+    @apply text-center;
+}
+
+.wrapper {
+    @apply flex flex-col max-w-3xl mx-auto;
+    @apply text-ionDark;
+
+    & > header {
+        @apply flex justify-between items-center flex-wrap gap-ios mb-7;
+    }
+
+    .row-wrapper {
+        @apply flex flex-wrap gap-ios;
+    }
+}
+
+.form {
+    @apply flex flex-col w-full gap-ios;
+
+    & > .f-error {
+        @apply p-2 border border-l-4;
+        @apply text-ionDanger border-ionDanger text-xs;
+    }
+}
+
+.mate-filter {
+    @apply px-ios rounded-ios drop-shadow-sm hover:drop-shadow-none p-ios
+    flex gap-ios items-center flex-wrap cursor-pointer w-full;
+
+    background-color: rgba(0,0,0, 0.07);
+}
+
+.mate-disabled {
+    @apply opacity-50;
+}
+
+ion-item.mate-selected {
+    @apply font-bold;
+
+    h3 {
+        @apply font-bold;
+    }
+}
+
+.i-error {
+    @apply text-ionDanger text-xs;
+    margin-top: 5px;
+}
+
+.i-info {
+    @apply text-sm text-gray-500 italic;
+    margin-top: 5px;
+}
+
+.c-input {
+    @apply w-full pb-4 border-b;
+    @apply border-ionLight-shade;
+
+    &.invalid {
+        @apply border-ionDanger-tint !important;
+    }
+}
+
+.description {
+    @apply text-ionDark bg-ionLight-tint p-ios rounded-ios text-base;
+}
+
+.backlog {
+    @apply flex flex-col gap-ios;
+    @apply text-sm;
+
+    markdown {
+        @apply flex flex-col gap-ios pb-ios;
+        @apply bg-ionLight-tint;
+
+        h2 {
+            @apply bg-ionDark-shade text-ionLight-tint p-ios;
+        }
+
+        ul {
+            @apply list-disc list-inside;
+
+            ul {
+                @apply ml-ios;
+                list-style-type: circle;
+
+                ul {
+                    @apply ml-7;
+                    list-style-type: square;
+                }
+            }
+        }
+
+        & > * {
+            @apply px-ios;
+        }
+
+        code {
+            @apply px-1;
+            @apply bg-ionLight-shade text-xs rounded;
+        }
+    }
+}

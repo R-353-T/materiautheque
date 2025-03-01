@@ -1,0 +1,78 @@
+<app-header></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="wrapper">
+    <h1 class="main">Modifier un champ</h1>
+
+    <form [formGroup]="form.formGroup" class="form" *ngIf="template() as t">
+      <div *ngIf="form.errorOf(form.formGroup)" class="f-error">
+        <p>{{ form.errorOf(form.formGroup) }}</p>
+      </div>
+
+      <ion-input
+        [formControl]="form.name"
+        type="text"
+        [label]="form.labelGroup.name"
+        [errorText]="form.errorOf(form.name)"
+      ></ion-input>
+
+      <ion-textarea
+        [formControl]="form.description"
+        type="text"
+        [label]="form.labelGroup.description"
+        [errorText]="form.errorOf(form.description)"
+      ></ion-textarea>
+
+      <app-select-group
+        [control]="form.groupId"
+        [preventRecursionId]="form.id.value"
+        [template]="t"
+        label="Groupe :"
+        [required]="true"
+      ></app-select-group>
+
+      <ion-toggle
+        [formControl]="form.isRequired"
+        class="border-b border-ionLight-shade mb-2 pb-ios"
+      >Est requis :</ion-toggle>
+
+      <ion-toggle
+        [formControl]="form.allowMultipleValues"
+        class="border-b border-ionLight-shade mb-2 pb-ios"
+      >Valeurs multiples :</ion-toggle>
+
+      <app-select-enumerator
+        [control]="form.enumeratorId"
+        label="Enumerateur :"
+      ></app-select-enumerator>
+
+      <app-select-type
+        [control]="form.typeId"
+        [label]="form.labelGroup.typeId"
+        [required]="true"
+        [only]="form.allowMultipleValues.value ? 'multiple' : undefined"
+        [exclude]="[10]"
+      ></app-select-type>
+
+      <app-select-unit
+        [control]="form.unitId"
+        [label]="form.labelGroup.unitId"
+      ></app-select-unit>
+
+      <div class="flex justify-between gap-ios">
+        <app-submit-button
+          [enabled]="form.formGroup.enabled"
+          (submit)="update()"
+          label="Modifier"
+        ></app-submit-button>
+
+        <div class="flex gap-ios">
+          <ion-button (click)="form.reset()" color="dark"
+          >Réinitialiser</ion-button>
+
+          <ion-button (click)="delete()" color="danger">Supprimer</ion-button>
+        </div>
+      </div>
+    </form>
+  </div>
+</ion-content>

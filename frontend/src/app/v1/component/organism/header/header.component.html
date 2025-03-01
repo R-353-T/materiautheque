@@ -1,0 +1,23 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start" *ngIf="navigationService.backTo$ | async as goBackTo">
+      <ion-button *ngIf="goBackTo !== undefined" (click)="goBackTo()" color="dark">
+        <ion-icon
+          slot="icon-only"
+          icon="arrow-back"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    
+    <ion-title>{{ headerService.title$ | async }}</ion-title>
+    
+    <ion-buttons slot="end">
+      <ion-menu-button auto-hide="true" menu="main" color="dark"></ion-menu-button>
+    </ion-buttons>
+
+    @if (headerService.isLoading$ | async) {
+      <ion-progress-bar type="indeterminate" color="dark"></ion-progress-bar>
+    }
+
+  </ion-toolbar>
+</ion-header>

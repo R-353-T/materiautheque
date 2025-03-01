@@ -1,0 +1,40 @@
+<app-header></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="wrapper">
+    <h1 class="main">Modifier une unité</h1>
+
+    <form [formGroup]="form.formGroup" class="form">
+      <div *ngIf="form.errorOf(form.formGroup)" class="f-error">
+        <p>{{ form.errorOf(form.formGroup) }}</p>
+      </div>
+
+      <ion-input
+        [formControl]="form.name"
+        type="text"
+        [label]="form.labelGroup.name"
+        [errorText]="form.errorOf(form.name)"
+      ></ion-input>
+
+      <app-input-image
+        [(file)]="form.fileValue"
+        infoText="Seuls les fichiers .png, .jpg et .jpeg de moins de 10 mégaoctets sont acceptés"
+        [errorText]="form.errorOf(form.file)"
+      ></app-input-image>
+
+      <div class="flex justify-between gap-ios">
+        <app-submit-button
+          [enabled]="form.formGroup.enabled"
+          (submit)="update()"
+          label="Modifier"
+        ></app-submit-button>
+
+        <div class="flex gap-ios" *ngIf="form.formGroup.enabled">
+          <ion-button (click)="form.reset()" color="dark"
+          >Réinitialiser</ion-button>
+          <ion-button (click)="delete()" color="danger">Supprimer</ion-button>
+        </div>
+      </div>
+    </form>
+  </div>
+</ion-content>

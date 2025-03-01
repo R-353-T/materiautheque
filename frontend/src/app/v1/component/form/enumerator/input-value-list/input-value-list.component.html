@@ -1,0 +1,73 @@
+<div class="flex flex-col gap-ios">
+  <h2>{{ form.labelGroup.valueList }}</h2>
+
+  <div>
+    <ion-button fill="outline" (click)="form.addValue()">
+      Ajouter une valeur
+    </ion-button>
+  </div>
+
+  @for (control of this.form.valueList.controls; track $index) {
+    <div class="flex flex-col border border-ionLight-shade rounded-ios p-ios">
+
+      @if(typeService.isTypeIsTextInput(form.typeId.value)) {
+        <ion-input
+          [formControl]="control"
+          type="text"
+          [errorText]="form.errorOf(control)"
+        ></ion-input>
+      } @else if (typeService.isTypeIsNumberInput(form.typeId.value)) {
+        <ion-input
+          [formControl]="control"
+          type="number"
+          [errorText]="form.errorOf(control)"
+        ></ion-input>
+      } @else if (typeService.isTypeIsTextArea(form.typeId.value)) {
+        <app-input-textarea [control]="control" [errorText]="form.errorOf(control)"></app-input-textarea>
+      } @else if (typeService.isTypeIsDateInput(form.typeId.value)) {
+        <app-input-date [control]="control" [errorText]="form.errorOf(control)"></app-input-date>
+      } @else {
+        <p>Something went wrong... Oops...</p>
+      }
+
+
+      <div class="flex justify-between">
+        <div class="flex">
+          @if ($index > 0) {
+            <ion-button
+              fill="clear"
+              size="small"
+              (click)="form.moveValueUp($index)"
+            >
+              <ion-icon name="arrow-up"></ion-icon>
+            </ion-button>
+          }
+
+          @if ($index < this.form.valueList.length - 1) {
+            <ion-button
+              fill="clear"
+              size="small"
+              (click)="form.moveValueDown($index)"
+            >
+              <ion-icon name="arrow-down"></ion-icon>
+            </ion-button>
+          }
+        </div>
+
+        <ion-button
+          color="danger"
+          size="small"
+          fill="clear"
+          (click)="form.removeValueAt($index)"
+        >
+          Supprimer
+        </ion-button>
+      </div>
+    </div>
+  }
+  <div>
+    <ion-button fill="outline" (click)="form.addValue()">
+      Ajouter une valeur
+    </ion-button>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+<ion-content [fullscreen]="true">
+  <div class="wrapper">
+    <h1 class="main">Page de connexion</h1>
+
+    <form [formGroup]="form.formGroup" class="form">
+      <div *ngIf="form.errorOf(form.formGroup)" class="f-error">
+        <p>{{ form.errorOf(form.formGroup) }}</p>
+      </div>
+
+      <ion-input
+        [label]="form.labelGroup.username"
+        [formControl]="form.username"
+        type="text"
+        [errorText]="form.errorOf(form.username)"
+      ></ion-input>
+
+      <ion-input
+        [label]="form.labelGroup.password"
+        [formControl]="form.password"
+        type="password"
+        [errorText]="form.errorOf(form.password)"
+      ></ion-input>
+
+      <app-submit-button
+        label="Se connecter"
+        [enabled]="form.formGroup.enabled"
+        (submit)="login()"
+      ></app-submit-button>
+    </form>
+  </div>
+</ion-content>

@@ -114,7 +114,6 @@ class FormRepository extends Repository
             : false;
     }
 
-
     public function deleteById(int $id): bool|WP_Error
     {
         try {

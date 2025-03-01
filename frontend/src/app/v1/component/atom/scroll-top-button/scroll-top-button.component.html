@@ -1,0 +1,10 @@
+
+<div *ngIf="this.scrollTop$ | async as scrollTop" class="fixed bottom-0 right-0">
+    @if(scrollTop > 125) {
+      <ion-fab class="fixed bottom-10 right-10">
+        <ion-fab-button (click)="this.scrollToTop()">
+          <ion-icon name="arrow-up"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    }
+</div>

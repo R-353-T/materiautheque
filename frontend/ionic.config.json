@@ -1,0 +1,7 @@
+{
+  "name": "app-materiautheque",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

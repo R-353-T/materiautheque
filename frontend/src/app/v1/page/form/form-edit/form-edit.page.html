@@ -1,0 +1,41 @@
+<!-- <app-header></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="wrapper" *ngIf="template && form">
+    <h1 class="px-ios pb-ios">Modifier un {{template.name}}</h1>
+
+    <form [formGroup]="form.fg" class="form">
+      <ion-input  [formControl]="nameControl"
+                  [errorText]="formService.controlErrorText(nameControl)"
+                  type="text"
+                  label="Nom :"></ion-input>
+
+      @for(group of form.groups; track $index) {
+        <app-form-group-input [group]="group"></app-form-group-input>
+      }
+
+      <div *ngIf="errorMessage" class="error italic">
+        <p>{{ errorMessage }}</p>
+      </div>
+      
+      <div class="flex justify-between gap-ios">
+        <div class="flex gap-ios">
+        @if(form.fg.enabled) {
+          <ion-button (click)="update()">Modifier l'unité</ion-button>
+        } @else {
+          <ion-spinner color="primary"></ion-spinner>
+        }
+        </div>
+
+        <div class="flex gap-ios">
+          <ion-button (click)="this.form.reset()" color="dark" *ngIf="form.fg.enabled">Réinitialiser</ion-button>
+        @if(form.fg.enabled) {
+          <ion-button (click)="delete()" color="danger">Supprimer</ion-button>
+        } @else {
+          <ion-spinner color="primary"></ion-spinner>
+        }
+        </div>
+      </div>
+    </form>
+  </div>
+</ion-content> -->

@@ -1,0 +1,51 @@
+<app-header></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="wrapper" *ngIf="unit$ | async as unit">
+    <header>
+      <h2>
+        {{ unit.name }} <ion-badge color="light">#{{ unit.id }}</ion-badge>
+      </h2>
+      <ion-button
+        (click)="navigationService.goToUnitEdit(unit.id)"
+        [disabled]="!permissionService.hasPermission(permissionService.PERMISSION.unit.update)"
+      >
+        Éditer
+      </ion-button>
+    </header>
+    <div class="flex flex-col gap-ios">
+      <h3>Description</h3>
+
+      <ion-text class="description">
+        {{ unit.description }}
+      </ion-text>
+
+      <h3>Valeurs</h3>
+
+      <div class="valueList">
+        @for(value of unit.valueList; track $index) {
+        <div class="value">
+          <p
+            class="
+              font-bold
+              flex
+              justify-center
+              items-center
+              text-ionDark
+              px-ios
+              rounded-ios
+              min-w-12
+              text-sm
+            "
+          >
+            {{ $index + 1 }}.
+          </p>
+          <p class="text-ionDark p-ios text-base">{{ value.value }}</p>
+        </div>
+        } @if(unit.valueList.length === 0) {
+        <p class="text-ionDark p-ios text-base">Aucune valeur.</p>
+        }
+      </div>
+    </div>
+  </div>
+</ion-content>

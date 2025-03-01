@@ -1,0 +1,64 @@
+<app-header></app-header>
+
+<ion-content [fullscreen]="true">
+  <div class="wrapper gap-ios" *ngIf="field$ | async as field">
+    <header *ngIf="group() as g">
+      <h2>
+        {{ field.name }} <ion-badge color="light">#{{ field.id }}</ion-badge>
+      </h2>
+      <ion-button
+        (click)="navigationService.goToTemplateFieldEdit(g.id, field.id)"
+      >
+        Éditer
+      </ion-button>
+    </header>
+
+    <div class="flex gap-2 flex-wrap">
+      <ion-badge
+        color="success"
+        class="p-ios uppercase font-bold drop-shadow-md"
+        *ngIf="enumerator() as e"
+      >
+        Enumerateur : {{ e.name }}
+      </ion-badge>
+
+      <ion-badge
+        color="primary"
+        class="p-ios uppercase font-bold drop-shadow-md"
+        *ngIf="type() as t"
+      >
+        Type : {{ t.name }}
+      </ion-badge>
+
+      <ion-badge
+        color="warning"
+        class="p-ios uppercase font-bold drop-shadow-md"
+        *ngIf="unit() as u"
+      >
+        Unité : {{ u.name }}
+      </ion-badge>
+
+      <ion-badge
+        color="danger"
+        class="p-ios uppercase font-bold drop-shadow-md"
+        *ngIf="field.isRequired"
+      >
+        Requis(e)
+      </ion-badge>
+
+      <ion-badge
+        color="tertiary"
+        class="p-ios uppercase font-bold drop-shadow-md"
+        *ngIf="field.allowMultipleValues"
+      >
+        Valeurs multiples
+      </ion-badge>
+    </div>
+
+    <h3>Description</h3>
+
+    <ion-text class="text-ionDark bg-ionLight-tint p-ios rounded-ios text-base">
+      {{ field.description }}
+    </ion-text>
+  </div>
+</ion-content>
