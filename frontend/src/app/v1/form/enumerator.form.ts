@@ -1,11 +1,8 @@
 import { FormArray, FormControl, FormGroup, Validators } from "@angular/forms";
 import { BaseForm } from "../class/baseform";
 import { IEnumerator } from "../interface/enumerator.interface";
-import { UrlValidator } from "src/app/v1/validators/url.validator";
-import { NumericValidator } from "src/app/v1/validators/numeric.validator";
-import { DateValidator } from "src/app/v1/validators/date.valitator";
-import { TypeEnum } from "../enum/Type";
 import { ValueDto } from "../model/value-dto";
+import { ValidatorService } from "../service/validator.service";
 
 export class EnumeratorForm extends BaseForm<IEnumerator> {
 
@@ -77,35 +74,10 @@ export class EnumeratorForm extends BaseForm<IEnumerator> {
     }
 
     valueValidators(typeId: number) {
-        const r = [Validators.required];
-
-        switch (typeId) {
-            case (TypeEnum.LABEL):
-                r.push(Validators.maxLength(255));
-                break;
-
-            case (TypeEnum.TEXT):
-                r.push(Validators.maxLength(65535));
-                break;
-
-            case (TypeEnum.URL):
-                r.push(Validators.maxLength(4096), UrlValidator());
-                break;
-
-            case (TypeEnum.NUMBER):
-                r.push(Validators.min(-9999999999), Validators.max(9999999999));
-                break;
-
-            case (TypeEnum.MONEY):
-                r.push(NumericValidator());
-                break;
-
-            case (TypeEnum.DATE):
-                r.push(DateValidator());
-                break;
-        }
-
-        return r;
+        return [
+            Validators.required,
+            ...ValidatorService.validatorByTypeId(typeId)
+        ];
     }
 
     addValue() {

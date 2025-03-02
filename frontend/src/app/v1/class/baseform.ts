@@ -1,4 +1,4 @@
-import { AbstractControl, FormGroup } from "@angular/forms";
+import { AbstractControl, FormArray, FormControl, FormGroup } from "@angular/forms";
 import { IBadRequestParam } from "../interface/api.interface";
 
 export abstract class BaseForm<T> {
@@ -13,7 +13,7 @@ export abstract class BaseForm<T> {
         invalidUrl: 'Ceci n\'est pas une URL valide (http, https ou ftp)',
         invalidBoolean: 'Le type de la valeur est incorrect',
         invalidNumber: 'La valeur du champ doit être un nombre réel',
-        invalidDecimalFormat: 'La valeur du champ est incorrecte (-9,999,999,999.999999 à 9,999,999,999.999999)',
+        invalidDecimalFormat: 'La valeur du champ ne peut contenir que six décimales et quinze chiffres maximum',
         invalidDateFormat: 'Le format de la date est incorrect',
         emptyString: 'La valeur du champ est obligatoire (autre que des espaces)',
         max: 'La valeur du champ est trop grande',
@@ -35,14 +35,17 @@ export abstract class BaseForm<T> {
         let result: boolean|string = false;
 
         if(c.errors !== null && (c.dirty || c.touched) && c.invalid) {
+
             for(const key in c.errors) {
                 result = c.errors[key];
 
-                if(result === true) {
+                if(result === true || typeof result === "object" ) {
                     result = this.errors[key];
                 }
             }
         }
+
+        console.log(result);
 
         return result;
     }
@@ -75,30 +78,6 @@ export abstract class BaseForm<T> {
         }
     }
 
-    applyCustomErrors(errors: { [key: string]: any }) {
-        console.log("APPLY ERRORS", errors);
-        for(const key in errors) {
-
-            console.log("KEY >> " + key);
-            if(key === "GLOBAL") {
-                console.log("GLOBAL");
-                this.formGroup.setErrors({ badRequest: errors[key] });
-            }
-
-            if(typeof errors[key] === "string") {
-                this.formGroup.get(key)?.setErrors({ badRequest: errors[key] });
-            }
-
-            if(typeof errors[key] === "object") {
-                for(const subKey in errors[key]) {
-                    if(subKey in this.errors) {
-                        this.formGroup.get(key)?.setErrors({ subKey: this.errors[subKey] });
-                    }
-                }
-            }
-        }
-    }
-
     valid() {
         this.formGroup.markAllAsTouched();
         this.formGroup.setErrors(null);
@@ -120,7 +99,18 @@ export abstract class BaseForm<T> {
 
     debugControls() {
         for(const key in this.formGroup.controls) {
-            console.log(key, this.formGroup.controls[key].valid);
+
+            if(this.formGroup.controls[key] instanceof FormControl) {
+                if(this.formGroup.controls[key].invalid) {
+                    console.warn(key, this.formGroup.controls[key].errors);
+                }
+            } else if(this.formGroup.controls[key] instanceof FormArray) {
+                for(const subKey in this.formGroup.controls[key].controls) {
+                    if(this.formGroup.controls[key].controls[subKey].invalid) {
+                        console.warn(key, subKey, this.formGroup.controls[key].controls[subKey].errors);
+                    }
+                }
+            }
         }
     }
 
