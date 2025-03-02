@@ -45,7 +45,7 @@ function mate_sanitize_float(mixed $v): int|float|false
         return false;
     }
 
-    $v = filter_var($v, FILTER_SANITIZE_NUMBER_FLOAT);
+    $v = filter_var($v, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     $v = filter_var($v, FILTER_VALIDATE_FLOAT);
     return $v !== false ? $v : false;
 }

@@ -171,10 +171,10 @@ class TypeValidator extends Validator
             $int = mate_sanitize_int($value);
             $float = mate_sanitize_float($value);
 
-            if ($int !== false) {
-                $value = $int;
-            } elseif ($float !== false) {
+            if ($float !== false) {
                 $value = $float;
+            } elseif ($int !== false) {
+                $value = $int;
             } else {
                 $value = SchemaError::incorrectType($paramName, "float");
             }
@@ -183,7 +183,7 @@ class TypeValidator extends Validator
         return $value;
     }
 
-    public function validMoney(mixed $value, string $paramName): int|float|string
+    public function validMoney(mixed $value, string $paramName): string | array
     {
         $err = $this->validNumber($value, $paramName);
 
