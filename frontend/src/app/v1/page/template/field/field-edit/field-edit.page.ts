@@ -14,7 +14,7 @@ import { FIELD_UPDATE_FORM } from "src/app/v1/form/field.form";
 import { AlertService } from "src/app/v1/service/alert.service";
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
 import { ToastService } from "src/app/v1/service/toast.service";
-import { BadRequestError } from "src/app/classes/errors/BadRequestError";
+import { BadRequestError } from "src/app/v1/error/BadRequestError";
 import {
   IonButton,
   IonContent,

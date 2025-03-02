@@ -8,7 +8,7 @@ import { IMAGE_CREATE_FORM } from "src/app/v1/form/image.form";
 import { SubmitButtonComponent } from "../../../component/form/submit-button/submit-button.component";
 import { IonContent, IonInput } from "@ionic/angular/standalone";
 import { ToastService } from "src/app/v1/service/toast.service";
-import { BadRequestError } from "src/app/classes/errors/BadRequestError";
+import { BadRequestError } from "src/app/v1/error/BadRequestError";
 import { InputImageComponent } from "../../../component/form/input-image/input-image.component";
 
 @Component({

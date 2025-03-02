@@ -7,7 +7,7 @@ import { NavigationService } from "src/app/v1/service/navigation/navigation.serv
 import { UNIT_CREATE_FORM } from "src/app/v1/form/unit.form";
 import { SubmitButtonComponent } from "../../../component/form/submit-button/submit-button.component";
 import { ToastService } from "src/app/v1/service/toast.service";
-import { BadRequestError } from "src/app/classes/errors/BadRequestError";
+import { BadRequestError } from "src/app/v1/error/BadRequestError";
 import { IonContent, IonInput, IonTextarea } from "@ionic/angular/standalone";
 import { InputValueListComponent } from "src/app/v1/component/form/unit/input-value-list/input-value-list.component";
 

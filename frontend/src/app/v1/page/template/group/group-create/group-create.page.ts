@@ -11,7 +11,7 @@ import { GROUP_CREATE_FORM } from "src/app/v1/form/group.form";
 import { IGroup } from "src/app/v1/interface/group.interface";
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
 import { ToastService } from "src/app/v1/service/toast.service";
-import { BadRequestError } from "src/app/classes/errors/BadRequestError";
+import { BadRequestError } from "src/app/v1/error/BadRequestError";
 import { IonContent, IonInput, IonTextarea } from "@ionic/angular/standalone";
 import { SelectGroupComponent } from "../../../../component/form/select-group/select-group.component";
 

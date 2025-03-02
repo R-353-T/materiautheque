@@ -6,8 +6,8 @@ import { AuthService } from "src/app/v1/service/api/auth/auth.service";
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { AUTH_LOGIN_FORM } from "src/app/v1/form/auth.form";
 import { SubmitButtonComponent } from "../../component/form/submit-button/submit-button.component";
-import { BadRequestError } from "src/app/classes/errors/BadRequestError";
-import { TooManyRequestError } from "src/app/classes/errors/TooManyRequestError";
+import { BadRequestError } from "src/app/v1/error/BadRequestError";
+import { TooManyRequestError } from "src/app/v1/error/TooManyRequestError";
 
 @Component({
   selector: "app-login",

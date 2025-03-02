@@ -17,7 +17,7 @@ import {
   IonInput,
   IonTextarea,
 } from "@ionic/angular/standalone";
-import { BadRequestError } from "src/app/classes/errors/BadRequestError";
+import { BadRequestError } from "src/app/v1/error/BadRequestError";
 import { InputValueListComponent } from "src/app/v1/component/form/unit/input-value-list/input-value-list.component";
 
 @Component({

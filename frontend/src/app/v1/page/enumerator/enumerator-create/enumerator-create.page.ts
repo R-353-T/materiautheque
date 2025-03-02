@@ -7,7 +7,7 @@ import { HeaderComponent } from "src/app/v1/component/organism/header/header.com
 import { ENUMERATOR_CREATE_FORM } from "src/app/v1/form/enumerator.form";
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
 import { ToastService } from "src/app/v1/service/toast.service";
-import { BadRequestError } from "src/app/classes/errors/BadRequestError";
+import { BadRequestError } from "src/app/v1/error/BadRequestError";
 import { IonContent, IonInput, IonTextarea } from "@ionic/angular/standalone";
 import { InputValueListComponent } from "src/app/v1/component/form/enumerator/input-value-list/input-value-list.component";
 import { SelectTypeComponent } from "../../../component/form/select-type/select-type.component";

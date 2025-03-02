@@ -19,7 +19,7 @@ import {
   IonInput,
   IonTextarea,
 } from "@ionic/angular/standalone";
-import { BadRequestError } from "src/app/classes/errors/BadRequestError";
+import { BadRequestError } from "src/app/v1/error/BadRequestError";
 import { SelectGroupComponent } from "../../../../component/form/select-group/select-group.component";
 
 @Component({

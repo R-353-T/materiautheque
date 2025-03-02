@@ -15,7 +15,7 @@ import { ActivatedRoute } from "@angular/router";
 import { take } from "rxjs";
 import { ITemplate } from "src/app/v1/interface/template.interface";
 import { TemplateService } from "src/app/v1/service/api/template.service";
-import { BadRequestError } from "src/app/classes/errors/BadRequestError";
+import { BadRequestError } from "src/app/v1/error/BadRequestError";
 import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
 

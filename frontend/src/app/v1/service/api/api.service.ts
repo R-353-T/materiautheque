@@ -1,8 +1,8 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, Observable, take, throwError } from 'rxjs';
-import { BadRequestError } from 'src/app/classes/errors/BadRequestError';
-import { LockTimeout } from 'src/app/classes/LockTimeout';
+import { BadRequestError } from 'src/app/v1/error/BadRequestError';
+import { LockTimeout } from 'src/app/v1/class/LockTimeout';
 import { HttpParameters } from 'src/app/v1/interface/api.interface';
 import { environment } from 'src/environments/environment';
 

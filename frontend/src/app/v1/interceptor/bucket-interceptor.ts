@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpInterceptorFn } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { catchError, throwError } from "rxjs";
-import { TooManyRequestError } from "src/app/classes/errors/TooManyRequestError";
+import { TooManyRequestError } from "src/app/v1/error/TooManyRequestError";
 import { ApiService } from "src/app/v1/service/api/api.service";
 import { environment } from "src/environments/environment";
 
