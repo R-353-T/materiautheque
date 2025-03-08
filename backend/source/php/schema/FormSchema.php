@@ -21,7 +21,7 @@ class FormSchema extends Schema
         $this->templateValidator = TemplateValidator::inject();
     }
 
-    public function create(WP_REST_Request $req, array $errors = []): array|WP_Error
+    public function create(WP_REST_Request $req, array $errors = [])
     {
         $name = $this->validator->validRequestName($req, $errors);
         $templateId = $this->templateValidator->validRequestId($req, $errors, "templateId");
@@ -38,7 +38,7 @@ class FormSchema extends Schema
         }
     }
 
-    public function update(WP_REST_Request $req, array $errors = []): array|WP_Error
+    public function update(WP_REST_Request $req, array $errors = [])
     {
         $id = $this->validator->validRequestId($req, $errors);
         $name = $this->validator->validRequestName($req, $errors);
@@ -68,7 +68,7 @@ class FormSchema extends Schema
         );
     }
 
-    public function get(WP_REST_Request $req, array $errors = []): FormModel|WP_Error
+    public function get(WP_REST_Request $req, array $errors = [])
     {
         $id = $this->validator->validRequestId($req, $errors);
 
@@ -81,7 +81,7 @@ class FormSchema extends Schema
         }
     }
 
-    public function delete(WP_REST_Request $req, array $errors = []): FormModel|WP_Error
+    public function delete(WP_REST_Request $req, array $errors = [])
     {
         $id = $this->validator->validRequestId($req, $errors);
 

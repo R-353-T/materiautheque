@@ -3,7 +3,13 @@
 namespace mate\controller;
 
 use mate\abstract\clazz\Controller;
+use mate\model\FieldModel;
+use mate\model\FormModel;
+use mate\model\FormValueModel;
+use mate\model\ValueDto;
+use mate\repository\FieldRepository;
 use mate\repository\FormRepository;
+use mate\repository\TypeRepository;
 use mate\schema\FormSchema;
 use mate\util\RestPermission;
 use mate\util\SqlSelectQueryOptions;
@@ -39,11 +45,13 @@ class FormController extends Controller
 
     private readonly FormSchema $schema;
     private readonly FormRepository $repository;
+    private readonly FieldRepository $fieldRepository;
 
     public function __construct()
     {
         $this->schema = FormSchema::inject();
         $this->repository = FormRepository::inject();
+        $this->fieldRepository = FieldRepository::inject();
     }
 
     public function create(WP_REST_Request $req)
@@ -54,7 +62,7 @@ class FormController extends Controller
             $model = $this->repository->insert($model);
 
             if (is_wp_error($model) === false) {
-                // $model->valueList = ValueDto::parseList($model->valueList);
+                $this->parseValueList($model);
                 return $this->ok($model);
             }
         }
@@ -70,7 +78,7 @@ class FormController extends Controller
             $model = $this->repository->update($model);
 
             if (is_wp_error($model) === false) {
-                // $model->valueList = ValueDto::parseList($model->valueList);
+                $this->parseValueList($model);
                 return $this->ok($model);
             }
         }
@@ -109,7 +117,7 @@ class FormController extends Controller
 
         if (is_wp_error($model) === false) {
             $model = $this->repository->selectById($model->id);
-            // $model->valueList = ValueDto::parseList($model->valueList);
+            $this->parseValueList($model);
             return $this->ok($model);
         }
 
@@ -126,5 +134,17 @@ class FormController extends Controller
         }
 
         return $model;
+    }
+
+    private function parseValueList(FormModel $model)
+    {
+        $model->valueList = array_map(function ($v) {
+            /** @var FieldModel */
+            $field = $this->fieldRepository->selectById($v->fieldId);
+            $r = ValueDto::parseTyped($field->typeId, $v);
+            $r->fieldId = $v->fieldId;
+            $r->unitValueId = $v->unitValueId;
+            return $r;
+        }, $model->valueList);
     }
 }

@@ -5,6 +5,7 @@ import { IResponse, IResponsePage } from 'src/app/v1/interface/api.interface';
 import { map } from 'rxjs';
 import { IForm } from 'src/app/v1/interface/form.interface';
 import { FormForm } from 'src/app/v1/form/form.form';
+import { Form } from '../../form/form';
 
 @Injectable({
   providedIn: 'root'
@@ -37,12 +38,14 @@ export class FormService {
       .pipe(map(response => response.data));
   }
 
-  create(form: FormForm) {
+  create(form: Form) {
     const body = {
-      name: form.name.value,
-      templateId: form.templateId.value,
-      valueList: form.parsedValueList
+      name: form.getTemplateSection().name.value,
+      templateId: form.getTemplateSection().templateId.value,
+      valueList: form.valueList
     };
+
+    console.log(body);
 
     return this.api
       .post<IResponse<IForm>>(this.ep.create, body)
@@ -54,7 +57,7 @@ export class FormService {
       id: form.id.value,
       name: form.name.value,
       templateId: form.templateId.value,
-      valueList: form.parsedValueList
+      valueList: [] // todo fix
     };
 
     return this.api

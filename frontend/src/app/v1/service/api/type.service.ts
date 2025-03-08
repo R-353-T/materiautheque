@@ -10,7 +10,6 @@ import { TypeEnum } from 'src/app/v1/enum/Type';
   providedIn: 'root'
 })
 export class TypeService {
-
   readonly typeList$: Observable<IType[]|undefined>;
   readonly loaded = signal<boolean>(false);
 
@@ -79,5 +78,9 @@ export class TypeService {
 
   isTypeIsDateInput(typeId: number) {
     return typeId === TypeEnum.DATE;
+  }
+
+  isTypsIsBoolean(typeId: number) {
+    return typeId === TypeEnum.BOOLEAN;
   }
 }

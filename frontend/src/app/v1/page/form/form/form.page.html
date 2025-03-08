@@ -1,44 +1,22 @@
-<!-- <app-header></app-header>
+<app-header></app-header>
 
 <ion-content [fullscreen]="true">
   <div class="wrapper" *ngIf="form$ | async as form">
-    <div class="item-title-wrapper">
-      <h2>{{ form.name }} <ion-badge color="light">#{{ form.id }}</ion-badge></h2>
+    <header>
+      <h2>
+        {{ form.name }} <ion-badge color="light">#{{ form.id }}</ion-badge>
+      </h2>
+    </header>
 
-      <div class="flex gap-ios">
-        <ion-button [disabled]="true" fill="outline">
-          <ion-icon name="share"></ion-icon>
-          <ion-label class="ml-ios">PDF</ion-label>
-        </ion-button>
-        <ion-button [disabled]="true" fill="outline">
-          <ion-icon name="share"></ion-icon>
-          <ion-label class="ml-ios">CSV</ion-label>
-        </ion-button>
-        <ion-button (click)="navigationService.goToFormEdit(form.templateId, form.id)"
-                    [disabled]="!permissionService.hasPermission(permissionService.PERMISSION.unit.update)">
-          Éditer
-        </ion-button>
-      </div>
-    </div>
-
+    <div class="flex flex-col gap-2">
     @for(value of form.valueList; track $index) {
-
-      @if(value.field) {
-        <div class="flex gap-1 flex-wrap">
-          <p>{{value.field.name}} :</p>
-        @if(value.field.typeId === type.URL) {
-          <a href="{{ value.value }}" target="_blank" class="text-ionPrimary underline">{{value.value}}</a>
-        }
-
-        @if(value.field.typeId === type.DATE) {
-          <p>{{ value.value | date:'dd/MM/yyyy' }}</p>          
-        }
-        </div>
-      }
-
-      <p class="text-gray-500 text-xs">DEBUG :: {{ value.value ?? "N/A" }}</p>
-
+      <div class="flex gap-2">
+        <div class="border border-black p-2 rounded">I : {{value.fieldId}}</div>
+        <div class="border border-black p-2 rounded">V : {{value.value}}</div>
+        <div class="border border-black p-2 rounded">U : {{value.unitValueId}}</div>
+      </div>
+      
     }
-
+    </div>
   </div>
-</ion-content> -->
+</ion-content>

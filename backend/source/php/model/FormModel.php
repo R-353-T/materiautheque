@@ -12,4 +12,7 @@ class FormModel extends Model
 
     /** @var FormValueModel[]|ValueDto[]|null */
     public ?array $valueList = null;
+
+    public ?string $createdAt = null;
+    public ?string $updatedAt = null;
 }

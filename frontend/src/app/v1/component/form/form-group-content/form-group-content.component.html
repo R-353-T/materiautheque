@@ -1,0 +1,12 @@
+<div *ngIf="fgroup" class="mt-8 flex flex-col gap-4">
+  @for (id of fgroup.fieldIdList; track $index) {
+    @if(fgroup.fieldGroup[id].allowMultipleValues) {
+      <app-form-group-multiple></app-form-group-multiple>
+    } @else {
+      <app-form-group-single
+        [control]="getControl(id)"
+        [field]="fgroup.fieldGroup[id]"
+      ></app-form-group-single>
+    }
+  }
+</div>

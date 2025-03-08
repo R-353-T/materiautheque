@@ -9,7 +9,26 @@
       [activeGroupId]="activeGroupId"
     ></app-form-group-summary>
 
-    <form class="form">
+    <form class="form" *ngIf="activeSection() as section">
+      @if(activeGroupId() === 0) {
+      <ion-input
+        [formControl]="form.getTemplateSection().name"
+        type="text"
+        class="mt-8 flex-col gap-4"
+        [label]="form.getTemplateSection().labelGroup.name"
+        [errorText]="section.errorOf(form.getTemplateSection().name)"
+      ></ion-input>
+      } @else {
+      <app-form-group-content
+        [fgroup]="form.getGroupSection(activeGroupId())"
+      ></app-form-group-content>
+      }
+
+      <app-submit-button
+        [enabled]="form.lock() === false"
+        (submit)="create()"
+        label="Ajouter"
+      ></app-submit-button>
     </form>
   </div>
 </ion-content>

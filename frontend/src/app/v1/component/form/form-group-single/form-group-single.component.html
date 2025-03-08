@@ -1,0 +1,35 @@
+@if(control && field) {
+  @if (typeService.isTypeIsTextInput(field.typeId)) {
+    <ion-input
+      [formControl]="control"
+      [label]="field.name + ' :'"
+      type="text"
+      [errorText]="form.errorOf(control)"
+    ></ion-input>
+  } @else if (typeService.isTypeIsNumberInput(field.typeId)) {
+    <ion-input
+      [formControl]="control"
+      [label]="field.name + ' :'"
+      type="number"
+      [errorText]="form.errorOf(control)"
+    ></ion-input>
+  } @else if (typeService.isTypsIsBoolean(field.typeId)) {
+    <app-input-boolean
+      [control]="control"
+      [label]="field.name"
+      [errorText]="form.errorOf(control)"></app-input-boolean>
+  } @else if (typeService.isTypeIsTextArea(field.typeId)) {
+    <app-input-textarea
+      [control]="control"
+      [label]="field.name + ' :'"
+      [errorText]="form.errorOf(control)"
+    ></app-input-textarea>
+  } @else if (typeService.isTypeIsDateInput(field.typeId)) {
+    <app-input-date
+      [control]="control"
+      [errorText]="form.errorOf(control)"
+    ></app-input-date>
+  } @else {
+    <p>Something went wrong... Oops...</p>
+  }
+}

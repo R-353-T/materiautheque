@@ -3,12 +3,14 @@
 namespace mate\validator;
 
 use mate\abstract\clazz\Validator;
+use mate\enumerator\Type;
 use mate\error\SchemaError;
 use mate\model\FieldModel;
 use mate\model\FormValueModel;
 use mate\repository\FieldRepository;
 use mate\repository\FormRepository;
 use mate\repository\FormValueRepository;
+use mate\repository\GroupRepository;
 use mate\repository\TypeRepository;
 use mate\repository\UnitRepository;
 use WP_REST_Request;
@@ -24,6 +26,7 @@ class FormValidator extends Validator
     private readonly FieldRepository $fieldRepository;
     private readonly TypeRepository $typeRepository;
     private readonly UnitRepository $unitRepository;
+    private readonly GroupRepository $groupRepository;
 
     public function __construct()
     {
@@ -37,6 +40,7 @@ class FormValidator extends Validator
         $this->fieldRepository = FieldRepository::inject();
         $this->typeRepository = TypeRepository::inject();
         $this->unitRepository = UnitRepository::inject();
+        $this->groupRepository = GroupRepository::inject();
     }
 
 
@@ -63,18 +67,19 @@ class FormValidator extends Validator
 
                 foreach ($dtoList as $dtoIndex => $dto) {
                     $model = new FormValueModel();
+                    $options = [
+                        "formId" => $formId,
+                        "index" => $dtoIndex,
+                        "templateId" => $templateId,
+                        "model" => $model,
+                        "fieldMap" => $fieldMap
+                    ];
 
                     $this->validDto(
                         $dto,
                         $errors,
                         $paramName,
-                        [
-                            "formId" => $formId,
-                            "index" => $dtoIndex,
-                            "templateId" => $templateId,
-                            "model" => $model,
-                            "fieldMap" => $fieldMap
-                        ]
+                        $options
                     );
 
                     $valueList[$dtoIndex] = $model;
@@ -118,9 +123,11 @@ class FormValidator extends Validator
         } elseif ($this->fieldValidator->validId($dto["fieldId"], $err, $paramName) === null) {
             $errors[] = $err[0];
         } else {
+            /** @var FieldModel */
             $field = $this->fieldRepository->selectById($dto["fieldId"]);
+            $group = $this->groupRepository->selectById($field->groupId);
 
-            if ($field->templateId !== $options["templateId"]) {
+            if ($group->templateId !== $options["templateId"]) {
                 $err = SchemaError::templateFieldMissMatch($paramName);
                 $err["index"] = $options["index"];
                 $err["property"] = "fieldId";
@@ -177,21 +184,25 @@ class FormValidator extends Validator
             $field = $this->fieldRepository->selectById($options["model"]->fieldId);
 
             if ($dto["value"] !== null) {
-                $value = $this->typeValidator->validValue(
-                    $field->typeId,
-                    $dto["value"],
-                    $paramName,
-                    [ "enumeratorId" => $field->enumeratorId ]
-                );
-
-                if (is_array($value)) {
-                    $value["index"] = $options["index"];
-                    $value["property"] = "value";
-                    $errors[] = $value;
+                if (is_string($dto["value"]) && trim($dto["value"]) === "") {
+                    $dto["value"] = null;
                 } else {
-                    $type = $this->typeRepository->selectById($field->typeId);
-                    $column = $type->column;
-                    $options["model"]->$column = $value;
+                    $value = $this->typeValidator->validValue(
+                        $field->typeId,
+                        $dto["value"],
+                        $paramName,
+                        [ "enumeratorId" => $field->enumeratorId ]
+                    );
+
+                    if (is_array($value)) {
+                        $value["index"] = $options["index"];
+                        $value["property"] = "value";
+                        $errors[] = $value;
+                    } else {
+                        $type = $this->typeRepository->selectById($field->typeId);
+                        $column = $type->column;
+                        $options["model"]->$column = $value;
+                    }
                 }
             }
         }
@@ -264,8 +275,12 @@ class FormValidator extends Validator
                     $type = $this->typeRepository->selectById($field->typeId);
                     $column = $type->column;
 
-                    if (isset($value->$column)) {
-                        $nnValueMap[$field->id] = true;
+                    if (isset($value->$column) && $value->$column !== null) {
+                        $t = [Type::LABEL, Type::TEXT, Type::MONEY];
+
+                        if (!in_array($field->typeId, $t) || strlen(trim($value->$column)) > 0) {
+                            $nnValueMap[$field->id] = true;
+                        }
                     }
                 }
             }

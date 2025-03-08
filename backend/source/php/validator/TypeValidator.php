@@ -178,6 +178,16 @@ class TypeValidator extends Validator
             } else {
                 $value = SchemaError::incorrectType($paramName, "float");
             }
+
+            if (is_array($value) === false) {
+                if ($value > 9999999999) {
+                    $value = SchemaError::maxNumber($paramName, 9999999999);
+                }
+
+                if ($value < -9999999999) {
+                    $value = SchemaError::minNumber($paramName, -9999999999);
+                }
+            }
         }
 
         return $value;
@@ -190,7 +200,7 @@ class TypeValidator extends Validator
         if (is_array($err)) {
             return $err;
         } else {
-            return filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT);
+            return filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         }
     }
 

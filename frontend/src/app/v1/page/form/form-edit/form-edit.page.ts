@@ -22,15 +22,10 @@ import { HeaderComponent } from 'src/app/v1/component/organism/header/header.com
   styleUrls: ['./form-edit.page.scss'],
   standalone: true,
   imports: [
-    IonContent,
-    IonInput,
-    IonButton,
-    IonSpinner,
     CommonModule,
     FormsModule,
     CommonModule,
     ReactiveFormsModule,
-    HeaderComponent,
   ]
 })
 export class FormEditPage implements OnInit {

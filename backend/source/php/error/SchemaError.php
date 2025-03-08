@@ -28,6 +28,24 @@ class SchemaError
         ];
     }
 
+    public static function minNumber(string $name, int $min)
+    {
+        return [
+            "name"  => $name,
+            "code"  => "min_number",
+            "min"   => $min
+        ];
+    }
+
+    public static function maxNumber(string $name, int $max)
+    {
+        return [
+            "name"  => $name,
+            "code"  => "max_number",
+            "max"   => $max
+        ];
+    }
+
     public static function tooLong(string $name, int $max)
     {
         return [

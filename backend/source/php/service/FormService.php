@@ -4,9 +4,6 @@ namespace mate\service;
 
 use DateTime;
 use mate\abstract\clazz\Service;
-use mate\enumerator\Type;
-use mate\model\FormModel;
-use mate\model\FormValueModel;
 use mate\repository\FieldRepository;
 use mate\repository\TemplateRepository;
 use mate\repository\TypeRepository;
@@ -24,7 +21,7 @@ class FormService extends Service
 
     public function getFieldHashMap(int $templateId)
     {
-        $template = $this->fieldRepository->selectByTemplate($templateId);
+        $template = $this->fieldRepository->selectFieldListByTemplateId($templateId);
 
         $result = [];
 

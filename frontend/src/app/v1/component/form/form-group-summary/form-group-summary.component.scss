@@ -1,5 +1,5 @@
 .mate-circle {
-    @apply w-3 h-3 bg-ionLight-shade rounded-full;
+    @apply w-3 h-3 bg-green-600 rounded-full duration-300;
 
     &.red {
         @apply bg-ionDanger;

@@ -1,14 +1,16 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
   IonButton,
-  IonBadge,
-  IonIcon,
-  IonLabel,
+  IonBadge
 } from '@ionic/angular/standalone';
 import { HeaderComponent } from 'src/app/v1/component/organism/header/header.component';
+import { IForm } from 'src/app/v1/interface/form.interface';
+import { map, Observable, take } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { NavigationService } from 'src/app/v1/service/navigation/navigation.service';
 
 @Component({
   selector: 'app-form',
@@ -17,36 +19,24 @@ import { HeaderComponent } from 'src/app/v1/component/organism/header/header.com
   standalone: true,
   imports: [
     IonContent,
-    IonButton,
-    IonBadge,
-    IonIcon,
-    IonLabel,
     CommonModule,
     FormsModule,
+    // IonButton,
+    IonBadge,
     HeaderComponent
   ]
 })
-export class FormPage implements OnInit {
+export class FormPage {
 
-  ngOnInit(): void { }
+  form$?: Observable<IForm>;
 
-  // public form$?: Observable<IFormModel>;
-  // public type = TYPE;
-  // public readonly navigationService = inject(NavigationService);
-  // public readonly permissionService = inject(PermissionService);
+  readonly navigationService = inject(NavigationService);
 
-  // private readonly route = inject(ActivatedRoute);
+  private readonly route = inject(ActivatedRoute);
 
-  // ngOnInit() {
-  //   this.form$ = this.route.data.pipe(map((data) => data['form'] as IFormModel));
-  // }
-
-  // ionViewWillEnter() {
-  //   this.form$?.pipe(take(1)).subscribe({
-  //     next: (form) => {
-  //       this.navigationService.backTo = this.navigationService.lastPage;
-  //     }
-  //   });
-  // }
+  ionViewWillEnter() {
+    this.form$ = this.route.data.pipe(map((data) => data['form'] as IForm));
+    this.navigationService.backTo = this.navigationService.lastPage;
+  }
 
 }

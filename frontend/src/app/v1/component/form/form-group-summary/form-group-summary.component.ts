@@ -1,5 +1,4 @@
-import { Component, computed, Input, signal, WritableSignal } from '@angular/core';
-import { FormForm } from 'src/app/v1/form/form.form';
+import { Component, computed, Input, OnDestroy, OnInit, signal, WritableSignal } from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -14,6 +13,8 @@ import {
   IonToolbar,
 } from "@ionic/angular/standalone";
 import { CommonModule } from '@angular/common';
+import { Form } from 'src/app/v1/form/form';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-form-group-summary',
@@ -35,32 +36,31 @@ import { CommonModule } from '@angular/common';
     CommonModule
   ]
 })
-export class FormGroupSummaryComponent {
+export class FormGroupSummaryComponent implements OnInit, OnDestroy {
 
   @Input()
-  form?: FormForm;
+  form?: Form;
 
   @Input()
   activeGroupId: WritableSignal<number> = signal(0);
 
   readonly active = computed(() => {
-    if(this.activeGroupId() === 0) {
-      return this.form?.originTemplate;
-    } else {
-      const fg = this.form?.groups[this.activeGroupId()];
-      return fg?.group;
-    }
+    return this.form?.getSection(this.activeGroupId());
   });
 
   readonly isActive = signal<boolean>(false);
-  readonly isValidActive = computed(() => {
-    if(this.activeGroupId() === 0) {
-      return this.form?.formGroup.valid;
-    } else {
-      const fg = this.form?.groups[this.activeGroupId()];
-      return fg?.form.formGroup.valid;
-    }
-  });
+
+  private intervalSubscription?: Subscription;
+
+  ngOnInit(): void {
+    this.intervalSubscription = interval(1500).subscribe(() => {
+      this.form?.validateAll();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.intervalSubscription?.unsubscribe();
+  }
 
   select(id: number) {
     this.activeGroupId.set(id);

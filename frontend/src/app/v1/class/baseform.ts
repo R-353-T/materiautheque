@@ -8,7 +8,7 @@ export abstract class BaseForm<T> {
     public labelGroup: any = {};
 
     public readonly errors: { [key: string]: string } = {
-        maxLength: 'La valeur du champ est trop longue',
+        maxlength: 'La valeur du champ est trop longue',
         invalidType: 'Le type de la valeur du champ est incorrect',
         invalidUrl: 'Ceci n\'est pas une URL valide (http, https ou ftp)',
         invalidBoolean: 'Le type de la valeur est incorrect',
@@ -44,8 +44,6 @@ export abstract class BaseForm<T> {
                 }
             }
         }
-
-        console.log(result);
 
         return result;
     }

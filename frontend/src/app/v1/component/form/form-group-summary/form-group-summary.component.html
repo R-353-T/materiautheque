@@ -7,8 +7,12 @@
       "
       (click)="isActive.set(true)"
     >
-      <div [class.red]="isValidActive() === false" class="mate-circle"></div>
-      <p>{{ active()?.name }}</p>
+      <div
+        [class.red]="form.formMapValidation[active()?.sectionId ?? 0] === false"
+        class="mate-circle ml-2"
+      >
+      </div>
+      <p>{{ active()?.sectionName }}</p>
       <ion-icon name="chevron-expand" class="ml-auto mr-ios"></ion-icon>
     </div>
   </div>
@@ -30,27 +34,20 @@
       </ion-header>
       <ion-content class="ion-padding">
         <ion-list>
-          <ion-item
-            button
-            lines="full"
-            (click)="select(0)"
-            [class.mate-selected]="0 === activeGroupId()"
-          >
-            <div class="mate-circle"></div>
-            <ion-label>
-              <h3>{{ this.form.originTemplate?.name }}</h3>
-            </ion-label>
-          </ion-item>
-          @for (group of form.groupsAsArray; track $index) {
+          @for (section of form.sections; track $index) {
             <ion-item
               button
               lines="full"
-              (click)="select(group.group.id)"
-              [class.mate-selected]="group.group.id === activeGroupId()"
+              (click)="select(section.sectionId)"
+              [class.mate-selected]="section.sectionId === activeGroupId()"
             >
-              <div class="mate-circle"></div>
+              <div
+                class="mate-circle"
+                [class.red]="form.formMapValidation[section.sectionId] === false"
+              >
+              </div>
               <ion-label>
-                <h3>{{ group.group.name }}</h3>
+                <h3>{{ section.sectionName }}</h3>
               </ion-label>
             </ion-item>
           }</ion-list>
