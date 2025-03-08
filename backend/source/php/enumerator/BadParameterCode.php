@@ -4,6 +4,8 @@ namespace mate\enumerator;
 
 class BadParameterCode
 {
+    // CODE
+
     public const REQUIRED = "required";
     public const INCORRECT = "incorrect";
     public const NOT_FOUND = "not_found";
@@ -23,11 +25,15 @@ class BadParameterCode
     public const FILE_NOT_SUPPORTED = "file_not_supported";
     public const FILE_TOO_LARGE = "file_too_large";
 
-    public const DATA_INCORRECT_INTEGER = ["TYPE" => "INTEGER"];
-    public const DATA_INCORRECT_STRING = ["TYPE" => "STRING"];
+    // DATA
 
-    public const DATA_INCORRECT_FILE = ["TYPE" => "FILE"];
+    public const DATA_INCORRECT_INTEGER = ["type" => "INTEGER"];
+    public const DATA_INCORRECT_STRING = ["type" => "STRING"];
+    public const DATA_INCORRECT_ARRAY = ["type" => "ARRAY"];
+
+    public const DATA_INCORRECT_FILE = ["type" => "FILE"];
 
 
-    public const DATA_STRING_MAX_NAME = ["MAX" => MATE_THEME_API_MAX_NAME_LENGTH];
+    public const DATA_STRING_MAX_NAME = ["max" => MATE_THEME_API_MAX_NAME_LENGTH];
+    public const DATA_STRING_MAX_DESCRIPTION = ["max" => MATE_THEME_API_MAX_DESCRIPTION_LENGTH];
 }

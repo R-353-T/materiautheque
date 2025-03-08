@@ -6,7 +6,7 @@ function mate_sanitize_string(mixed $v): string|false
         return false;
     }
 
-    return trim(htmlspecialchars($v, ENT_QUOTES, 'UTF-8'));
+    return trim(htmlspecialchars($v, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
 }
 
 function mate_sanitize_int(mixed $v): int|false

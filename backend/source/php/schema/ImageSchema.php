@@ -3,7 +3,6 @@
 namespace mate\schema;
 
 use mate\abstract\clazz\Schema;
-use mate\error\BadRequestBuilder;
 use mate\model\ImageModel;
 use mate\validator\ImageValidator;
 use WP_Error;
@@ -12,11 +11,10 @@ use WP_REST_Request;
 class ImageSchema extends Schema
 {
     private readonly ImageValidator $validator;
-    private readonly BadRequestBuilder $brb;
 
     public function __construct()
     {
-        $this->brb = new BadRequestBuilder();
+        parent::__construct();
         $this->validator = new ImageValidator($this->brb);
     }
 

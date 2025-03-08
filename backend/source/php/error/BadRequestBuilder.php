@@ -32,6 +32,24 @@ class BadRequestBuilder
         ];
     }
 
+    public function addIndexedError(
+        string $name,
+        int $index,
+        string $code,
+        array|null $data = null
+    ) {
+        if (isset($this->parameters[$name]) === false) {
+            $this->parameters[$name] = [];
+        }
+
+        $this->parameters[$name][] = [
+            "code" => $code,
+            "name" => $name,
+            "index" => $index,
+            "data" => $data
+        ];
+    }
+
     public function containErrors(): bool
     {
         return count($this->parameters) > 0;

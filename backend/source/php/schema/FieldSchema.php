@@ -27,7 +27,7 @@ class FieldSchema extends Schema
         $this->groupValidator = GroupValidator::inject();
         $this->typeValidator = TypeValidator::inject();
         $this->enumeratorValidator = EnumeratorValidator::inject();
-        $this->unitValidator = UnitValidator::inject();
+        // $this->unitValidator = UnitValidator::inject();
     }
 
     public function create(WP_REST_Request $req, array $errors = []): FieldModel | WP_Error
@@ -45,7 +45,7 @@ class FieldSchema extends Schema
             ["required" => false]
         );
 
-        $unitId = $this->unitValidator->validRequestId($req, $errors, "unitId", ["required" => false]);
+        // $unitId = $this->unitValidator->id($request->get_param("unitId"), $errors, "unitId", ["required" => false]);
         $allowMultipleValues = $this->validator->validRequestAllowMultipleValues($req, $errors);
 
         $this->validator->validRequestAllowMultipleValues($req, $errors);
@@ -62,7 +62,7 @@ class FieldSchema extends Schema
             $model->groupId = $groupId;
             $model->typeId = $typeId;
             $model->enumeratorId = $enumeratorId;
-            $model->unitId = $unitId;
+            // $model->unitId = $unitId;
             $model->allowMultipleValues = $allowMultipleValues;
             return $model;
         }
@@ -84,7 +84,7 @@ class FieldSchema extends Schema
             ["required" => false]
         );
 
-        $unitId = $this->unitValidator->validRequestId($req, $errors, "unitId", ["required" => false]);
+        // $unitId = $this->unitValidator->validRequestId($req, $errors, "unitId", ["required" => false]);
         $allowMultipleValues = $this->validator->validRequestAllowMultipleValues($req, $errors);
 
         $this->validator->validRequestAllowMultipleValues($req, $errors);
@@ -102,7 +102,7 @@ class FieldSchema extends Schema
             $model->groupId = $groupId;
             $model->typeId = $typeId;
             $model->enumeratorId = $enumeratorId;
-            $model->unitId = $unitId;
+            // $model->unitId = $unitId;
             $model->allowMultipleValues = $allowMultipleValues;
             return $model;
         }

@@ -3,7 +3,6 @@
 namespace mate\schema;
 
 use mate\abstract\clazz\Schema;
-use mate\error\WPErrorBuilder;
 use mate\model\UnitModel;
 use mate\validator\UnitValidator;
 use WP_REST_Request;
@@ -14,17 +13,18 @@ class UnitSchema extends Schema
 
     public function __construct()
     {
-        $this->validator = UnitValidator::inject();
+        parent::__construct();
+        $this->validator = new UnitValidator($this->brb);
     }
 
-    public function create(WP_REST_Request $req, array $errors = [])
+    public function create(WP_REST_Request $request)
     {
-        $name = $this->validator->validRequestName($req, $errors);
-        $description = $this->validator->validRequestDescription($req, $errors);
-        $valueList = $this->validator->validRequestValueList($req, $errors);
+        $name = $this->validator->name($request->get_param("name"));
+        $description = $this->validator->description($request->get_param("description"));
+        $valueList = $this->validator->valueList($request->get_param("valueList"));
 
-        if (count($errors) > 0) {
-            return WPErrorBuilder::badRequestError($errors);
+        if ($this->brb->containErrors()) {
+            return $this->brb->build();
         } else {
             $model = new UnitModel();
             $model->name = $name;
@@ -34,15 +34,15 @@ class UnitSchema extends Schema
         }
     }
 
-    public function update(WP_REST_Request $req, array $errors = [])
+    public function update(WP_REST_Request $request)
     {
-        $id = $this->validator->validRequestId($req, $errors);
-        $name = $this->validator->validRequestName($req, $errors);
-        $description = $this->validator->validRequestDescription($req, $errors);
-        $valueList = $this->validator->validRequestValueList($req, $errors);
+        $id = $this->validator->id($request->get_param("id"));
+        $name = $this->validator->name($request->get_param("name"), $id);
+        $description = $this->validator->description($request->get_param("description"));
+        $valueList = $this->validator->valueList($request->get_param("valueList"), $id);
 
-        if (count($errors) > 0) {
-            return WPErrorBuilder::badRequestError($errors);
+        if ($this->brb->containErrors()) {
+            return $this->brb->build();
         } else {
             $model = new UnitModel();
             $model->id = $id;
@@ -53,24 +53,21 @@ class UnitSchema extends Schema
         }
     }
 
-    public function list(WP_REST_Request $req, array $errors = [])
+    public function list(WP_REST_Request $request)
     {
-        return $this->returnData(
-            [
-                "search" => $this->validator->validSearch($req),
-                "index" => $this->validator->validPageIndex($req),
-                "size" => $this->validator->validPageSize($req)
-            ],
-            $errors
-        );
+        return [
+            "search" => $this->validator->search($request->get_param("search")),
+            "index" => $this->validator->paginationIndex($request->get_param("index")),
+            "size" => $this->validator->paginationSize($request->get_param("size")),
+        ];
     }
 
-    public function get(WP_REST_Request $req, array $errors = [])
+    public function get(WP_REST_Request $request)
     {
-        $id = $this->validator->validRequestId($req, $errors);
+        $id = $this->validator->id($request->get_param("id"));
 
-        if (count($errors) > 0) {
-            return WPErrorBuilder::badRequestError($errors);
+        if ($this->brb->containErrors()) {
+            return $this->brb->build();
         } else {
             $model = new UnitModel();
             $model->id = $id;
@@ -78,12 +75,12 @@ class UnitSchema extends Schema
         }
     }
 
-    public function delete(WP_REST_Request $req, array $errors = [])
+    public function delete(WP_REST_Request $request)
     {
-        $id = $this->validator->validRequestId($req, $errors);
+        $id = $this->validator->id($request->get_param("id"));
 
-        if (count($errors) > 0) {
-            return WPErrorBuilder::badRequestError($errors);
+        if ($this->brb->containErrors()) {
+            return $this->brb->build();
         } else {
             $model = new UnitModel();
             $model->id = $id;

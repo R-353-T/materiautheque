@@ -19,17 +19,22 @@ class Validator
 
     public function id(mixed $id, string $parameterName = "id", bool $required = true): int
     {
-        $output = 0;
-
         if ($id === null && $required === true) {
             $this->brb->addError($parameterName, BadParameterCode::REQUIRED);
-        } elseif (($output = mate_sanitize_int($id)) === false) {
-            $this->brb->addError($parameterName, BadParameterCode::INCORRECT, BadParameterCode::DATA_INCORRECT_INTEGER);
-        } elseif ($this->repository->selectById($output) === null) {
-            $this->brb->addError($parameterName, BadParameterCode::NOT_FOUND);
+            return 0;
         }
 
-        return $output;
+        if (($id = mate_sanitize_int($id)) === false) {
+            $this->brb->addError($parameterName, BadParameterCode::INCORRECT, BadParameterCode::DATA_INCORRECT_INTEGER);
+            return 0;
+        }
+
+        if ($this->repository->selectById($id) === null) {
+            $this->brb->addError($parameterName, BadParameterCode::NOT_FOUND);
+            return 0;
+        }
+
+        return $id;
     }
 
     public function search(mixed $search): ?string
@@ -54,9 +59,13 @@ class Validator
     {
         if (($size = mate_sanitize_int($size)) === false) {
             $size = MATE_THEME_API_DEFAULT_PAGE_SIZE;
-        } elseif ($size <= 0) {
+        }
+
+        if ($size <= 0) {
             $size = MATE_THEME_API_DEFAULT_PAGE_SIZE;
-        } elseif ($size > MATE_THEME_API_MAX_PAGE_SIZE) {
+        }
+
+        if ($size > MATE_THEME_API_MAX_PAGE_SIZE) {
             $size = MATE_THEME_API_MAX_PAGE_SIZE;
         }
 

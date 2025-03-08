@@ -46,9 +46,9 @@ class ImageController extends Controller
         $this->repository = ImageRepository::inject();
     }
 
-    public function create(WP_REST_Request $req)
+    public function create(WP_REST_Request $request)
     {
-        $model = $this->schema->create($req);
+        $model = $this->schema->create($request);
 
         if (is_wp_error($model) === false) {
             $model = $this->repository->insert($model);
@@ -61,9 +61,9 @@ class ImageController extends Controller
         return $model;
     }
 
-    public function update(WP_REST_Request $req)
+    public function update(WP_REST_Request $request)
     {
-        $model = $this->schema->update($req);
+        $model = $this->schema->update($request);
 
         if (is_wp_error($model) === false) {
             $model = $this->repository->update($model);
@@ -76,9 +76,9 @@ class ImageController extends Controller
         return $model;
     }
 
-    public function list(WP_REST_Request $req)
+    public function list(WP_REST_Request $request)
     {
-        $options = $this->schema->list($req);
+        $options = $this->schema->list($request);
 
         if (is_wp_error($options) === false) {
             $sqlOptions = new SqlSelectQueryOptions($options["index"], $options["size"]);
@@ -99,9 +99,9 @@ class ImageController extends Controller
         return $options;
     }
 
-    public function get(WP_REST_Request $req)
+    public function get(WP_REST_Request $request)
     {
-        $model = $this->schema->get($req);
+        $model = $this->schema->get($request);
 
         if (is_wp_error($model) === false) {
             $model = $this->repository->selectById($model->id);
@@ -111,9 +111,9 @@ class ImageController extends Controller
         return $model;
     }
 
-    public function delete(WP_REST_Request $req)
+    public function delete(WP_REST_Request $request)
     {
-        $model = $this->schema->delete($req);
+        $model = $this->schema->delete($request);
 
         if (is_wp_error($model) === false) {
             $deleted = $this->repository->deleteById($model->id);

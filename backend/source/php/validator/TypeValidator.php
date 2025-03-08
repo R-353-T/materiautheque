@@ -5,6 +5,7 @@ namespace mate\validator;
 use DateTime;
 use mate\abstract\clazz\Validator;
 use mate\enumerator\Type;
+use mate\error\BadRequestBuilder;
 use mate\error\SchemaError;
 use mate\model\TypeModel;
 use mate\repository\EnumeratorRepository;
@@ -236,7 +237,9 @@ class TypeValidator extends Validator
     public function validImage(mixed $value, string $paramName): int|array
     {
         $errors = [];
-        $value = $this->imageValidator->validId($value, $errors, $paramName);
+        // $value = $this->imageValidator->id($value, $errors, $paramName);
+
+        // TODO: TO FIX
 
         if (count($errors) > 0) {
             $value = $errors[0];
