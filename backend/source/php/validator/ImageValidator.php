@@ -2,7 +2,7 @@
 
 namespace mate\validator;
 
-use mate\enumerator\BadParameterCode;
+use mate\enumerator\BadParameterCode as BPC;
 use mate\error\BadRequestBuilder;
 use mate\repository\ImageRepository;
 
@@ -22,22 +22,22 @@ class ImageValidator extends Validator
     public function name(mixed $name, string $parameterName = "name"): ?string
     {
         if ($name === null) {
-            $this->brb->addError($parameterName, BadParameterCode::REQUIRED);
+            $this->brb->addError($parameterName, BPC::REQUIRED);
             return null;
         }
 
         if (($name = mate_sanitize_string($name)) === false) {
-            $this->brb->addError($parameterName, BadParameterCode::INCORRECT, BadParameterCode::DATA_INCORRECT_STRING);
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING);
             return null;
         }
 
         if (strlen($name) === 0) {
-            $this->brb->addError($parameterName, BadParameterCode::REQUIRED);
+            $this->brb->addError($parameterName, BPC::REQUIRED);
             return null;
         }
 
         if (strlen($name) > MATE_THEME_API_MAX_NAME_LENGTH) {
-            $this->brb->addError($parameterName, BadParameterCode::STRING_MAX, BadParameterCode::DATA_STRING_MAX_NAME);
+            $this->brb->addError($parameterName, BPC::STRING_MAX, BPC::DATA_STRING_MAX_NAME);
             return null;
         }
 
@@ -49,7 +49,7 @@ class ImageValidator extends Validator
         $parameterName = "file";
 
         if (isset($_FILES[$parameterName]) === false && $required === true) {
-            $this->brb->addError($parameterName, BadParameterCode::REQUIRED);
+            $this->brb->addError($parameterName, BPC::REQUIRED);
             return null;
         }
 
@@ -60,7 +60,7 @@ class ImageValidator extends Validator
             || isset($_FILES[$parameterName]["size"]) === false
             )
         ) {
-            $this->brb->addError($parameterName, BadParameterCode::INCORRECT, BadParameterCode::DATA_INCORRECT_FILE);
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_FILE);
             return null;
         }
 
@@ -68,12 +68,12 @@ class ImageValidator extends Validator
             isset(self::$MIME_LIST[$metadata["ext"]]) === false
             || $metadata["type"] !== self::$MIME_LIST[$metadata["ext"]]
         ) {
-            $this->brb->addError($parameterName, BadParameterCode::FILE_NOT_SUPPORTED);
+            $this->brb->addError($parameterName, BPC::FILE_NOT_SUPPORTED);
             return null;
         }
 
         if ($_FILES[$parameterName]["size"] > MATE_THEME_API_IMAGE_MAX_SIZE) {
-            $this->brb->addError($parameterName, BadParameterCode::FILE_TOO_LARGE);
+            $this->brb->addError($parameterName, BPC::FILE_TOO_LARGE);
             return null;
         }
 

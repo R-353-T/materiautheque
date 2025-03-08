@@ -185,7 +185,7 @@ class EnumeratorValidator extends Validator
             $this->brb->addIndexedError(
                 $parameterName,
                 $model->position,
-                BPC::NOT_FOUND,
+                BPC::NOT_RELATED,
                 ["name" => "id"]
             );
             return;

@@ -10,6 +10,7 @@ class BadParameterCode
     public const INCORRECT = "incorrect";
     public const NOT_FOUND = "not_found";
     public const UNAVAILABLE = "unavailable";
+    public const NOT_RELATED = "not_related";
 
     public const NUMBER_MIN = "number_min";
     public const NUMBER_MAX = "number_max";
@@ -35,4 +36,13 @@ class BadParameterCode
 
     public const DATA_STRING_MAX_NAME = ["max" => MATE_THEME_API_MAX_NAME_LENGTH];
     public const DATA_STRING_MAX_DESCRIPTION = ["max" => MATE_THEME_API_MAX_DESCRIPTION_LENGTH];
+
+    // GROUP
+
+    public const GROUP_CIRCULAR_REFERENCE = "circular_reference";
+
+
+    // TEMPLATE
+
+    public const TEMPLATE_MISSMATCH = "template_missmatch";
 }

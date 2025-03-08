@@ -16,21 +16,21 @@ class Validator
         $this->brb = $brb;
     }
 
-    public function id(mixed $id, bool $required = true, string $parameterName = "id"): int
+    public function id(mixed $id, bool $required = true, string $parameterName = "id"): ?int
     {
         if ($id === null && $required === true) {
             $this->brb->addError($parameterName, BadParameterCode::REQUIRED);
-            return 0;
+            return null;
         }
 
         if (($id = mate_sanitize_int($id)) === false) {
             $this->brb->addError($parameterName, BadParameterCode::INCORRECT, BadParameterCode::DATA_INCORRECT_INTEGER);
-            return 0;
+            return null;
         }
 
         if ($this->repository->selectById($id) === null) {
             $this->brb->addError($parameterName, BadParameterCode::NOT_FOUND);
-            return 0;
+            return null;
         }
 
         return $id;

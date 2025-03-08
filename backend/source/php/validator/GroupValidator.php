@@ -2,205 +2,191 @@
 
 namespace mate\validator;
 
-use mate\abstract\clazz\Validator;
-use mate\error\SchemaError;
+use mate\enumerator\BadParameterCode as BPC;
+use mate\error\BadRequestBuilder;
 use mate\model\FieldModel;
 use mate\model\GroupModel;
 use mate\repository\GroupRepository;
-use WP_REST_Request;
 
 class GroupValidator extends Validator
 {
-    private readonly GroupRepository $groupRepository;
-
-    public function __construct()
+    public function __construct(BadRequestBuilder $brb)
     {
-        $this->repository = GroupRepository::inject();
-        $this->groupRepository = GroupRepository::inject();
+        parent::__construct(GroupRepository::inject(), $brb);
     }
 
-    public function validRequestParentId(
-        WP_REST_Request $req,
-        array &$errors,
-        string $paramName = "parentId"
-    ): int|null {
-        $parentId = null;
+    public function name(mixed $name, string $parameterName = "name"): ?string
+    {
+        if ($name === null) {
+            $this->brb->addError($parameterName, BPC::REQUIRED);
+            return null;
+        }
 
-        if (
-            $this->validRequestId($req, $errors, $paramName, ["required" => false]) !== null
-            && $this->hasError($errors, "id", "templateId") === false
-        ) {
-            $id = $req->get_param("id");
-            $parentId = (int) $req->get_param($paramName);
-            $parent = $this->repository->selectById($parentId);
+        if (($name = mate_sanitize_string($name)) === false) {
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING);
+            return null;
+        }
 
-            if ($id !== null) {
-                $group = $this->repository->selectById($id);
+        if (strlen($name) === 0) {
+            $this->brb->addError($parameterName, BPC::REQUIRED);
+            return null;
+        }
 
-                if ($group->templateId !== $parent->templateId) {
-                    $errors[] = SchemaError::templateGroupMissmatch($paramName);
-                } elseif ($this->groupRepository->circularParentId($id, $parentId)) {
-                    $errors[] = SchemaError::templateParentCircular($paramName);
-                }
-            } else {
-                $templateId = (int) $req->get_param("templateId");
+        if (strlen($name) > MATE_THEME_API_MAX_NAME_LENGTH) {
+            $this->brb->addError($parameterName, BPC::STRING_MAX, BPC::DATA_STRING_MAX_NAME);
+            return null;
+        }
 
-                if ($templateId !== $parent->templateId) {
-                    $errors[] = SchemaError::templateGroupMissmatch($paramName);
-                }
+        return $name;
+    }
+
+    public function description(mixed $description): ?string
+    {
+        $parameterName = "description";
+
+        if ($description === null) {
+            $this->brb->addError($parameterName, BPC::REQUIRED);
+            return null;
+        }
+
+        if (($description = mate_sanitize_string($description)) === false) {
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING);
+            return null;
+        }
+
+        if (strlen($description) > MATE_THEME_API_MAX_DESCRIPTION_LENGTH) {
+            $this->brb->addError($parameterName, BPC::STRING_MAX, BPC::DATA_STRING_MAX_DESCRIPTION);
+            return null;
+        }
+
+        return $description;
+    }
+
+    public function parentId(mixed $parentId, ?int $id, ?int $templateId): ?int
+    {
+        if ($this->brb->hasError("id", "templateId")) {
+            return null;
+        }
+
+        if (($parentId = $this->id($parentId, false, "parentId")) !== null) {
+            if (
+                ($id === null
+                && ($parent = $this->repository->selectById($parentId)) !== null
+                && $parent->templateId !== $templateId)
+                ||
+                ($id !== null
+                && ($group = $this->repository->selectById($id)) !== null
+                && ($parent = $this->repository->selectById($parentId)) !== null
+                && $group->templateId !== $parent->templateId)
+            ) {
+                $this->brb->addError("parentId", BPC::TEMPLATE_MISSMATCH);
+                return null;
+            }
+
+            if ($id !== null && $this->repository->circularParentId($id, $parentId)) {
+                $this->brb->addError("parentId", BPC::GROUP_CIRCULAR_REFERENCE);
             }
         }
 
         return $parentId;
     }
 
-    public function validRequestGroupList(
-        WP_REST_Request $req,
-        array &$errors,
-        string $paramName = "groupList"
-    ): array {
-        $groupList = [];
-        $id = $req->get_param("id");
-        $dtoList = $req->get_param($paramName);
-
-        if ($this->hasError($errors, "id") === false) {
-            if ($dtoList === null) {
-                $errors[] = SchemaError::required($paramName);
-            } elseif (mate_sanitize_array($dtoList) === false) {
-                $errors[] = SchemaError::incorrectType($paramName, "array");
-            } else {
-                foreach ($dtoList as $dtoIndex => $dto) {
-                    $groupList[$dtoIndex] = $this->validGroupDto(
-                        $dto,
-                        $errors,
-                        $paramName,
-                        [
-                            "groupId" => $id,
-                            "index" => $dtoIndex
-                        ]
-                    );
-                }
-            }
+    public function groupList(mixed $groupList, ?int $id): ?array
+    {
+        if ($this->brb->hasError("id")) {
+            return null;
         }
 
-        return $groupList;
+        if ($groupList === null) {
+            return [];
+        }
+
+        if (mate_sanitize_array($groupList) === false) {
+            $this->brb->addError("groupList", BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY);
+            return null;
+        }
+
+        return array_map(
+            fn($index) => $this->groupDto($groupList[$index], $index, $id),
+            array_keys($groupList)
+        );
     }
 
-    private function validGroupDto(
-        mixed $dto,
-        array &$errors,
-        string $paramName,
-        array $options
-    ): GroupModel {
-        $model = new GroupModel();
-        $model->position = $options["index"];
-
-        if (mate_sanitize_array($dto) === false) {
-            $err = SchemaError::incorrectType($paramName, "array");
-            $err["index"] = $options["index"];
-            $errors[] = $err;
-            $model = null;
-        } else {
-            // valid - id
-
-            if (isset($dto["id"]) === false) {
-                $err = SchemaError::required($paramName);
-                $err["index"] = $options["index"];
-                $err["property"] = "id";
-                $errors[] = $err;
-                $model = null;
-            } elseif (mate_sanitize_int($dto["id"]) === false) {
-                $err = SchemaError::incorrectType($paramName, "integer");
-                $err["index"] = $options["index"];
-                $err["property"] = "id";
-                $errors[] = $err;
-                $model = null;
-            } elseif ($this->groupRepository->containsGroupId($options["groupId"], $dto["id"]) === false) {
-                $err = SchemaError::notForeignOf($paramName, $options["groupId"]);
-                $err["index"] = $options["index"];
-                $err["property"] = "id";
-                $errors[] = $err;
-                $model = null;
-            } else {
-                $model->id = $dto["id"];
-            }
+    public function fieldList(mixed $fieldList, ?int $id): ?array
+    {
+        if ($this->brb->hasError("id")) {
+            return null;
         }
 
+        if ($fieldList === null) {
+            return [];
+        }
+
+        if (mate_sanitize_array($fieldList) === false) {
+            $this->brb->addError("fieldList", BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY);
+            return null;
+        }
+
+        return array_map(
+            fn($index) => $this->fieldDto($fieldList[$index], $index, $id),
+            array_keys($fieldList)
+        );
+    }
+
+    private function groupDto(mixed $dto, int $index, ?int $parentId): ?GroupModel
+    {
+        $model = new GroupModel();
+        $model->position = $index;
+
+        if (mate_sanitize_array($dto) === false) {
+            $this->brb->addIndexedError("groupList", $index, BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY);
+            return null;
+        }
+
+        if (isset($dto["id"]) === false || $dto["id"] === null) {
+            $this->brb->addIndexedError("groupList", $index, BPC::REQUIRED, ["name" => "id"]);
+            return null;
+        }
+
+        if (($id = mate_sanitize_int($dto["id"])) === false) {
+            $this->brb->addIndexedError("groupList", $index, BPC::INCORRECT, ["name" => "id", "type" => "INTEGER"]);
+            return null;
+        }
+
+        if ($this->repository->containsGroupId($parentId, $id) === false) {
+            $this->brb->addIndexedError("groupList", $index, BPC::NOT_RELATED, ["name" => "id"]);
+            return null;
+        }
+
+        $model->id = $id;
         return $model;
     }
 
-    public function validRequestFieldList(
-        WP_REST_Request $req,
-        array &$errors,
-        string $paramName = "fieldList"
-    ): array {
-        $fieldList = [];
-        $id = $req->get_param("id");
-        $dtoList = $req->get_param($paramName);
-
-        if ($this->hasError($errors, "id") === false) {
-            if ($dtoList === null) {
-                $errors[] = SchemaError::required($paramName);
-            } elseif (mate_sanitize_array($dtoList) === false) {
-                $errors[] = SchemaError::incorrectType($paramName, "array");
-            } else {
-                foreach ($dtoList as $dtoIndex => $dto) {
-                    $fieldList[$dtoIndex] = $this->validFieldDto(
-                        $dto,
-                        $errors,
-                        $paramName,
-                        [
-                            "groupId" => $id,
-                            "index" => $dtoIndex
-                        ]
-                    );
-                }
-            }
-        }
-
-        return $fieldList;
-    }
-
-    private function validFieldDto(
-        mixed $dto,
-        array &$errors,
-        string $paramName,
-        array $options
-    ): FieldModel {
+    private function fieldDto(mixed $dto, int $index, ?int $groupId): ?FieldModel
+    {
         $model = new FieldModel();
-        $model->position = $options["index"];
+        $model->position = $index;
 
         if (mate_sanitize_array($dto) === false) {
-            $err = SchemaError::incorrectType($paramName, "array");
-            $err["index"] = $options["index"];
-            $errors[] = $err;
-            $model = null;
-        } else {
-            // valid - id
-
-            if (isset($dto["id"]) === false) {
-                $err = SchemaError::required($paramName);
-                $err["index"] = $options["index"];
-                $err["property"] = "id";
-                $errors[] = $err;
-                $model = null;
-            } elseif (mate_sanitize_int($dto["id"]) === false) {
-                $err = SchemaError::incorrectType($paramName, "integer");
-                $err["index"] = $options["index"];
-                $err["property"] = "id";
-                $errors[] = $err;
-                $model = null;
-            } elseif ($this->groupRepository->containsFieldId($options["groupId"], $dto["id"]) === false) {
-                $err = SchemaError::notForeignOf($paramName, $options["groupId"]);
-                $err["index"] = $options["index"];
-                $err["property"] = "id";
-                $errors[] = $err;
-                $model = null;
-            } else {
-                $model->id = $dto["id"];
-            }
+            $this->brb->addIndexedError("fieldList", $index, BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY);
+            return null;
         }
 
+        if (isset($dto["id"]) === false || $dto["id"] === null) {
+            $this->brb->addIndexedError("fieldList", $index, BPC::REQUIRED, ["name" => "id"]);
+        }
+
+        if (($id = mate_sanitize_int($dto["id"])) === false) {
+            $this->brb->addIndexedError("fieldList", $index, BPC::INCORRECT, ["name" => "id", "type" => "INTEGER"]);
+            return null;
+        }
+
+        if ($this->repository->containsFieldId($groupId, $id) === false) {
+            $this->brb->addIndexedError("fieldList", $index, BPC::NOT_RELATED, ["name" => "id"]);
+            return null;
+        }
+
+        $model->id = $id;
         return $model;
     }
 }

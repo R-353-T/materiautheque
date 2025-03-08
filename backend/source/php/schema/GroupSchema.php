@@ -3,7 +3,6 @@
 namespace mate\schema;
 
 use mate\abstract\clazz\Schema;
-use mate\error\WPErrorBuilder;
 use mate\model\GroupModel;
 use mate\validator\GroupValidator;
 use mate\validator\TemplateValidator;
@@ -17,89 +16,90 @@ class GroupSchema extends Schema
 
     public function __construct()
     {
-        $this->validator = GroupValidator::inject();
-        $this->templateValidator = TemplateValidator::inject();
+        parent::__construct();
+        $this->validator = new GroupValidator($this->brb);
+        $this->templateValidator = new TemplateValidator($this->brb);
     }
 
-    public function create(WP_REST_Request $req, array $errors = []): GroupModel|WP_Error
+    public function create(WP_REST_Request $request): GroupModel|WP_Error
     {
-        $name = $this->validator->validRequestName($req, $errors);
-        $description = $this->validator->validRequestDescription($req, $errors);
-        $templateId = $this->templateValidator->validRequestId($req, $errors, "templateId");
-        $parentId = $this->validator->validRequestParentId($req, $errors);
+        $name = $this->validator->name($request->get_param("name"));
+        $description = $this->validator->description($request->get_param("description"));
+        $templateId = $this->templateValidator->id($request->get_param("templateId"), true, "templateId");
+        $parentId = $this->validator->parentId($request->get_param("parentId"), null, $templateId);
 
-        if (count($errors) > 0) {
-            return WPErrorBuilder::badRequestError($errors);
-        } else {
-            $model = new GroupModel();
-            $model->name = $name;
-            $model->description = $description;
-            $model->templateId = $templateId;
-            $model->parentId = $parentId;
-            return $model;
+        if ($this->brb->containErrors()) {
+            return $this->brb->build();
         }
+
+        $model = new GroupModel();
+        $model->name = $name;
+        $model->description = $description;
+        $model->templateId = $templateId;
+        $model->parentId = $parentId;
+        return $model;
     }
 
-    public function update(WP_REST_Request $req, array $errors = []): GroupModel|WP_Error
+    public function update(WP_REST_Request $request): GroupModel|WP_Error
     {
-        $id = $this->validator->validRequestId($req, $errors);
-        $name = $this->validator->validRequestName($req, $errors);
-        $description = $this->validator->validRequestDescription($req, $errors);
-        $parentId = $this->validator->validRequestParentId($req, $errors);
-        $groupList = $this->validator->validRequestGroupList($req, $errors);
-        $fieldList = $this->validator->validRequestFieldList($req, $errors);
+        $id = $this->validator->id($request->get_param("id"));
+        $name = $this->validator->name($request->get_param("name"));
+        $description = $this->validator->description($request->get_param("description"));
+        $parentId = $this->validator->parentId($request->get_param("parentId"), $id, null);
+        $groupList = $this->validator->groupList($request->get_param("groupList"), $id);
+        $fieldList = $this->validator->fieldList($request->get_param("fieldList"), $id);
 
-        if (count($errors) > 0) {
-            return WPErrorBuilder::badRequestError($errors);
-        } else {
-            $model = new GroupModel();
-            $model->id = $id;
-            $model->name = $name;
-            $model->description = $description;
-            $model->parentId = $parentId;
-            $model->groupList = $groupList;
-            $model->fieldList = $fieldList;
-            return $model;
+        if ($this->brb->containErrors()) {
+            return $this->brb->build();
         }
+
+        $model = new GroupModel();
+        $model->id = $id;
+        $model->name = $name;
+        $model->description = $description;
+        $model->parentId = $parentId;
+        $model->groupList = $groupList;
+        $model->fieldList = $fieldList;
+        return $model;
     }
 
-    public function list(WP_REST_Request $req, array $errors = []): array|WP_Error
+    public function list(WP_REST_Request $request): array|WP_Error
     {
-        return $this->returnData(
-            [
-                "templateId"    => $this->templateValidator->validRequestId($req, $errors, "templateId"),
-                "parentId"      => $this->validator->validRequestId($req, $errors, "parentId", ["required" => false]),
-                "search"        => $this->validator->validSearch($req),
-                "index"         => $this->validator->validPageIndex($req),
-                "size"          => $this->validator->validPageSize($req)
-            ],
-            $errors
-        );
+        $templateId = $this->templateValidator->id($request->get_param("templateId"), true, "templateId");
+        $parentId = $this->validator->id($request->get_param("parentId"), false, "parentId");
+
+        return [
+            "templateId" => $templateId,
+            "parentId" => $parentId,
+            "search" => $this->validator->search($request->get_param("search")),
+            "index" => $this->validator->paginationIndex($request->get_param("index")),
+            "size" => $this->validator->paginationSize($request->get_param("size")),
+        ];
     }
 
-    public function get(WP_REST_Request $req, array $errors = []): GroupModel|WP_Error
+    public function get(WP_REST_Request $request): GroupModel|WP_Error
     {
-        $id = $this->validator->validRequestId($req, $errors);
+        $id = $this->validator->id($request->get_param("id"));
 
-        if (count($errors) > 0) {
-            return WPErrorBuilder::badRequestError($errors);
-        } else {
-            $model = new GroupModel();
-            $model->id = $id;
-            return $model;
+        if ($this->brb->containErrors()) {
+            return $this->brb->build();
         }
+
+        $model = new GroupModel();
+        $model->id = $id;
+        return $model;
     }
 
-    public function delete(WP_REST_Request $req, array $errors = []): GroupModel|WP_Error
+    public function delete(WP_REST_Request $request): GroupModel|WP_Error
     {
-        $id = $this->validator->validRequestId($req, $errors);
+        $id = $this->validator->id($request->get_param("id"));
 
-        if (count($errors) > 0) {
-            return WPErrorBuilder::badRequestError($errors);
-        } else {
-            $model = new GroupModel();
-            $model->id = $id;
-            return $model;
+        if ($this->brb->containErrors()) {
+            return $this->brb->build();
         }
+
+        $model = new GroupModel();
+        $model->id = $id;
+        return $model;
     }
 }
