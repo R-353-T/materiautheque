@@ -44,29 +44,37 @@ class FormValidator extends Validator
     }
 
 
+    /**
+     * @return FormValueModel[]|null
+     */
     public function validRequestValueList(
         WP_REST_Request $req,
         array &$errors,
         string $paramName = "valueList"
     ): array|null {
-        $valueList = [];
+        $formId = $req->get_param("id");
+        $dtoList = $req->get_param($paramName);
+
+        /** @var FormValueModel[] */
+        $output = [];
 
         if ($this->hasError($errors, "id", "templateId") === false) {
-            $dtoList = $req->get_param($paramName);
-            $formId = $req->get_param("id");
-            $templateId = $formId !== null
-            ? $this->formRepository->selectById($formId)->templateId
-            : $req->get_param("templateId");
+            if ($formId !== null) {
+                $templateId = $this->formRepository->selectById($formId)->templateId;
+            } else {
+                $templateId = $req->get_param("templateId");
+            }
 
             if ($dtoList === null) {
                 $errors[] = SchemaError::required($paramName);
-            } elseif (mate_sanitize_array($valueList) === false) {
+            } elseif (mate_sanitize_array($dtoList) === false) {
                 $errors[] = SchemaError::incorrectType($paramName, "array");
             } else {
                 $fieldMap = [];
 
                 foreach ($dtoList as $dtoIndex => $dto) {
                     $model = new FormValueModel();
+
                     $options = [
                         "formId" => $formId,
                         "index" => $dtoIndex,
@@ -82,14 +90,14 @@ class FormValidator extends Validator
                         $options
                     );
 
-                    $valueList[$dtoIndex] = $model;
+                    $output[$dtoIndex] = $model;
                 }
 
-                $this->validRequiredFields($req, $errors, $valueList);
+                $this->validRequiredFields($req, $errors, $output);
             }
         }
 
-        return $valueList;
+        return $output;
     }
 
     private function validDto(

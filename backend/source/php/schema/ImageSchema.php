@@ -3,7 +3,7 @@
 namespace mate\schema;
 
 use mate\abstract\clazz\Schema;
-use mate\error\WPErrorBuilder;
+use mate\error\BadRequestBuilder;
 use mate\model\ImageModel;
 use mate\validator\ImageValidator;
 use WP_Error;
@@ -12,19 +12,21 @@ use WP_REST_Request;
 class ImageSchema extends Schema
 {
     private readonly ImageValidator $validator;
+    private readonly BadRequestBuilder $brb;
 
     public function __construct()
     {
-        $this->validator = ImageValidator::inject();
+        $this->brb = new BadRequestBuilder();
+        $this->validator = new ImageValidator($this->brb);
     }
 
-    public function create(WP_REST_Request $req, array $errors = [])
+    public function create(WP_REST_Request $request)
     {
-        $name = $this->validator->validRequestName($req, $errors);
-        $file = $this->validator->validRequestFile($_FILES, $errors);
+        $name = $this->validator->name($request->get_param("name"));
+        $file = $this->validator->file();
 
-        if (count($errors) > 0) {
-            return WPErrorBuilder::badRequestError($errors);
+        if ($this->brb->containErrors()) {
+            return $this->brb->build();
         } else {
             $model = new ImageModel();
             $model->name = $name;
@@ -33,14 +35,14 @@ class ImageSchema extends Schema
         }
     }
 
-    public function update(WP_REST_Request $req, array $errors = [])
+    public function update(WP_REST_Request $request)
     {
-        $id = $this->validator->validRequestId($req, $errors);
-        $name = $this->validator->validRequestName($req, $errors);
-        $file = $this->validator->validRequestFile($_FILES, $errors, ["required" => false]);
+        $id = $this->validator->id($request->get_param("id"));
+        $name = $this->validator->name($request->get_param("name"));
+        $file = $this->validator->file(false);
 
-        if (count($errors) > 0) {
-            return WPErrorBuilder::badRequestError($errors);
+        if ($this->brb->containErrors()) {
+            return $this->brb->build();
         } else {
             $model = new ImageModel();
             $model->id = $id;
@@ -50,24 +52,21 @@ class ImageSchema extends Schema
         }
     }
 
-    public function list(WP_REST_Request $req, array $errors = []): array|WP_Error
+    public function list(WP_REST_Request $request): array|WP_Error
     {
-        return $this->returnData(
-            [
-                "search" => $this->validator->validSearch($req),
-                "index" => $this->validator->validPageIndex($req),
-                "size" => $this->validator->validPageSize($req)
-            ],
-            $errors
-        );
+        return [
+            "search" => $this->validator->search($request->get_param("search")),
+            "index" => $this->validator->paginationIndex($request->get_param("index")),
+            "size" => $this->validator->paginationSize($request->get_param("size")),
+        ];
     }
 
-    public function get(WP_REST_Request $req, array $errors = [])
+    public function get(WP_REST_Request $request)
     {
-        $id = $this->validator->validRequestId($req, $errors);
+        $id = $this->validator->id($request->get_param("id"));
 
-        if (count($errors) > 0) {
-            return WPErrorBuilder::badRequestError($errors);
+        if ($this->brb->containErrors()) {
+            return $this->brb->build();
         } else {
             $model = new ImageModel();
             $model->id = $id;
@@ -75,12 +74,12 @@ class ImageSchema extends Schema
         }
     }
 
-    public function delete(WP_REST_Request $req, array $errors = [])
+    public function delete(WP_REST_Request $request)
     {
-        $id = $this->validator->validRequestId($req, $errors);
+        $id = $this->validator->id($request->get_param("id"));
 
-        if (count($errors) > 0) {
-            return WPErrorBuilder::badRequestError($errors);
+        if ($this->brb->containErrors()) {
+            return $this->brb->build();
         } else {
             $model = new ImageModel();
             $model->id = $id;

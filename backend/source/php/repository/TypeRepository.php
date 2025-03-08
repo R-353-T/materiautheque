@@ -13,12 +13,14 @@ class TypeRepository extends Repository
 
     public function selectAll(?SqlSelectQueryOptions $options = null): array
     {
-        $r = parent::selectAll($options);
+        $options = new SqlSelectQueryOptions();
+        $options->orderBy("name", "ASC");
+        $typeList = parent::selectAll($options);
 
-        foreach ($r as $model) {
-            $this->cache->set($model->id, $model);
+        foreach ($typeList as $type) {
+            $this->cache->set($type->id, $type);
         }
 
-        return $r;
+        return $typeList;
     }
 }
