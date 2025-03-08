@@ -25,12 +25,12 @@ class ImageSchema extends Schema
 
         if ($this->brb->containErrors()) {
             return $this->brb->build();
-        } else {
-            $model = new ImageModel();
-            $model->name = $name;
-            $model->file = $file;
-            return $model;
         }
+
+        $model = new ImageModel();
+        $model->name = $name;
+        $model->file = $file;
+        return $model;
     }
 
     public function update(WP_REST_Request $request)
@@ -41,13 +41,13 @@ class ImageSchema extends Schema
 
         if ($this->brb->containErrors()) {
             return $this->brb->build();
-        } else {
-            $model = new ImageModel();
-            $model->id = $id;
-            $model->name = $name;
-            $model->file = $file;
-            return $model;
         }
+
+        $model = new ImageModel();
+        $model->id = $id;
+        $model->name = $name;
+        $model->file = $file;
+        return $model;
     }
 
     public function list(WP_REST_Request $request): array|WP_Error
@@ -65,11 +65,11 @@ class ImageSchema extends Schema
 
         if ($this->brb->containErrors()) {
             return $this->brb->build();
-        } else {
-            $model = new ImageModel();
-            $model->id = $id;
-            return $model;
         }
+
+        $model = new ImageModel();
+        $model->id = $id;
+        return $model;
     }
 
     public function delete(WP_REST_Request $request)
@@ -78,10 +78,10 @@ class ImageSchema extends Schema
 
         if ($this->brb->containErrors()) {
             return $this->brb->build();
-        } else {
-            $model = new ImageModel();
-            $model->id = $id;
-            return $model;
         }
+
+        $model = new ImageModel();
+        $model->id = $id;
+        return $model;
     }
 }

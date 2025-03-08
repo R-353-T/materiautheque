@@ -9,12 +9,16 @@ use mate\repository\UnitRepository;
 
 class UnitValidator extends Validator
 {
+    private readonly TypeValidator $typeValidator;
+
     public function __construct(BadRequestBuilder $brb)
     {
         parent::__construct(
             UnitRepository::inject(),
             $brb
         );
+
+        $this->typeValidator = new TypeValidator($this->brb);
     }
 
     public function name(mixed $name, ?int $unitId = null): ?string
@@ -49,8 +53,10 @@ class UnitValidator extends Validator
         return $name;
     }
 
-    public function description(mixed $description, string $parameterName = "description"): ?string
+    public function description(mixed $description): ?string
     {
+        $parameterName = "description";
+
         if ($description === null) {
             $this->brb->addError($parameterName, BPC::REQUIRED);
             return null;
@@ -69,8 +75,10 @@ class UnitValidator extends Validator
         return $description;
     }
 
-    public function valueList(mixed $valueList, ?int $unitId = null, string $parameterName = "valueList"): ?array
+    public function valueList(mixed $valueList, ?int $unitId = null): ?array
     {
+        $parameterName = "valueList";
+
         if ($this->brb->hasError("id")) {
             return null;
         }
@@ -111,7 +119,7 @@ class UnitValidator extends Validator
         $model->value = "";
         $parameterName = "valueList";
 
-        if (!isset($dto["value"]) || $dto["value"] === null) {
+        if (isset($dto["value"]) === false) {
             $this->brb->addIndexedError(
                 $parameterName,
                 $model->position,
@@ -121,43 +129,9 @@ class UnitValidator extends Validator
             return;
         }
 
-        if (($value = mate_sanitize_string($dto["value"])) === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $model->position,
-                BPC::INCORRECT,
-                [
-                    "name" => "value",
-                    "type" => "STRING"
-                ]
-            );
-            return;
+        if (($value = $this->typeValidator->LABEL($dto["value"], $model->position, $parameterName, true)) !== null) {
+            $model->value = $value;
         }
-
-        if (strlen($value) === 0) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $model->position,
-                BPC::REQUIRED,
-                ["name" => "value"]
-            );
-            return;
-        }
-
-        if (strlen($value) > MATE_THEME_API_MAX_NAME_LENGTH) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $model->position,
-                BPC::STRING_MAX,
-                [
-                    "name" => "value",
-                    "max" => MATE_THEME_API_MAX_NAME_LENGTH
-                ]
-            );
-            return;
-        }
-
-        $model->value = $value;
     }
 
     private function dtoId(array $dto, ?int $unitId = null, UnitValueModel $model): void

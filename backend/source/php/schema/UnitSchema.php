@@ -25,13 +25,13 @@ class UnitSchema extends Schema
 
         if ($this->brb->containErrors()) {
             return $this->brb->build();
-        } else {
-            $model = new UnitModel();
-            $model->name = $name;
-            $model->description = $description;
-            $model->valueList = $valueList;
-            return $model;
         }
+
+        $model = new UnitModel();
+        $model->name = $name;
+        $model->description = $description;
+        $model->valueList = $valueList;
+        return $model;
     }
 
     public function update(WP_REST_Request $request)
@@ -43,14 +43,14 @@ class UnitSchema extends Schema
 
         if ($this->brb->containErrors()) {
             return $this->brb->build();
-        } else {
-            $model = new UnitModel();
-            $model->id = $id;
-            $model->name = $name;
-            $model->description = $description;
-            $model->valueList = $valueList;
-            return $model;
         }
+
+        $model = new UnitModel();
+        $model->id = $id;
+        $model->name = $name;
+        $model->description = $description;
+        $model->valueList = $valueList;
+        return $model;
     }
 
     public function list(WP_REST_Request $request)
@@ -68,11 +68,11 @@ class UnitSchema extends Schema
 
         if ($this->brb->containErrors()) {
             return $this->brb->build();
-        } else {
-            $model = new UnitModel();
-            $model->id = $id;
-            return $model;
         }
+
+        $model = new UnitModel();
+        $model->id = $id;
+        return $model;
     }
 
     public function delete(WP_REST_Request $request)
@@ -81,10 +81,10 @@ class UnitSchema extends Schema
 
         if ($this->brb->containErrors()) {
             return $this->brb->build();
-        } else {
-            $model = new UnitModel();
-            $model->id = $id;
-            return $model;
         }
+
+        $model = new UnitModel();
+        $model->id = $id;
+        return $model;
     }
 }

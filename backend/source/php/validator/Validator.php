@@ -2,7 +2,6 @@
 
 namespace mate\validator;
 
-use mate\abstract\clazz\Service;
 use mate\enumerator\BadParameterCode;
 use mate\error\BadRequestBuilder;
 
@@ -17,7 +16,7 @@ class Validator
         $this->brb = $brb;
     }
 
-    public function id(mixed $id, string $parameterName = "id", bool $required = true): int
+    public function id(mixed $id, bool $required = true, string $parameterName = "id"): int
     {
         if ($id === null && $required === true) {
             $this->brb->addError($parameterName, BadParameterCode::REQUIRED);

@@ -2,6 +2,7 @@
 
 namespace mate\validator;
 
+use mate\enumerator\BadParameterCode as BPC;
 use DateTime;
 use mate\abstract\clazz\Validator;
 use mate\enumerator\Type;
@@ -18,8 +19,10 @@ class TypeValidator extends Validator
     private readonly EnumeratorRepository $enumeratorRepository;
 
     private readonly ImageValidator $imageValidator;
+    private readonly ?BadRequestBuilder $brb;
 
-    // todo move into DB
+
+    // TODO: move into DB
     private static array $UNITABLE = [
         Type::LABEL,
         Type::TEXT,
@@ -27,8 +30,9 @@ class TypeValidator extends Validator
         Type::MONEY
     ];
 
-    public function __construct()
+    public function __construct(?BadRequestBuilder $brb = null)
     {
+        $this->brb = $brb;
         $this->repository = TypeRepository::inject();
         $this->typeRepository = TypeRepository::inject();
         $this->enumeratorRepository = EnumeratorRepository::inject();
@@ -123,20 +127,6 @@ class TypeValidator extends Validator
                 return SchemaError::notImplemented();
         }
     }
-
-    public function validLabel(mixed $value, string $paramName): string|array
-    {
-        if ($value === null) {
-            $value = SchemaError::required($paramName);
-        } elseif (mate_sanitize_string($value) === false) {
-            $value = SchemaError::incorrectType($paramName, "string");
-        } elseif (strlen(trim($value)) > 255) {
-            $value = SchemaError::tooLong($paramName, 255);
-        }
-
-        return $value;
-    }
-
 
     public function validText(mixed $value, string $paramName): string|array
     {
@@ -271,6 +261,361 @@ class TypeValidator extends Validator
             $value = SchemaError::incorrectType($paramName, "number");
         } elseif ($this->enumeratorRepository->containsValueById($enumeratorId, $value) === false) {
             $value = SchemaError::notForeignOf($paramName, $enumeratorId);
+        }
+
+        return $value;
+    }
+
+    public function validLabel(mixed $value, string $paramName): string|array
+    {
+        if ($value === null) {
+            $value = SchemaError::required($paramName);
+        } elseif (mate_sanitize_string($value) === false) {
+            $value = SchemaError::incorrectType($paramName, "string");
+        } elseif (strlen(trim($value)) > 255) {
+            $value = SchemaError::tooLong($paramName, 255);
+        }
+
+        return $value;
+    }
+
+    public function MIXED(mixed $value, int $typeId, int $index, string $parameterName, bool $required = true): mixed
+    {
+        switch ($typeId) {
+            case Type::LABEL:
+                return $this->LABEL($value, $index, $parameterName, $required);
+
+            case Type::TEXT:
+                return $this->TEXT($value, $index, $parameterName, $required);
+
+            case Type::URL:
+                return $this->URL($value, $index, $parameterName, $required);
+
+            case Type::BOOLEAN:
+                // return $this->validBoolean($value, $parameterName);
+
+            case Type::NUMBER:
+                return $this->NUMBER($value, $index, $parameterName, $required);
+
+            case Type::MONEY:
+                return $this->MONEY($value, $index, $parameterName, $required);
+
+            case Type::DATE:
+                return $this->DATE($value, $index, $parameterName, $required);
+
+            case Type::IMAGE:
+                // return $this->validImage($value, $parameterName);
+
+            case Type::FORM:
+                // return $this->validForm($value, $parameterName);
+
+            case Type::ENUMERATOR:
+                // return $this->validEnumeration($value, $parameterName, $options["enumeratorId"]);
+
+            default:
+                return SchemaError::notImplemented();
+        }
+    }
+
+    public function LABEL(mixed $value, int $index, string $parameterName, bool $required): ?string
+    {
+        if ($value === null) {
+            if ($required) {
+                $this->brb->addIndexedError(
+                    $parameterName,
+                    $index,
+                    BPC::REQUIRED,
+                    ["name" => "value"]
+                );
+            }
+            return null;
+        }
+
+        if (($value = mate_sanitize_string($value)) === false) {
+            $this->brb->addIndexedError(
+                $parameterName,
+                $index,
+                BPC::INCORRECT,
+                ["name" => "value", "type" => "STRING"]
+            );
+            return null;
+        }
+
+        if (strlen($value) > MATE_THEME_API_MAX_NAME_LENGTH) {
+            $this->brb->addIndexedError(
+                $parameterName,
+                $index,
+                BPC::STRING_MAX,
+                [
+                    "name" => "value",
+                    "max" => MATE_THEME_API_MAX_NAME_LENGTH
+                ]
+            );
+            return null;
+        }
+
+        if (strlen($value) === 0 && $required) {
+            $this->brb->addIndexedError(
+                $parameterName,
+                $index,
+                BPC::REQUIRED,
+                ["name" => "value"]
+            );
+            return null;
+        }
+
+        return $value;
+    }
+
+    public function TEXT(mixed $value, int $index, string $parameterName, bool $required): ?string
+    {
+        if ($value === null) {
+            if ($required) {
+                $this->brb->addIndexedError(
+                    $parameterName,
+                    $index,
+                    BPC::REQUIRED,
+                    ["name" => "value"]
+                );
+            }
+            return null;
+        }
+
+        if (($value = mate_sanitize_string($value)) === false) {
+            $this->brb->addIndexedError(
+                $parameterName,
+                $index,
+                BPC::INCORRECT,
+                ["name" => "value", "type" => "STRING"]
+            );
+            return null;
+        }
+
+        if (strlen($value) > MATE_THEME_API_MAX_TEXT_LENGTH) {
+            $this->brb->addIndexedError(
+                $parameterName,
+                $index,
+                BPC::STRING_MAX,
+                [
+                    "name" => "value",
+                    "max" => MATE_THEME_API_MAX_TEXT_LENGTH
+                ]
+            );
+            return null;
+        }
+
+        if (strlen($value) === 0 && $required) {
+            $this->brb->addIndexedError(
+                $parameterName,
+                $index,
+                BPC::REQUIRED,
+                ["name" => "value"]
+            );
+            return null;
+        }
+
+        return $value;
+    }
+
+    public function URL(mixed $value, int $index, string $parameterName, bool $required): ?string
+    {
+        if ($value === null) {
+            if ($required) {
+                $this->brb->addIndexedError(
+                    $parameterName,
+                    $index,
+                    BPC::REQUIRED,
+                    ["name" => "value"]
+                );
+            }
+            return null;
+        }
+
+        if (($value = mate_sanitize_url($value)) === false) {
+            $this->brb->addIndexedError(
+                $parameterName,
+                $index,
+                BPC::URL_INVALID,
+                ["name" => "value"]
+            );
+            return null;
+        }
+
+        if (strlen($value) > MATE_THEME_API_MAX_URL_LENGTH) {
+            $this->brb->addIndexedError(
+                $parameterName,
+                $index,
+                BPC::STRING_MAX,
+                [
+                    "name" => "value",
+                    "max" => MATE_THEME_API_MAX_URL_LENGTH
+                ]
+            );
+            return null;
+        }
+
+        if (strlen($value) === 0 && $required) {
+            $this->brb->addIndexedError(
+                $parameterName,
+                $index,
+                BPC::REQUIRED,
+                ["name" => "value"]
+            );
+            return null;
+        }
+
+        return $value;
+    }
+
+    public function NUMBER(mixed $value, int $index, string $parameterName, bool $required): ?int
+    {
+        if ($value === null) {
+            if ($required) {
+                $this->brb->addIndexedError(
+                    $parameterName,
+                    $index,
+                    BPC::REQUIRED,
+                    ["name" => "value"]
+                );
+            }
+            return null;
+        }
+
+        $int_value = mate_sanitize_int($value);
+        $float_value = mate_sanitize_float($value);
+
+        if ($float_value !== false) {
+            $value = $float_value;
+        } elseif ($int_value !== false) {
+            $value = $int_value;
+        } else {
+            $value = false;
+        }
+
+        if ($value === false) {
+            $this->brb->addIndexedError(
+                $parameterName,
+                $index,
+                BPC::INCORRECT,
+                [
+                    "name" => "value",
+                    "type" => "NUMERIC"
+                ]
+            );
+            return null;
+        }
+
+        if ($value > MATE_THEME_API_MAX_NUMBER) {
+            $this->brb->addIndexedError(
+                $parameterName,
+                $index,
+                BPC::NUMBER_MAX,
+                [
+                    "name" => "value",
+                    "max" => MATE_THEME_API_MAX_NUMBER
+                ]
+            );
+            return null;
+        }
+
+        if ($value < MATE_THEME_API_MIN_NUMBER) {
+            $this->brb->addIndexedError(
+                $parameterName,
+                $index,
+                BPC::NUMBER_MIN,
+                [
+                    "name" => "value",
+                    "min" => MATE_THEME_API_MIN_NUMBER
+                ]
+            );
+            return null;
+        }
+
+        return $value;
+    }
+
+    public function MONEY(mixed $value, int $index, string $parameterName, bool $required): ?int
+    {
+        if ($value === null) {
+            if ($required) {
+                $this->brb->addIndexedError(
+                    $parameterName,
+                    $index,
+                    BPC::REQUIRED,
+                    ["name" => "value"]
+                );
+            }
+            return null;
+        }
+
+        $int_value = mate_sanitize_int($value);
+        $float_value = mate_sanitize_float($value);
+
+        if ($float_value !== false) {
+            $value = $float_value;
+        } elseif ($int_value !== false) {
+            $value = $int_value;
+        } else {
+            $value = false;
+        }
+
+        if ($value === false) {
+            $this->brb->addIndexedError(
+                $parameterName,
+                $index,
+                BPC::INCORRECT,
+                [
+                    "name" => "value",
+                    "type" => "NUMERIC"
+                ]
+            );
+            return null;
+        }
+
+        return $value;
+    }
+
+    public function DATE(mixed $value, int $index, string $parameterName, bool $required): ?string
+    {
+        if ($value === null) {
+            if ($required) {
+                $this->brb->addIndexedError(
+                    $parameterName,
+                    $index,
+                    BPC::REQUIRED,
+                    ["name" => "value"]
+                );
+            }
+            return null;
+        }
+
+        if (($value = mate_sanitize_string($value)) === false) {
+            $this->brb->addIndexedError(
+                $parameterName,
+                $index,
+                BPC::INCORRECT,
+                [
+                    "name" => "value",
+                    "type" => "DATE"
+                ]
+            );
+            return null;
+        }
+
+        try {
+            date_default_timezone_set(MATE_TIMEZONE);
+            DateTime::createFromFormat(MATE_DATE_FORMAT, $value);
+        } catch (Throwable $exception) {
+            $this->brb->addIndexedError(
+                $parameterName,
+                $index,
+                BPC::INCORRECT,
+                [
+                    "name" => "value",
+                    "type" => "DATE"
+                ]
+            );
+            return null;
         }
 
         return $value;
