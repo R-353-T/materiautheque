@@ -110,7 +110,7 @@ class EnumeratorValidator extends Validator
         return $typeId;
     }
 
-    public function valueList(mixed $valueList, ?int $enumeratorId = null): ?array
+    public function valueList(mixed $valueList, mixed $enumeratorId = null): ?array
     {
         $parameterName = "valueList";
 
@@ -134,7 +134,7 @@ class EnumeratorValidator extends Validator
         );
     }
 
-    private function valueDto(mixed $value, int $index, ?int $unitId = null): ?EnumeratorValueModel
+    private function valueDto(mixed $value, int $index, ?int $enumeratorId = null): ?EnumeratorValueModel
     {
         $model = new EnumeratorValueModel();
         $model->position = $index;
@@ -144,12 +144,12 @@ class EnumeratorValidator extends Validator
             return null;
         }
 
-        $this->dtoId($value, $unitId, $model);
+        $this->dtoId($value, $enumeratorId, $model);
         $this->dtoValue($value, $model);
         return $model;
     }
 
-    private function dtoId(array $dto, ?int $unitId = null, EnumeratorValueModel $model): void
+    private function dtoId(array $dto, ?int $enumeratorId = null, EnumeratorValueModel $model): void
     {
         $model->id = null;
         $parameterName = "valueList";
@@ -158,11 +158,11 @@ class EnumeratorValidator extends Validator
             return;
         }
 
-        if ($unitId === null) {
+        if ($enumeratorId === null) {
             $this->brb->addIndexedError(
                 $parameterName,
                 $model->position,
-                BPC::REQUIRED,
+                BPC::NOT_RELATED,
                 ["name" => "id"]
             );
             return;
@@ -181,7 +181,7 @@ class EnumeratorValidator extends Validator
             return;
         }
 
-        if ($this->repository->containsValueById($unitId, $id) === false) {
+        if ($this->repository->containsValueById($enumeratorId, $id) === false) {
             $this->brb->addIndexedError(
                 $parameterName,
                 $model->position,

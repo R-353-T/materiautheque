@@ -2,106 +2,129 @@
 
 namespace mate\validator;
 
-use mate\abstract\clazz\Validator;
+use mate\enumerator\BadParameterCode as BPC;
 use mate\enumerator\Type;
-use mate\error\SchemaError;
+use mate\error\BadRequestBuilder;
 use mate\repository\FieldRepository;
-use WP_REST_Request;
+use mate\repository\TypeRepository;
 
 class FieldValidator extends Validator
 {
     private readonly TypeValidator $typeValidator;
+    private readonly TypeRepository $typeRepository;
 
-    public function __construct()
+    public function __construct(BadRequestBuilder $brb)
     {
-        $this->repository = FieldRepository::inject();
-        $this->typeValidator = TypeValidator::inject();
+        parent::__construct(FieldRepository::inject(), $brb);
+        $this->typeValidator = new TypeValidator($this->brb);
+        $this->typeRepository = TypeRepository::inject();
     }
 
-    public function validRequestTypeEnumerator(
-        WP_REST_Request $req,
-        array &$errors,
-        string $paramName = "typeId"
-    ): bool|null {
-        $output = null;
+    public function name(mixed $name): ?string
+    {
+        $parameterName = "name";
 
-        if ($this->hasError($errors, $paramName, "enumeratorId") === false) {
-            $typeId = $req->get_param($paramName);
-            $enumeratorId = $req->get_param("enumeratorId");
-
-            if ($typeId === Type::ENUMERATOR && $enumeratorId === null) {
-                $errors[] = SchemaError::required("enumeratorId");
-            } elseif ($typeId !== Type::ENUMERATOR && $enumeratorId !== null) {
-                $errors[] = SchemaError::incorrectType("enumeratorId", "null");
-            } else {
-                $output = true;
-            }
+        if ($name === null) {
+            $this->brb->addError($parameterName, BPC::REQUIRED);
+            return null;
         }
 
-        return $output;
-    }
-
-    public function validRequestTypeWithUnit(
-        WP_REST_Request $req,
-        array &$errors,
-        string $paramName = "typeId"
-    ): bool|null {
-        $output = false;
-
-        if ($this->hasError($errors, $paramName, "unitId") === false) {
-            $typeId = $req->get_param($paramName);
-            $unitId = $req->get_param("unitId");
-
-            if ($unitId !== null) {
-                $typeId = $this->typeValidator->typeIsUnitable($typeId, "typeId");
-
-                if (is_array($typeId)) {
-                    $errors[] = $typeId;
-                    $unitId = null;
-                } else {
-                    $output = true;
-                }
-            }
+        if (($name = mate_sanitize_string($name)) === false) {
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING);
+            return null;
         }
 
-        return $output;
+        if (strlen($name) === 0) {
+            $this->brb->addError($parameterName, BPC::REQUIRED);
+            return null;
+        }
+
+        if (strlen($name) > MATE_THEME_API_MAX_NAME_LENGTH) {
+            $this->brb->addError($parameterName, BPC::STRING_MAX, BPC::DATA_STRING_MAX_NAME);
+            return null;
+        }
+
+        return $name;
     }
 
-    public function validRequestAllowMultipleValues(WP_REST_Request $req, array &$errors): bool|null
+    public function description(mixed $description): ?string
     {
-        $allowMultipleValues = $req->get_param("allowMultipleValues");
-        $allowMultipleValues = mate_sanitize_boolean($allowMultipleValues);
+        $parameterName = "description";
 
-        if ($this->hasError($errors, "typeId") === false) {
-            if ($allowMultipleValues === null) {
-                $errors[] = SchemaError::incorrectType("allowMultipleValues", "boolean");
-                $allowMultipleValues = null;
-            } elseif ($allowMultipleValues === true) {
-                $typeId = $this->typeValidator->typeIsMultiple($allowMultipleValues, "typeId");
+        if ($description === null) {
+            $this->brb->addError($parameterName, BPC::REQUIRED);
+            return null;
+        }
 
-                if (is_array($typeId)) {
-                    $errors[] = $typeId;
-                    $allowMultipleValues = null;
-                }
-            }
+        if (($description = mate_sanitize_string($description)) === false) {
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING);
+            return null;
+        }
+
+        if (strlen($description) > MATE_THEME_API_MAX_DESCRIPTION_LENGTH) {
+            $this->brb->addError($parameterName, BPC::STRING_MAX, BPC::DATA_STRING_MAX_DESCRIPTION);
+            return null;
+        }
+
+        return $description;
+    }
+
+    public function isRequired(mixed $isRequired): bool|null
+    {
+        if (($isRequired = mate_sanitize_boolean($isRequired)) === null) {
+            $this->brb->addError("isRequired", BPC::INCORRECT, BPC::DATA_INCORRECT_BOOLEAN);
+        }
+
+        return $isRequired;
+    }
+
+    public function allowMultipleValues(mixed $allowMultipleValues, mixed $typeId): bool|null
+    {
+        if ($this->brb->hasError("typeId")) {
+            return null;
+        }
+
+        if (($allowMultipleValues = mate_sanitize_boolean($allowMultipleValues)) === null) {
+            $this->brb->addError("allowMultipleValues", BPC::INCORRECT, BPC::DATA_INCORRECT_BOOLEAN);
+            return null;
+        }
+
+        if (
+            ($type = $this->typeRepository->selectById($typeId)) !== null
+            && $allowMultipleValues === true
+            && $type->allowMultipleValues === false
+        ) {
+            $this->brb->addError("typeId", BPC::TYPE_NOT_MULTIPLE);
+            return null;
         }
 
         return $allowMultipleValues;
     }
 
-    public function validRequestIsRequired(
-        WP_REST_Request $req,
-        array &$errors,
-        string $paramName = "isRequired"
-    ): bool|null {
-        $isRequired = $req->get_param($paramName);
-        $isRequired = mate_sanitize_boolean($isRequired);
-
-        if ($isRequired === null) {
-            $errors[] = SchemaError::incorrectType("isRequired", "boolean");
-            $isRequired = null;
+    public function typeWithEnumerator(mixed $typeId, mixed $enumeratorId): void
+    {
+        if ($this->brb->hasError("typeId", "enumeratorId")) {
+            return;
         }
 
-        return $isRequired;
+        if ($typeId === Type::ENUMERATOR && $enumeratorId === null) {
+            $this->brb->addError("enumeratorId", BPC::REQUIRED);
+        }
+
+        if ($typeId !== Type::ENUMERATOR && $enumeratorId !== null) {
+            $this->brb->addError("typeId", BPC::INCORRECT);
+            $this->brb->addError("enumeratorId", BPC::INCORRECT);
+        }
+    }
+
+    public function typeWithUnit(mixed $typeId, mixed $unitId): void
+    {
+        if ($this->brb->hasError("typeId", "unitId")) {
+            return;
+        }
+
+        if ($unitId !== null && Type::allowUnit($typeId) === false) {
+            $this->brb->addError("typeId", BPC::TYPE_NOT_UNIT);
+        }
     }
 }

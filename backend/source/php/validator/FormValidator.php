@@ -2,11 +2,11 @@
 
 namespace mate\validator;
 
-use mate\abstract\clazz\Validator;
+use mate\enumerator\BadParameterCode as BPC;
 use mate\enumerator\Type;
+use mate\error\BadRequestBuilder;
 use mate\error\SchemaError;
 use mate\model\FieldModel;
-use mate\model\FormValueModel;
 use mate\repository\FieldRepository;
 use mate\repository\FormRepository;
 use mate\repository\FormValueRepository;
@@ -18,167 +18,207 @@ use WP_REST_Request;
 class FormValidator extends Validator
 {
     private readonly TypeValidator $typeValidator;
-    private readonly FieldValidator $fieldValidator;
-
-    private readonly FormRepository $formRepository;
     private readonly FormValueRepository $formValueRepository;
-
     private readonly FieldRepository $fieldRepository;
     private readonly TypeRepository $typeRepository;
     private readonly UnitRepository $unitRepository;
     private readonly GroupRepository $groupRepository;
 
-    public function __construct()
+    public function __construct(BadRequestBuilder $brb)
     {
-        $this->repository = FormRepository::inject();
+        parent::__construct(FormRepository::inject(), $brb);
         $this->formValueRepository = FormValueRepository::inject();
-
-        $this->formRepository = FormRepository::inject();
-        $this->typeValidator = TypeValidator::inject();
-        $this->fieldValidator = FieldValidator::inject();
-
         $this->fieldRepository = FieldRepository::inject();
         $this->typeRepository = TypeRepository::inject();
         $this->unitRepository = UnitRepository::inject();
         $this->groupRepository = GroupRepository::inject();
+        $this->typeValidator = new TypeValidator($brb);
     }
 
+    public function name(mixed $name, ?int $unitId = null): ?string
+    {
+        $parameterName = "name";
 
-    /**
-     * @return FormValueModel[]|null
-     */
-    public function validRequestValueList(
-        WP_REST_Request $req,
-        array &$errors,
-        string $paramName = "valueList"
-    ): array|null {
-        $formId = $req->get_param("id");
-        $dtoList = $req->get_param($paramName);
-
-        /** @var FormValueModel[] */
-        $output = [];
-
-        if ($this->hasError($errors, "id", "templateId") === false) {
-            if ($formId !== null) {
-                $templateId = $this->formRepository->selectById($formId)->templateId;
-            } else {
-                $templateId = $req->get_param("templateId");
-            }
-
-            if ($dtoList === null) {
-                $errors[] = SchemaError::required($paramName);
-            } elseif (mate_sanitize_array($dtoList) === false) {
-                $errors[] = SchemaError::incorrectType($paramName, "array");
-            } else {
-                $fieldMap = [];
-
-                foreach ($dtoList as $dtoIndex => $dto) {
-                    $model = new FormValueModel();
-
-                    $options = [
-                        "formId" => $formId,
-                        "index" => $dtoIndex,
-                        "templateId" => $templateId,
-                        "model" => $model,
-                        "fieldMap" => $fieldMap
-                    ];
-
-                    $this->validDto(
-                        $dto,
-                        $errors,
-                        $paramName,
-                        $options
-                    );
-
-                    $output[$dtoIndex] = $model;
-                }
-
-                $this->validRequiredFields($req, $errors, $output);
-            }
+        if ($name === null) {
+            $this->brb->addError($parameterName, BPC::REQUIRED);
+            return null;
         }
 
-        return $output;
+        if (($name = mate_sanitize_string($name)) === false) {
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING);
+            return null;
+        }
+
+        if (strlen($name) === 0) {
+            $this->brb->addError($parameterName, BPC::REQUIRED);
+            return null;
+        }
+
+        if (strlen($name) > MATE_THEME_API_MAX_NAME_LENGTH) {
+            $this->brb->addError($parameterName, BPC::STRING_MAX, BPC::DATA_STRING_MAX_NAME);
+            return null;
+        }
+
+        if (($instance = $this->repository->selectByName($name)) !== null && $instance->id !== $unitId) {
+            $this->brb->addError($parameterName, BPC::UNAVAILABLE);
+            return null;
+        }
+
+        return $name;
     }
 
-    private function validDto(
-        mixed $dto,
-        array &$errors,
-        string $paramName,
-        array &$options
+    public function valueList(mixed $valueList, mixed $formId = null, mixed $templateId = null): array|null
+    {
+        $parameterName = "valueList";
+
+        if ($this->brb->hasError("id", "templateId")) {
+            return null;
+        }
+
+        if ($valueList === null) {
+            $this->brb->addError($parameterName, BPC::REQUIRED);
+            return null;
+        }
+
+        $templateId = ($formId !== null) ? $this->repository->selectById($formId)->templateId : $templateId;
+
+        if (mate_sanitize_array($valueList) === false) {
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY);
+            return null;
+        }
+
+        $fieldValueMap = [];
+
+        foreach ($valueList as $index => $value) {
+            $this->valueDto($value, $index, $formId, $templateId, $fieldValueMap);
+        }
+
+        $this->requiredFields($templateId, $fieldValueMap);
+
+        return $fieldValueMap;
+    }
+
+    private function valueDto(
+        mixed $value,
+        int $index,
+        ?int $formId,
+        int $templateId,
+        array &$fieldValueMap
     ): void {
-        if (mate_sanitize_array($dto) === false) {
-            $err = SchemaError::incorrectType($paramName, "array");
-            $err["index"] = $options["index"];
-            $errors[] = $err;
-        } else {
-            $this->validDtoFieldId($dto, $errors, $paramName, $options);
-            $this->validDtoId($dto, $errors, $paramName, $options);
-            $this->validDtoValue($dto, $errors, $paramName, $options);
-            $this->validDtoUnit($dto, $errors, $paramName, $options);
-            $this->validDtoNotMultiple($dto, $errors, $paramName, $options);
+        if (mate_sanitize_array($value) === false) {
+            $this->brb->addIndexedError("valueList", $index, BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY);
+            return;
         }
+
+        $field = $this->dtoField($value, $index, $templateId);
+
+        if ($field !== null) {
+            $id = $this->dtoId($value, $index, $formId, $field);
+        }
+
+        $this->validDtoValue($dto, $errors, $paramName, $options);
+        $this->validDtoUnit($dto, $errors, $paramName, $options);
+        $this->validDtoNotMultiple($dto, $errors, $paramName, $options);
     }
 
-    private function validDtoFieldId($dto, array &$errors, string $paramName, array &$options): void
+    private function dtoField(array $value, int $index, int $templateId): ?FieldModel
     {
-        $err = [];
-
-        if (isset($dto["fieldId"]) === false || $dto["fieldId"] === null) {
-            $err = SchemaError::required($paramName);
-            $err["index"] = $options["index"];
-            $err["property"] = "fieldId";
-            $errors[] = $err;
-        } elseif ($this->fieldValidator->validId($dto["fieldId"], $err, $paramName) === null) {
-            $errors[] = $err[0];
-        } else {
-            /** @var FieldModel */
-            $field = $this->fieldRepository->selectById($dto["fieldId"]);
-            $group = $this->groupRepository->selectById($field->groupId);
-
-            if ($group->templateId !== $options["templateId"]) {
-                $err = SchemaError::templateFieldMissMatch($paramName);
-                $err["index"] = $options["index"];
-                $err["property"] = "fieldId";
-                $errors[] = $err;
-            } else {
-                $options["model"]->fieldId = $dto["fieldId"];
-            }
+        if (isset($value["fieldId"]) === false || $value["fieldId"] === null) {
+            $this->brb->addIndexedError(
+                "valueList",
+                $index,
+                BPC::REQUIRED,
+                ["name" => "fieldId"]
+            );
+            return null;
         }
+
+        if (($fieldId = mate_sanitize_int($value["fieldId"])) === false) {
+            $this->brb->addIndexedError(
+                "valueList",
+                $index,
+                BPC::INCORRECT,
+                ["name" => "fieldId", "type" => "INTEGER"]
+            );
+            return null;
+        }
+
+        if (($field = $this->fieldRepository->selectById($fieldId)) === null) {
+            $this->brb->addIndexedError(
+                "valueList",
+                $index,
+                BPC::UNAVAILABLE,
+                ["name" => "fieldId", "fieldId" => $fieldId]
+            );
+            return null;
+        }
+
+        if ($field->templateId !== $templateId) {
+            $this->brb->addIndexedError(
+                "valueList",
+                $index,
+                BPC::NOT_RELATED,
+                ["name" => "fieldId", "fieldId" => $fieldId]
+            );
+            return null;
+        }
+
+        return $field;
     }
 
-    private function validDtoId(array $dto, array &$errors, string $paramName, array &$options): void
+    private function dtoId(array $value, int $index, ?int $formId, FieldModel $field): ?int
     {
-        if (isset($dto["id"]) !== false) {
-            if ($options["formId"] === null) {
-                $err = SchemaError::notForeignOf($paramName, "null");
-                $err["index"] = $options["index"];
-                $err["property"] = "id";
-                $errors[] = $err;
-            } elseif (mate_sanitize_int($dto["id"]) === false) {
-                $err = SchemaError::incorrectType($paramName, "integer");
-                $err["index"] = $options["index"];
-                $err["property"] = "id";
-                $errors[] = $err;
-            } elseif ($this->formRepository->containsValueById($options["formId"], $dto["id"]) === false) {
-                $err = SchemaError::notForeignOf($paramName, $options["formId"]);
-                $err["index"] = $options["index"];
-                $err["property"] = "id";
-                $errors[] = $err;
-            } else {
-                if ($this->hasError($errors, "fieldId") === false) {
-                    $value = $this->formValueRepository->selectById($dto["id"]);
-
-                    if ($value->fieldId !== $options["model"]->fieldId) {
-                        $err = SchemaError::templateFieldMissMatch($paramName);
-                        $err["index"] = $options["index"];
-                        $err["property"] = "id";
-                        $errors[] = $err;
-                    } else {
-                        $options["model"]->id = $dto["id"];
-                    }
-                }
-            }
+        if (isset($value["id"]) === false || $value["id"] === null || $this->brb->hasError("id", "templateId")) {
+            return null;
         }
+
+        if (($id = mate_sanitize_int($value["id"])) === false) {
+            $this->brb->addIndexedError(
+                "valueList",
+                $index,
+                BPC::INCORRECT,
+                ["name" => "id", "type" => "INTEGER"]
+            );
+            return null;
+        }
+
+        if ($formId === null) {
+            $this->brb->addIndexedError(
+                "valueList",
+                $index,
+                BPC::NOT_RELATED,
+                ["name" => "id"]
+            );
+            return null;
+        }
+
+        if ($this->repository->containsValueById($formId, $id) === false) {
+            $this->brb->addIndexedError(
+                "valueList",
+                $index,
+                BPC::NOT_RELATED,
+                ["name" => "id", "id" => $id]
+            );
+            return null;
+        }
+
+        if (
+            ($formValue = $this->repository->selectById($id)) !== null
+            && $field->id !== $formValue->fieldId
+        ) {
+            $this->brb->addIndexedError(
+                "valueList",
+                $index,
+                BPC::NOT_RELATED,
+                [
+                    "name" => "fieldId",
+                    "fieldId" => $field->id
+                ]
+            );
+            return null;
+        }
+
+        return $id;
     }
 
     private function validDtoValue(array $dto, array &$errors, string $paramName, array &$options): void
@@ -199,7 +239,7 @@ class FormValidator extends Validator
                         $field->typeId,
                         $dto["value"],
                         $paramName,
-                        [ "enumeratorId" => $field->enumeratorId ]
+                        ["enumeratorId" => $field->enumeratorId]
                     );
 
                     if (is_array($value)) {

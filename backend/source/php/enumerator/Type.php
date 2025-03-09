@@ -14,4 +14,15 @@ class Type
     public const IMAGE = 8;
     public const FORM = 9;
     public const ENUMERATOR = 10;
+
+    // TODO: Move in database
+    public static function allowUnit(int $typeId)
+    {
+        return in_array($typeId, [
+            Type::LABEL,
+            Type::TEXT,
+            Type::NUMBER,
+            Type::MONEY
+        ]);
+    }
 }

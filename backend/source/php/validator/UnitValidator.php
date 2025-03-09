@@ -75,7 +75,7 @@ class UnitValidator extends Validator
         return $description;
     }
 
-    public function valueList(mixed $valueList, ?int $unitId = null): ?array
+    public function valueList(mixed $valueList, mixed $unitId = null): ?array
     {
         $parameterName = "valueList";
 
@@ -147,7 +147,7 @@ class UnitValidator extends Validator
             $this->brb->addIndexedError(
                 $parameterName,
                 $model->position,
-                BPC::REQUIRED,
+                BPC::NOT_RELATED,
                 ["name" => "id"]
             );
             return;

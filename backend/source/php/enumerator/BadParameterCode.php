@@ -21,6 +21,8 @@ class BadParameterCode
     public const DATE_INVALID = "date_invalid";
 
     public const TYPE_NOT_ENUM = "type_not_enum";
+    public const TYPE_NOT_MULTIPLE = "type_not_multiple";
+    public const TYPE_NOT_UNIT = "type_not_unit";
 
     public const FILE_NOT_SUPPORTED = "file_not_supported";
     public const FILE_TOO_LARGE = "file_too_large";
@@ -31,6 +33,7 @@ class BadParameterCode
     public const DATA_INCORRECT_NUMERIC = ["type" => "NUMERIC"];
     public const DATA_INCORRECT_STRING = ["type" => "STRING"];
     public const DATA_INCORRECT_ARRAY = ["type" => "ARRAY"];
+    public const DATA_INCORRECT_BOOLEAN = ["type" => "BOOLEAN"];
 
     public const DATA_INCORRECT_FILE = ["type" => "FILE"];
 
