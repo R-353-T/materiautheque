@@ -37,39 +37,26 @@ class TemplateController extends Controller
         $this->repository = TemplateRepository::inject();
     }
 
-    public function update(WP_REST_Request $req)
+    public function update(WP_REST_Request $request)
     {
-        $model = $this->schema->update($req);
-
-        if (is_wp_error($model) === false) {
-            $model = $this->repository->update($model);
-
-            if (is_wp_error($model) === false) {
-                return $this->ok($model);
-            }
-        }
-
-        return $model;
+        return is_wp_error($model = $this->schema->update($request))
+            || is_wp_error($model = $this->repository->update($model))
+            ? $model
+            : $this->ok($model);
     }
 
-    public function list(WP_REST_Request $req)
+    public function list(WP_REST_Request $request)
     {
         $sqlOptions = new SqlSelectQueryOptions();
         $sqlOptions->orderBy("name", "ASC");
         $data = $this->repository->selectAll($sqlOptions);
-
         return $this->ok($data);
     }
 
-    public function get(WP_REST_Request $req)
+    public function get(WP_REST_Request $request)
     {
-        $model = $this->schema->get($req);
-
-        if (is_wp_error($model) === false) {
-            $model = $this->repository->selectById($model->id);
-            return $this->ok($model);
-        }
-
-        return $model;
+        return is_wp_error(($id = $this->schema->get($request)))
+            ? $id
+            : $this->ok($this->repository->selectById($id));
     }
 }

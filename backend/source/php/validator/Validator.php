@@ -2,7 +2,7 @@
 
 namespace mate\validator;
 
-use mate\enumerator\BadParameterCode;
+use mate\enumerator\BadParameterCode as BPC;
 use mate\error\BadRequestBuilder;
 
 class Validator
@@ -16,21 +16,21 @@ class Validator
         $this->brb = $brb;
     }
 
-    public function id(mixed $id, bool $required = true, string $parameterName = "id"): ?int
+    public function id(mixed $id, bool $required = true, string $parameterName = "id"): int
     {
         if ($id === null && $required === true) {
-            $this->brb->addError($parameterName, BadParameterCode::REQUIRED);
-            return null;
+            $this->brb->addError($parameterName, BPC::REQUIRED);
+            return 0;
         }
 
         if (($id = mate_sanitize_int($id)) === false) {
-            $this->brb->addError($parameterName, BadParameterCode::INCORRECT, BadParameterCode::DATA_INCORRECT_INTEGER);
-            return null;
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_INTEGER);
+            return 0;
         }
 
         if ($this->repository->selectById($id) === null) {
-            $this->brb->addError($parameterName, BadParameterCode::NOT_FOUND);
-            return null;
+            $this->brb->addError($parameterName, BPC::NOT_FOUND);
+            return 0;
         }
 
         return $id;
@@ -69,5 +69,54 @@ class Validator
         }
 
         return $size;
+    }
+
+
+    public function name(mixed $name, string $parameterName = "name"): string
+    {
+        if ($name === null) {
+            $this->brb->addError($parameterName, BPC::REQUIRED);
+            return "";
+        }
+
+        if (($name = mate_sanitize_string($name)) === false) {
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING);
+            return "";
+        }
+
+        if (strlen($name) === 0) {
+            $this->brb->addError($parameterName, BPC::REQUIRED);
+            return "";
+        }
+
+        if (strlen($name) > MATE_THEME_API_MAX_NAME_LENGTH) {
+            $this->brb->addError($parameterName, BPC::STRING_MAX, BPC::DATA_STRING_MAX_NAME);
+            return "";
+        }
+
+        return $name;
+    }
+
+
+    public function description(mixed $description): string
+    {
+        $parameterName = "description";
+
+        if ($description === null) {
+            $this->brb->addError($parameterName, BPC::REQUIRED);
+            return "";
+        }
+
+        if (($description = mate_sanitize_string($description)) === false) {
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING);
+            return "";
+        }
+
+        if (strlen($description) > MATE_THEME_API_MAX_DESCRIPTION_LENGTH) {
+            $this->brb->addError($parameterName, BPC::STRING_MAX, BPC::DATA_STRING_MAX_DESCRIPTION);
+            return "";
+        }
+
+        return $description;
     }
 }

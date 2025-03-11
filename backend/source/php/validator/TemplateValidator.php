@@ -14,7 +14,7 @@ class TemplateValidator extends Validator
         parent::__construct(TemplateRepository::inject(), $brb);
     }
 
-    public function groupList(mixed $groupList, ?int $id): ?array
+    public function groupList(mixed $groupList, mixed $id): ?array
     {
         if ($this->brb->hasError("id")) {
             return null;
@@ -42,22 +42,22 @@ class TemplateValidator extends Validator
         $model->position = $index;
 
         if (mate_sanitize_array($dto) === false) {
-            $this->brb->addIndexedError("groupList", $index, BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY);
+            $this->brb->addError("groupList", BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY, $index);
             return null;
         }
 
         if (isset($dto["id"]) === false || $dto["id"] === null) {
-            $this->brb->addIndexedError("groupList", $index, BPC::REQUIRED, ["name" => "id"]);
+            $this->brb->addError("groupList", BPC::REQUIRED, null, $index, "id");
             return null;
         }
 
         if (($id = mate_sanitize_int($dto["id"])) === false) {
-            $this->brb->addIndexedError("groupList", $index, BPC::INCORRECT, ["name" => "id", "type" => "INTEGER"]);
+            $this->brb->addError("groupList", BPC::INCORRECT, BPC::DATA_INCORRECT_INTEGER, $index, "id");
             return null;
         }
 
         if ($this->repository->containsGroupId($parentId, $id) === false) {
-            $this->brb->addIndexedError("groupList", $index, BPC::NOT_RELATED, ["name" => "id"]);
+            $this->brb->addError("groupList", BPC::NOT_RELATED, null, $index, "id");
             return null;
         }
 

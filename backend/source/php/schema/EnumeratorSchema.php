@@ -19,58 +19,43 @@ class EnumeratorSchema extends Schema
 
     public function create(WP_REST_Request $request)
     {
-        $name = $this->validator->name($request->get_param("name"));
-        $description = $this->validator->description($request->get_param("description"));
-        $valueList = $this->validator->valueList($request->get_param("valueList"));
-        $typeId = $this->validator->typeId($request->get_param("typeId"));
-
-        if ($this->brb->containErrors()) {
-            return $this->brb->build();
-        }
-
         $model = new EnumeratorModel();
-        $model->name = $name;
-        $model->description = $description;
-        $model->typeId = $typeId;
-        $model->valueList = $valueList;
-        return $model;
+        $model->name = $this->validator->uName($request->get_param("name"));
+        $model->description = $this->validator->description($request->get_param("description"));
+        $model->typeId = $this->validator->typeId($request->get_param("typeId"));
+        $model->valueList = $this->validator->valueList($request->get_param("valueList"));
+
+        return $this->brb->containErrors()
+            ? $this->brb->build()
+            : $model;
     }
 
     public function update(WP_REST_Request $request)
     {
-        $id = $this->validator->id($request->get_param("id"));
-        $name = $this->validator->name($request->get_param("name"));
-        $description = $this->validator->description($request->get_param("description"));
-        $valueList = $this->validator->valueList($request->get_param("valueList"));
-        $typeId = $this->validator->typeId($request->get_param("typeId"));
-
-        if ($this->brb->containErrors()) {
-            return $this->brb->build();
-        }
-
         $model = new EnumeratorModel();
-        $model->id = $id;
-        $model->name = $name;
-        $model->description = $description;
-        $model->typeId = $typeId;
-        $model->valueList = $valueList;
-        return $model;
+        $model->id = $this->validator->id($request->get_param("id"));
+        $model->name = $this->validator->uName($request->get_param("name"), $model->id);
+        $model->description = $this->validator->description($request->get_param("description"));
+        $model->typeId = $this->validator->typeId($request->get_param("typeId"));
+        $model->valueList = $this->validator->valueList($request->get_param("valueList"), $model->id);
+
+        return $this->brb->containErrors()
+            ? $this->brb->build()
+            : $model;
     }
 
     public function list(WP_REST_Request $request)
     {
         $typeId = $this->validator->typeId($request->get_param("typeId"), false);
 
-        if ($this->brb->containErrors()) {
-            return $this->brb->build();
-        }
-
-        return [
-            "search" => $this->validator->search($request->get_param("search")),
-            "index" => $this->validator->paginationIndex($request->get_param("index")),
-            "size" => $this->validator->paginationSize($request->get_param("size")),
-            "typeId" => $typeId
-        ];
+        return $this->brb->containErrors()
+            ? $this->brb->build()
+            : [
+                "search" => $this->validator->search($request->get_param("search")),
+                "index" => $this->validator->paginationIndex($request->get_param("index")),
+                "size" => $this->validator->paginationSize($request->get_param("size")),
+                "typeId" => $typeId
+            ];
     }
 
 
@@ -78,25 +63,17 @@ class EnumeratorSchema extends Schema
     {
         $id = $this->validator->id($request->get_param("id"));
 
-        if ($this->brb->containErrors()) {
-            return $this->brb->build();
-        }
-
-        $model = new EnumeratorModel();
-        $model->id = $id;
-        return $model;
+        return $this->brb->containErrors()
+            ? $this->brb->build()
+            : $id;
     }
 
     public function delete(WP_REST_Request $request)
     {
         $id = $this->validator->id($request->get_param("id"));
 
-        if ($this->brb->containErrors()) {
-            return $this->brb->build();
-        }
-
-        $model = new EnumeratorModel();
-        $model->id = $id;
-        return $model;
+        return $this->brb->containErrors()
+            ? $this->brb->build()
+            : $id;
     }
 }

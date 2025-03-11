@@ -23,31 +23,25 @@ class BadRequestBuilder
     public function addError(
         string $name,
         string $code,
-        array|null $data = null
+        array|null $data = null,
+        ?int $index = null,
+        ?string $property = null
     ) {
-        $this->parameters[] = [
+        $err = [
             "code" => $code,
             "name" => $name,
             "data" => $data
         ];
-    }
 
-    public function addIndexedError(
-        string $name,
-        int $index,
-        string $code,
-        array|null $data = null
-    ) {
-        if (isset($this->parameters[$name]) === false) {
-            $this->parameters[$name] = [];
+        if ($index !== null) {
+            $err["index"] = $index;
         }
 
-        $this->parameters[$name][] = [
-            "code" => $code,
-            "name" => $name,
-            "index" => $index,
-            "data" => $data
-        ];
+        if ($property !== null) {
+            $err["property"] = $property;
+        }
+
+        $this->parameters[] = $err;
     }
 
     public function containErrors(): bool

@@ -15,53 +15,6 @@ class GroupValidator extends Validator
         parent::__construct(GroupRepository::inject(), $brb);
     }
 
-    public function name(mixed $name, string $parameterName = "name"): ?string
-    {
-        if ($name === null) {
-            $this->brb->addError($parameterName, BPC::REQUIRED);
-            return null;
-        }
-
-        if (($name = mate_sanitize_string($name)) === false) {
-            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING);
-            return null;
-        }
-
-        if (strlen($name) === 0) {
-            $this->brb->addError($parameterName, BPC::REQUIRED);
-            return null;
-        }
-
-        if (strlen($name) > MATE_THEME_API_MAX_NAME_LENGTH) {
-            $this->brb->addError($parameterName, BPC::STRING_MAX, BPC::DATA_STRING_MAX_NAME);
-            return null;
-        }
-
-        return $name;
-    }
-
-    public function description(mixed $description): ?string
-    {
-        $parameterName = "description";
-
-        if ($description === null) {
-            $this->brb->addError($parameterName, BPC::REQUIRED);
-            return null;
-        }
-
-        if (($description = mate_sanitize_string($description)) === false) {
-            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING);
-            return null;
-        }
-
-        if (strlen($description) > MATE_THEME_API_MAX_DESCRIPTION_LENGTH) {
-            $this->brb->addError($parameterName, BPC::STRING_MAX, BPC::DATA_STRING_MAX_DESCRIPTION);
-            return null;
-        }
-
-        return $description;
-    }
-
     public function parentId(mixed $parentId, ?int $id, ?int $templateId): ?int
     {
         if ($this->brb->hasError("id", "templateId")) {
@@ -139,22 +92,22 @@ class GroupValidator extends Validator
         $model->position = $index;
 
         if (mate_sanitize_array($dto) === false) {
-            $this->brb->addIndexedError("groupList", $index, BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY);
+            $this->brb->addError("groupList", BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY, $index);
             return null;
         }
 
         if (isset($dto["id"]) === false || $dto["id"] === null) {
-            $this->brb->addIndexedError("groupList", $index, BPC::REQUIRED, ["name" => "id"]);
+            $this->brb->addError("groupList", BPC::REQUIRED, null, $index, "id");
             return null;
         }
 
         if (($id = mate_sanitize_int($dto["id"])) === false) {
-            $this->brb->addIndexedError("groupList", $index, BPC::INCORRECT, ["name" => "id", "type" => "INTEGER"]);
+            $this->brb->addError("groupList", BPC::INCORRECT, BPC::DATA_INCORRECT_INTEGER, $index, "id");
             return null;
         }
 
         if ($this->repository->containsGroupId($parentId, $id) === false) {
-            $this->brb->addIndexedError("groupList", $index, BPC::NOT_RELATED, ["name" => "id"]);
+            $this->brb->addError("groupList", BPC::NOT_RELATED, null, $index, "id");
             return null;
         }
 
@@ -168,21 +121,21 @@ class GroupValidator extends Validator
         $model->position = $index;
 
         if (mate_sanitize_array($dto) === false) {
-            $this->brb->addIndexedError("fieldList", $index, BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY);
+            $this->brb->addError("fieldList", BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY, $index);
             return null;
         }
 
         if (isset($dto["id"]) === false || $dto["id"] === null) {
-            $this->brb->addIndexedError("fieldList", $index, BPC::REQUIRED, ["name" => "id"]);
+            $this->brb->addError("fieldList", BPC::REQUIRED, null, $index, "id");
         }
 
         if (($id = mate_sanitize_int($dto["id"])) === false) {
-            $this->brb->addIndexedError("fieldList", $index, BPC::INCORRECT, ["name" => "id", "type" => "INTEGER"]);
+            $this->brb->addError("fieldList", BPC::INCORRECT, BPC::DATA_INCORRECT_INTEGER, $index, "id");
             return null;
         }
 
         if ($this->repository->containsFieldId($groupId, $id) === false) {
-            $this->brb->addIndexedError("fieldList", $index, BPC::NOT_RELATED, ["name" => "id"]);
+            $this->brb->addError("fieldList", BPC::NOT_RELATED, null, $index, "id");
             return null;
         }
 

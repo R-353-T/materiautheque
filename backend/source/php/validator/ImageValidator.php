@@ -19,31 +19,6 @@ class ImageValidator extends Validator
         parent::__construct(ImageRepository::inject(), $brb);
     }
 
-    public function name(mixed $name, string $parameterName = "name"): ?string
-    {
-        if ($name === null) {
-            $this->brb->addError($parameterName, BPC::REQUIRED);
-            return null;
-        }
-
-        if (($name = mate_sanitize_string($name)) === false) {
-            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING);
-            return null;
-        }
-
-        if (strlen($name) === 0) {
-            $this->brb->addError($parameterName, BPC::REQUIRED);
-            return null;
-        }
-
-        if (strlen($name) > MATE_THEME_API_MAX_NAME_LENGTH) {
-            $this->brb->addError($parameterName, BPC::STRING_MAX, BPC::DATA_STRING_MAX_NAME);
-            return null;
-        }
-
-        return $name;
-    }
-
     public function file(bool $required = true): ?array
     {
         $parameterName = "file";

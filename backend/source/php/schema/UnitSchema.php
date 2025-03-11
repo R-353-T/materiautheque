@@ -19,38 +19,27 @@ class UnitSchema extends Schema
 
     public function create(WP_REST_Request $request)
     {
-        $name = $this->validator->name($request->get_param("name"));
-        $description = $this->validator->description($request->get_param("description"));
-        $valueList = $this->validator->valueList($request->get_param("valueList"));
-
-        if ($this->brb->containErrors()) {
-            return $this->brb->build();
-        }
-
         $model = new UnitModel();
-        $model->name = $name;
-        $model->description = $description;
-        $model->valueList = $valueList;
-        return $model;
+        $model->name = $this->validator->uName($request->get_param("name"));
+        $model->description = $this->validator->description($request->get_param("description"));
+        $model->valueList = $this->validator->valueList($request->get_param("valueList"));
+
+        return $this->brb->containErrors()
+            ? $this->brb->build()
+            : $model;
     }
 
     public function update(WP_REST_Request $request)
     {
-        $id = $this->validator->id($request->get_param("id"));
-        $name = $this->validator->name($request->get_param("name"), $id);
-        $description = $this->validator->description($request->get_param("description"));
-        $valueList = $this->validator->valueList($request->get_param("valueList"), $id);
-
-        if ($this->brb->containErrors()) {
-            return $this->brb->build();
-        }
-
         $model = new UnitModel();
-        $model->id = $id;
-        $model->name = $name;
-        $model->description = $description;
-        $model->valueList = $valueList;
-        return $model;
+        $model->id = $this->validator->id($request->get_param("id"));
+        $model->name = $this->validator->uName($request->get_param("name"), $model->id);
+        $model->description = $this->validator->description($request->get_param("description"));
+        $model->valueList = $this->validator->valueList($request->get_param("valueList"), $model->id);
+
+        return $this->brb->containErrors()
+            ? $this->brb->build()
+            : $model;
     }
 
     public function list(WP_REST_Request $request)
@@ -66,25 +55,17 @@ class UnitSchema extends Schema
     {
         $id = $this->validator->id($request->get_param("id"));
 
-        if ($this->brb->containErrors()) {
-            return $this->brb->build();
-        }
-
-        $model = new UnitModel();
-        $model->id = $id;
-        return $model;
+        return $this->brb->containErrors()
+            ? $this->brb->build()
+            : $id;
     }
 
     public function delete(WP_REST_Request $request)
     {
         $id = $this->validator->id($request->get_param("id"));
 
-        if ($this->brb->containErrors()) {
-            return $this->brb->build();
-        }
-
-        $model = new UnitModel();
-        $model->id = $id;
-        return $model;
+        return $this->brb->containErrors()
+            ? $this->brb->build()
+            : $id;
     }
 }

@@ -7,6 +7,7 @@ use mate\enumerator\Type;
 use mate\error\BadRequestBuilder;
 use mate\error\SchemaError;
 use mate\model\FieldModel;
+use mate\model\FormValueModel;
 use mate\repository\FieldRepository;
 use mate\repository\FormRepository;
 use mate\repository\FormValueRepository;
@@ -33,38 +34,6 @@ class FormValidator extends Validator
         $this->unitRepository = UnitRepository::inject();
         $this->groupRepository = GroupRepository::inject();
         $this->typeValidator = new TypeValidator($brb);
-    }
-
-    public function name(mixed $name, ?int $unitId = null): ?string
-    {
-        $parameterName = "name";
-
-        if ($name === null) {
-            $this->brb->addError($parameterName, BPC::REQUIRED);
-            return null;
-        }
-
-        if (($name = mate_sanitize_string($name)) === false) {
-            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING);
-            return null;
-        }
-
-        if (strlen($name) === 0) {
-            $this->brb->addError($parameterName, BPC::REQUIRED);
-            return null;
-        }
-
-        if (strlen($name) > MATE_THEME_API_MAX_NAME_LENGTH) {
-            $this->brb->addError($parameterName, BPC::STRING_MAX, BPC::DATA_STRING_MAX_NAME);
-            return null;
-        }
-
-        if (($instance = $this->repository->selectByName($name)) !== null && $instance->id !== $unitId) {
-            $this->brb->addError($parameterName, BPC::UNAVAILABLE);
-            return null;
-        }
-
-        return $name;
     }
 
     public function valueList(mixed $valueList, mixed $formId = null, mixed $templateId = null): array|null
@@ -94,7 +63,6 @@ class FormValidator extends Validator
         }
 
         $this->requiredFields($templateId, $fieldValueMap);
-
         return $fieldValueMap;
     }
 
@@ -105,239 +73,167 @@ class FormValidator extends Validator
         int $templateId,
         array &$fieldValueMap
     ): void {
+        $model = new FormValueModel();
+
         if (mate_sanitize_array($value) === false) {
-            $this->brb->addIndexedError("valueList", $index, BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY);
+            $this->brb->addError("valueList", BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY, $index);
             return;
         }
 
         $field = $this->dtoField($value, $index, $templateId);
 
         if ($field !== null) {
-            $id = $this->dtoId($value, $index, $formId, $field);
-        }
+            $column = $this->typeRepository->selectById($field->typeId)->column;
 
-        $this->validDtoValue($dto, $errors, $paramName, $options);
-        $this->validDtoUnit($dto, $errors, $paramName, $options);
-        $this->validDtoNotMultiple($dto, $errors, $paramName, $options);
+            $model->id = $this->dtoId($value, $index, $formId, $field);
+            $model->$column = $this->dtoValue($value, $index, $field);
+            $model->unitValueId = $this->dtoUnit($value, $index, $field);
+            $this->dtoNotMultiple($index, $field, $fieldValueMap);
+
+            if (isset($fieldValueMap[$field->id]) === false) {
+                $fieldValueMap[$field->id] = [
+                    "field" => $field,
+                    "values" => []
+                ];
+            }
+
+            $fieldValueMap[$field->id]["values"][] = $model;
+        }
     }
 
     private function dtoField(array $value, int $index, int $templateId): ?FieldModel
     {
         if (isset($value["fieldId"]) === false || $value["fieldId"] === null) {
-            $this->brb->addIndexedError(
-                "valueList",
-                $index,
-                BPC::REQUIRED,
-                ["name" => "fieldId"]
-            );
+            $this->brb->addError("valueList", BPC::REQUIRED, null, $index, "fieldId");
             return null;
         }
 
         if (($fieldId = mate_sanitize_int($value["fieldId"])) === false) {
-            $this->brb->addIndexedError(
-                "valueList",
-                $index,
-                BPC::INCORRECT,
-                ["name" => "fieldId", "type" => "INTEGER"]
-            );
+            $this->brb->addError("valueList", BPC::INCORRECT, BPC::DATA_INCORRECT_INTEGER, $index, "fieldId");
             return null;
         }
 
         if (($field = $this->fieldRepository->selectById($fieldId)) === null) {
-            $this->brb->addIndexedError(
-                "valueList",
-                $index,
-                BPC::UNAVAILABLE,
-                ["name" => "fieldId", "fieldId" => $fieldId]
-            );
+            $this->brb->addError("valueList", BPC::NOT_FOUND, null, $index, "fieldId");
             return null;
         }
 
         if ($field->templateId !== $templateId) {
-            $this->brb->addIndexedError(
-                "valueList",
-                $index,
-                BPC::NOT_RELATED,
-                ["name" => "fieldId", "fieldId" => $fieldId]
-            );
+            $this->brb->addError("valueList", BPC::NOT_RELATED, null, $index, "fieldId");
             return null;
         }
 
         return $field;
     }
 
-    private function dtoId(array $value, int $index, ?int $formId, FieldModel $field): ?int
+    private function dtoId(array $value, int $index, ?int $formId, FieldModel $field): int
     {
         if (isset($value["id"]) === false || $value["id"] === null || $this->brb->hasError("id", "templateId")) {
-            return null;
+            return 0;
         }
 
         if (($id = mate_sanitize_int($value["id"])) === false) {
-            $this->brb->addIndexedError(
-                "valueList",
-                $index,
-                BPC::INCORRECT,
-                ["name" => "id", "type" => "INTEGER"]
-            );
-            return null;
-        }
-
-        if ($formId === null) {
-            $this->brb->addIndexedError(
-                "valueList",
-                $index,
-                BPC::NOT_RELATED,
-                ["name" => "id"]
-            );
-            return null;
-        }
-
-        if ($this->repository->containsValueById($formId, $id) === false) {
-            $this->brb->addIndexedError(
-                "valueList",
-                $index,
-                BPC::NOT_RELATED,
-                ["name" => "id", "id" => $id]
-            );
-            return null;
+            $this->brb->addError("valueList", BPC::INCORRECT, BPC::DATA_INCORRECT_INTEGER, $index, "id");
+            return 0;
         }
 
         if (
-            ($formValue = $this->repository->selectById($id)) !== null
-            && $field->id !== $formValue->fieldId
+            $formId === null
+            || $this->repository->containsValueById($formId, $id) === false
+            || (($formValue = $this->repository->selectById($id)) !== null
+            && $field->id !== $formValue->fieldId)
         ) {
-            $this->brb->addIndexedError(
-                "valueList",
-                $index,
-                BPC::NOT_RELATED,
-                [
-                    "name" => "fieldId",
-                    "fieldId" => $field->id
-                ]
-            );
-            return null;
+            $this->brb->addError("valueList", BPC::NOT_RELATED, null, $index, "id");
+            return 0;
         }
 
         return $id;
     }
 
-    private function validDtoValue(array $dto, array &$errors, string $paramName, array &$options): void
+    private function dtoValue(array $value, int $index, FieldModel $field): mixed
     {
-        if (isset($dto["value"]) === false) {
-            $err = SchemaError::required($paramName);
-            $err["index"] = $options["index"];
-            $err["property"] = "value";
-            $errors[] = $err;
-        } elseif ($this->hasError($errors, "fieldId") === false) {
-            $field = $this->fieldRepository->selectById($options["model"]->fieldId);
+        if (isset($value["value"]) === false || $value["value"] === null) {
+            $this->brb->addError("valueList", BPC::REQUIRED, null, $index, "value");
+            return null;
+        }
 
-            if ($dto["value"] !== null) {
-                if (is_string($dto["value"]) && trim($dto["value"]) === "") {
-                    $dto["value"] = null;
-                } else {
-                    $value = $this->typeValidator->validValue(
-                        $field->typeId,
-                        $dto["value"],
-                        $paramName,
-                        ["enumeratorId" => $field->enumeratorId]
-                    );
+        if (is_string($value["value"]) && trim($value["value"]) === "") {
+            return null;
+        }
 
-                    if (is_array($value)) {
-                        $value["index"] = $options["index"];
-                        $value["property"] = "value";
-                        $errors[] = $value;
-                    } else {
-                        $type = $this->typeRepository->selectById($field->typeId);
-                        $column = $type->column;
-                        $options["model"]->$column = $value;
-                    }
-                }
+        return $this->typeValidator->MIXED($value["value"], $field->typeId, $index, "valueList", false, $field);
+    }
+
+    private function dtoUnit(array $value, int $index, FieldModel $field): ?int
+    {
+        if ($field->unitId === null) {
+            return null;
+        }
+
+        if (isset($dto["unit"]) === false) {
+            $this->brb->addError("valueList", BPC::REQUIRED, null, $index, "unitValueId");
+            return null;
+        }
+
+        if (($unitValueId = mate_sanitize_int($dto["unit"])) === false) {
+            $this->brb->addError("valueList", BPC::INCORRECT, BPC::DATA_INCORRECT_INTEGER, $index, "unitValueId");
+            return null;
+        }
+
+        if ($this->unitRepository->containsValueById($field->unitId, $unitValueId) === false) {
+            $this->brb->addError("valueList", BPC::NOT_RELATED, null, $index, "unitValueId");
+            return null;
+        }
+
+        return $unitValueId;
+    }
+
+    private function dtoNotMultiple(int $index, FieldModel $field, array &$fieldValueMap): void
+    {
+        if (isset($fieldValueMap[$field->id])) {
+            $type = $this->typeRepository->selectById($field->typeId);
+
+            if ($type->allowMultipleValues === false) {
+                $this->brb->addError("valueList", BPC::TYPE_NOT_MULTIPLE, null, $index, "fieldId");
             }
         }
     }
 
-    private function validDtoUnit($dto, $errors, $paramName, $options)
+    private function requiredFields(int $templateId, array $fieldValueMap): void
     {
-        if ($this->hasError($errors, "fieldId") === false) {
-            $field = $this->fieldRepository->selectById($options["model"]->fieldId);
-
-            if ($field->unitId !== null) {
-                if (isset($dto["unit"]) === false) {
-                    $err = SchemaError::required($paramName);
-                    $err["index"] = $options["index"];
-                    $err["property"] = "unit";
-                    $errors[] = $err;
-                } elseif (mate_sanitize_int($dto["unit"]) === false) {
-                    $err = SchemaError::incorrectType($paramName, "integer");
-                    $err["index"] = $options["index"];
-                    $err["property"] = "unit";
-                    $errors[] = $err;
-                } elseif ($this->unitRepository->containsValueById($field->unitId, $dto["unit"]) === false) {
-                    $err = SchemaError::notForeignOf($paramName, $field->unitId);
-                    $err["index"] = $options["index"];
-                    $err["property"] = "unit";
-                    $errors[] = $err;
-                } else {
-                    $options["model"]->unitValueId = $dto["unit"];
-                }
-            }
+        if ($this->brb->hasError("id", "templateId", "valueList")) {
+            return;
         }
-    }
 
-    private function validDtoNotMultiple(array $dto, array &$errors, string $paramName, array &$options): void
-    {
-        if ($this->hasError($errors, "fieldId") === false) {
-            if (isset($options["fieldMap"][$options["model"]->fieldId]) === false) {
-                $options["fieldMap"][$options["model"]->fieldId] = true;
-            } else {
-                $field = $this->fieldRepository->selectById($options["model"]->fieldId);
-                $err = $this->typeValidator->typeIsMultiple($field->typeId, $paramName);
+        $fieldList = $this->fieldRepository->selectFieldListByTemplateId($templateId);
+        $notNullMap = [];
 
-                if (is_array($err)) {
-                    $err["index"] = $options["index"];
-                    $err["property"] = "fieldId";
-                    $errors[] = $err;
-                }
-            }
-        }
-    }
+        foreach ($fieldValueMap as $fieldValue) {
+            $field = $fieldValue["field"];
+            $values = $fieldValue["values"];
+            $type = $this->typeRepository->selectById($field->typeId);
+            $column = $type->column;
 
-    private function validRequiredFields(
-        WP_REST_Request $req,
-        array &$errors,
-        array &$valueList,
-        string $paramName = "field"
-    ): void {
-        if ($this->hasError($errors, "id", "templateId", "valueList") === false) {
-            $templateId = $req->get_param("templateId");
+            foreach ($values as $value) {
+                if (
+                    $field->isRequired
+                    && isset($value->$column)
+                ) {
+                    if ($column !== "text") {
+                        $notNullMap[$field->id] = true;
+                    }
 
-            /** @var FieldModel */
-            $fieldList = $this->fieldRepository->selectFieldListByTemplateId($templateId);
-            $nnValueMap = [];
-
-            foreach ($valueList as $value) {
-                /** @var FieldModel */
-                $field = $this->fieldRepository->selectById($value->fieldId);
-
-                if ($field->isRequired) {
-                    $type = $this->typeRepository->selectById($field->typeId);
-                    $column = $type->column;
-
-                    if (isset($value->$column) && $value->$column !== null) {
-                        $t = [Type::LABEL, Type::TEXT, Type::MONEY];
-
-                        if (!in_array($field->typeId, $t) || strlen(trim($value->$column)) > 0) {
-                            $nnValueMap[$field->id] = true;
-                        }
+                    if ($column === "text" && strlen(trim($value->$column)) > 0) {
+                        $notNullMap[$field->id] = true;
                     }
                 }
             }
+        }
 
-            foreach ($fieldList as $field) {
-                if ($field->isRequired) {
-                    if (isset($nnValueMap[$field->id]) === false) {
-                        $errors[] = SchemaError::formFieldRequired($paramName, $field->id, $field->groupId);
-                    }
+        foreach ($fieldList as $field) {
+            if ($field->isRequired) {
+                if (isset($notNullMap[$field->id]) === false) {
+                    $this->brb->addError("valueList", BPC::REQUIRED, ["fieldId" => $field->id], null, "fieldId");
                 }
             }
         }

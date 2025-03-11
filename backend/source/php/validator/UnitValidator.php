@@ -10,86 +10,43 @@ use mate\repository\UnitRepository;
 class UnitValidator extends Validator
 {
     private readonly TypeValidator $typeValidator;
+    private const VL = "valueList";
 
     public function __construct(BadRequestBuilder $brb)
     {
-        parent::__construct(
-            UnitRepository::inject(),
-            $brb
-        );
-
+        parent::__construct(UnitRepository::inject(), $brb);
         $this->typeValidator = new TypeValidator($this->brb);
     }
 
-    public function name(mixed $name, ?int $unitId = null): ?string
+    public function uName(mixed $name, ?int $unitId = null): string
     {
-        $parameterName = "name";
+        $name = $this->name($name);
 
-        if ($name === null) {
-            $this->brb->addError($parameterName, BPC::REQUIRED);
-            return null;
-        }
-
-        if (($name = mate_sanitize_string($name)) === false) {
-            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING);
-            return null;
-        }
-
-        if (strlen($name) === 0) {
-            $this->brb->addError($parameterName, BPC::REQUIRED);
-            return null;
-        }
-
-        if (strlen($name) > MATE_THEME_API_MAX_NAME_LENGTH) {
-            $this->brb->addError($parameterName, BPC::STRING_MAX, BPC::DATA_STRING_MAX_NAME);
-            return null;
+        if ($this->brb->hasError("name")) {
+            return "";
         }
 
         if (($instance = $this->repository->selectByName($name)) !== null && $instance->id !== $unitId) {
-            $this->brb->addError($parameterName, BPC::UNAVAILABLE);
-            return null;
+            $this->brb->addError("name", BPC::UNAVAILABLE);
+            return "";
         }
 
         return $name;
     }
 
-    public function description(mixed $description): ?string
-    {
-        $parameterName = "description";
-
-        if ($description === null) {
-            $this->brb->addError($parameterName, BPC::REQUIRED);
-            return null;
-        }
-
-        if (($description = mate_sanitize_string($description)) === false) {
-            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING);
-            return null;
-        }
-
-        if (strlen($description) > MATE_THEME_API_MAX_DESCRIPTION_LENGTH) {
-            $this->brb->addError($parameterName, BPC::STRING_MAX, BPC::DATA_STRING_MAX_DESCRIPTION);
-            return null;
-        }
-
-        return $description;
-    }
-
     public function valueList(mixed $valueList, mixed $unitId = null): ?array
     {
-        $parameterName = "valueList";
-
         if ($this->brb->hasError("id")) {
             return null;
         }
 
         if ($valueList === null) {
-            $this->brb->addError($parameterName, BPC::REQUIRED);
+            $this->brb->addError(self::VL, BPC::REQUIRED);
             return null;
         }
 
         if (mate_sanitize_array($valueList) === false) {
-            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY);
+            $this->brb->addError(self::VL, BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY);
             return null;
         }
 
@@ -105,7 +62,7 @@ class UnitValidator extends Validator
         $model->position = $index;
 
         if (mate_sanitize_array($value) === false) {
-            $this->brb->addIndexedError("valueList", $index, BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY);
+            $this->brb->addError(self::VL, BPC::INCORRECT, BPC::DATA_INCORRECT_ARRAY, $index);
             return null;
         }
 
@@ -117,19 +74,13 @@ class UnitValidator extends Validator
     private function dtoValue(array $dto, UnitValueModel $model): void
     {
         $model->value = "";
-        $parameterName = "valueList";
 
         if (isset($dto["value"]) === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $model->position,
-                BPC::REQUIRED,
-                ["name" => "value"]
-            );
+            $this->brb->addError(self::VL, BPC::REQUIRED, null, $model->position, "value");
             return;
         }
 
-        if (($value = $this->typeValidator->LABEL($dto["value"], $model->position, $parameterName, true)) !== null) {
+        if (($value = $this->typeValidator->LABEL($dto["value"], $model->position, self::VL, true)) !== null) {
             $model->value = $value;
         }
     }
@@ -137,42 +88,23 @@ class UnitValidator extends Validator
     private function dtoId(array $dto, ?int $unitId = null, UnitValueModel $model): void
     {
         $model->id = null;
-        $parameterName = "valueList";
 
         if (isset($dto["id"]) === false || $dto["id"] === null) {
             return;
         }
 
         if ($unitId === null) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $model->position,
-                BPC::NOT_RELATED,
-                ["name" => "id"]
-            );
+            $this->brb->addError(self::VL, BPC::NOT_RELATED, null, $model->position, "id");
             return;
         }
 
         if (($id = mate_sanitize_int($dto["id"])) === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $model->position,
-                BPC::INCORRECT,
-                [
-                    "name" => "id",
-                    "type" => "INTEGER"
-                ]
-            );
+            $this->brb->addError(self::VL, BPC::INCORRECT, BPC::DATA_INCORRECT_INTEGER, $model->position, "id");
             return;
         }
 
         if ($this->repository->containsValueById($unitId, $id) === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $model->position,
-                BPC::NOT_RELATED,
-                ["name" => "id"]
-            );
+            $this->brb->addError(self::VL, BPC::NOT_RELATED, null, $model->position, "id");
             return;
         }
 

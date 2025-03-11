@@ -17,8 +17,6 @@ class BadParameterCode
 
     public const STRING_MAX = "string_max";
 
-    public const URL_INVALID = "url_invalid";
-    public const DATE_INVALID = "date_invalid";
 
     public const TYPE_NOT_ENUM = "type_not_enum";
     public const TYPE_NOT_MULTIPLE = "type_not_multiple";
@@ -34,11 +32,16 @@ class BadParameterCode
     public const DATA_INCORRECT_STRING = ["type" => "STRING"];
     public const DATA_INCORRECT_ARRAY = ["type" => "ARRAY"];
     public const DATA_INCORRECT_BOOLEAN = ["type" => "BOOLEAN"];
-
+    public const DATA_INCORRECT_URL = ["type" => "URL"];
+    public const DATA_INCORRECT_DATE = ["type" => "DATE"];
     public const DATA_INCORRECT_FILE = ["type" => "FILE"];
 
     public const DATA_STRING_MAX_NAME = ["max" => MATE_THEME_API_MAX_NAME_LENGTH];
     public const DATA_STRING_MAX_DESCRIPTION = ["max" => MATE_THEME_API_MAX_DESCRIPTION_LENGTH];
+    public const DATA_STRING_MAX_URL = ["max" => MATE_THEME_API_MAX_DESCRIPTION_LENGTH];
+    public const DATA_STRING_MAX_TEXT = ["max" => MATE_THEME_API_MAX_TEXT_LENGTH];
+    public const DATA_NUMBER_MAX = ["max" => MATE_THEME_API_MAX_NUMBER];
+    public const DATA_NUMBER_MIN = ["min" => MATE_THEME_API_MIN_NUMBER];
 
     // GROUP
 

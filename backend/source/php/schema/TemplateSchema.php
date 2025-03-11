@@ -3,7 +3,6 @@
 namespace mate\schema;
 
 use mate\abstract\clazz\Schema;
-use mate\error\WPErrorBuilder;
 use mate\model\TemplateModel;
 use mate\validator\TemplateValidator;
 use WP_REST_Request;
@@ -14,38 +13,27 @@ class TemplateSchema extends Schema
 
     public function __construct()
     {
-        $this->validator = TemplateValidator::inject();
+        parent::__construct();
+        $this->validator = new TemplateValidator($this->brb);
     }
 
-    public function update(WP_REST_Request $req, array $errors = [])
+    public function update(WP_REST_Request $request)
     {
-        $result = null;
-        $id = $this->validator->validRequestId($req, $errors);
-        $groupList = $this->validator->validRequestGroupList($req, $errors);
+        $model = new TemplateModel();
+        $model->id = $this->validator->id($request->get_param("id"));
+        $model->groupList = $this->validator->groupList($request->get_param("groupList"), $model->id);
 
-        if (count($errors) > 0) {
-            $result = WPErrorBuilder::badRequestError($errors);
-        } else {
-            $result = new TemplateModel();
-            $result->id = $id;
-            $result->groupList = $groupList;
-        }
-
-        return $result;
+        return $this->brb->containErrors()
+            ? $this->brb->build()
+            : $model;
     }
 
-    public function get(WP_REST_Request $req, array $errors = [])
+    public function get(WP_REST_Request $request)
     {
-        $result = null;
-        $id = $this->validator->validRequestId($req, $errors);
+        $id = $this->validator->id($request->get_param("id"));
 
-        if (count($errors) > 0) {
-            $result = WPErrorBuilder::badRequestError($errors);
-        } else {
-            $result = new TemplateModel();
-            $result->id = $id;
-        }
-
-        return $result;
+        return $this->brb->containErrors()
+            ? $this->brb->build()
+            : $id;
     }
 }

@@ -20,37 +20,28 @@ class ImageSchema extends Schema
 
     public function create(WP_REST_Request $request)
     {
-        $name = $this->validator->name($request->get_param("name"));
-        $file = $this->validator->file();
-
-        if ($this->brb->containErrors()) {
-            return $this->brb->build();
-        }
-
         $model = new ImageModel();
-        $model->name = $name;
-        $model->file = $file;
-        return $model;
+        $model->name = $this->validator->name($request->get_param("name"));
+        $model->file = $this->validator->file();
+
+        return $this->brb->containErrors()
+            ? $this->brb->build()
+            : $model;
     }
 
     public function update(WP_REST_Request $request)
     {
-        $id = $this->validator->id($request->get_param("id"));
-        $name = $this->validator->name($request->get_param("name"));
-        $file = $this->validator->file(false);
-
-        if ($this->brb->containErrors()) {
-            return $this->brb->build();
-        }
-
         $model = new ImageModel();
-        $model->id = $id;
-        $model->name = $name;
-        $model->file = $file;
-        return $model;
+        $model->id = $this->validator->id($request->get_param("id"));
+        $model->name = $this->validator->name($request->get_param("name"));
+        $model->file = $this->validator->file(false);
+
+        return $this->brb->containErrors()
+            ? $this->brb->build()
+            : $model;
     }
 
-    public function list(WP_REST_Request $request): array|WP_Error
+    public function list(WP_REST_Request $request)
     {
         return [
             "search" => $this->validator->search($request->get_param("search")),
@@ -63,25 +54,17 @@ class ImageSchema extends Schema
     {
         $id = $this->validator->id($request->get_param("id"));
 
-        if ($this->brb->containErrors()) {
-            return $this->brb->build();
-        }
-
-        $model = new ImageModel();
-        $model->id = $id;
-        return $model;
+        return $this->brb->containErrors()
+            ? $this->brb->build()
+            : $id;
     }
 
     public function delete(WP_REST_Request $request)
     {
         $id = $this->validator->id($request->get_param("id"));
 
-        if ($this->brb->containErrors()) {
-            return $this->brb->build();
-        }
-
-        $model = new ImageModel();
-        $model->id = $id;
-        return $model;
+        return $this->brb->containErrors()
+            ? $this->brb->build()
+            : $id;
     }
 }

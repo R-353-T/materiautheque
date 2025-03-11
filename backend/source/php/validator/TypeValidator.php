@@ -75,166 +75,92 @@ class TypeValidator extends Validator
         }
     }
 
-    public function LABEL(mixed $value, int $index, string $parameterName, bool $required): ?string
+    public function LABEL(mixed $value, int $index, string $name, bool $required): ?string
     {
         if ($value === null) {
             if ($required) {
-                $this->brb->addIndexedError(
-                    $parameterName,
-                    $index,
-                    BPC::REQUIRED,
-                    ["name" => "value"]
-                );
+                $this->brb->addError($name, BPC::REQUIRED, null, $index, "value");
             }
             return null;
         }
 
         if (($value = mate_sanitize_string($value)) === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::INCORRECT,
-                ["name" => "value", "type" => "STRING"]
-            );
+            $this->brb->addError($name, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING, $index, "value");
             return null;
         }
 
         if (strlen($value) > MATE_THEME_API_MAX_NAME_LENGTH) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::STRING_MAX,
-                [
-                    "name" => "value",
-                    "max" => MATE_THEME_API_MAX_NAME_LENGTH
-                ]
-            );
+            $this->brb->addError($name, BPC::STRING_MAX, BPC::DATA_STRING_MAX_NAME, $index, "value");
             return null;
         }
 
         if (strlen($value) === 0 && $required) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::REQUIRED,
-                ["name" => "value"]
-            );
+            $this->brb->addError($name, BPC::REQUIRED, null, $index, "value");
             return null;
         }
 
         return $value;
     }
 
-    public function TEXT(mixed $value, int $index, string $parameterName, bool $required): ?string
+    public function TEXT(mixed $value, int $index, string $pn, bool $required): ?string
     {
         if ($value === null) {
             if ($required) {
-                $this->brb->addIndexedError(
-                    $parameterName,
-                    $index,
-                    BPC::REQUIRED,
-                    ["name" => "value"]
-                );
+                $this->brb->addError($pn, BPC::REQUIRED, null, $index, "value");
             }
             return null;
         }
 
         if (($value = mate_sanitize_string($value)) === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::INCORRECT,
-                ["name" => "value", "type" => "STRING"]
-            );
+            $this->brb->addError($pn, BPC::INCORRECT, BPC::DATA_INCORRECT_STRING, $index, "value");
             return null;
         }
 
         if (strlen($value) > MATE_THEME_API_MAX_TEXT_LENGTH) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::STRING_MAX,
-                [
-                    "name" => "value",
-                    "max" => MATE_THEME_API_MAX_TEXT_LENGTH
-                ]
-            );
+            $this->brb->addError($pn, BPC::STRING_MAX, BPC::DATA_STRING_MAX_TEXT, $index, "value");
             return null;
         }
 
         if (strlen($value) === 0 && $required) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::REQUIRED,
-                ["name" => "value"]
-            );
+            $this->brb->addError($pn, BPC::REQUIRED, null, $index, "value");
             return null;
         }
 
         return $value;
     }
 
-    public function URL(mixed $value, int $index, string $parameterName, bool $required): ?string
+    public function URL(mixed $value, int $index, string $pn, bool $required): ?string
     {
         if ($value === null) {
             if ($required) {
-                $this->brb->addIndexedError(
-                    $parameterName,
-                    $index,
-                    BPC::REQUIRED,
-                    ["name" => "value"]
-                );
+                $this->brb->addError($pn, BPC::REQUIRED, null, $index, "value");
             }
             return null;
         }
 
         if (($value = mate_sanitize_url($value)) === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::URL_INVALID,
-                ["name" => "value"]
-            );
+            $this->brb->addError($pn, BPC::INCORRECT, BPC::DATA_INCORRECT_URL, $index, "value");
             return null;
         }
 
         if (strlen($value) > MATE_THEME_API_MAX_URL_LENGTH) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::STRING_MAX,
-                [
-                    "name" => "value",
-                    "max" => MATE_THEME_API_MAX_URL_LENGTH
-                ]
-            );
+            $this->brb->addError($pn, BPC::STRING_MAX, BPC::DATA_STRING_MAX_URL, $index, "value");
             return null;
         }
 
         if (strlen($value) === 0 && $required) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::REQUIRED,
-                ["name" => "value"]
-            );
+            $this->brb->addError($pn, BPC::REQUIRED, null, $index, "value");
             return null;
         }
 
         return $value;
     }
 
-    public function NUMBER(mixed $value, int $index, string $parameterName, bool $required): ?int
+    public function NUMBER(mixed $value, int $index, string $pn, bool $required): ?int
     {
         if ($value === null) {
             if ($required) {
-                $this->brb->addIndexedError(
-                    $parameterName,
-                    $index,
-                    BPC::REQUIRED,
-                    ["name" => "value"]
-                );
+                $this->brb->addError($pn, BPC::REQUIRED, null, $index, "value");
             }
             return null;
         }
@@ -251,41 +177,17 @@ class TypeValidator extends Validator
         }
 
         if ($value === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::INCORRECT,
-                [
-                    "name" => "value",
-                    "type" => "NUMERIC"
-                ]
-            );
+            $this->brb->addError($pn, BPC::INCORRECT, BPC::DATA_INCORRECT_NUMERIC, $index, "value");
             return null;
         }
 
         if ($value > MATE_THEME_API_MAX_NUMBER) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::NUMBER_MAX,
-                [
-                    "name" => "value",
-                    "max" => MATE_THEME_API_MAX_NUMBER
-                ]
-            );
+            $this->brb->addError($pn, BPC::NUMBER_MAX, BPC::DATA_NUMBER_MAX, $index, "value");
             return null;
         }
 
         if ($value < MATE_THEME_API_MIN_NUMBER) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::NUMBER_MIN,
-                [
-                    "name" => "value",
-                    "min" => MATE_THEME_API_MIN_NUMBER
-                ]
-            );
+            $this->brb->addError($pn, BPC::NUMBER_MIN, BPC::DATA_NUMBER_MIN, $index, "value");
             return null;
         }
 
@@ -294,14 +196,9 @@ class TypeValidator extends Validator
 
     public function MONEY(mixed $value, int $index, string $parameterName, bool $required): ?int
     {
-        if ($value === null) {
+        if ($value === null || is_string($value) && strlen($value) === 0) {
             if ($required) {
-                $this->brb->addIndexedError(
-                    $parameterName,
-                    $index,
-                    BPC::REQUIRED,
-                    ["name" => "value"]
-                );
+                $this->brb->addError($parameterName, BPC::REQUIRED, null, $index, "value");
             }
             return null;
         }
@@ -318,15 +215,7 @@ class TypeValidator extends Validator
         }
 
         if ($value === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::INCORRECT,
-                [
-                    "name" => "value",
-                    "type" => "NUMERIC"
-                ]
-            );
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_NUMERIC, $index, "value");
             return null;
         }
 
@@ -337,26 +226,13 @@ class TypeValidator extends Validator
     {
         if ($value === null) {
             if ($required) {
-                $this->brb->addIndexedError(
-                    $parameterName,
-                    $index,
-                    BPC::REQUIRED,
-                    ["name" => "value"]
-                );
+                $this->brb->addError($parameterName, BPC::REQUIRED, null, $index, "value");
             }
             return null;
         }
 
         if (($value = mate_sanitize_string($value)) === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::INCORRECT,
-                [
-                    "name" => "value",
-                    "type" => "DATE"
-                ]
-            );
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_DATE, $index, "value");
             return null;
         }
 
@@ -364,15 +240,7 @@ class TypeValidator extends Validator
             date_default_timezone_set(MATE_TIMEZONE);
             DateTime::createFromFormat(MATE_DATE_FORMAT, $value);
         } catch (Throwable $exception) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::INCORRECT,
-                [
-                    "name" => "value",
-                    "type" => "DATE"
-                ]
-            );
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_DATE, $index, "value");
             return null;
         }
 
@@ -383,23 +251,13 @@ class TypeValidator extends Validator
     {
         if ($value === null) {
             if ($required) {
-                $this->brb->addIndexedError(
-                    $parameterName,
-                    $index,
-                    BPC::REQUIRED,
-                    ["name" => "value"]
-                );
+                $this->brb->addError($parameterName, BPC::REQUIRED, null, $index, "value");
             }
             return null;
         }
 
         if (($value = mate_sanitize_boolean($value)) === null) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::INCORRECT,
-                ["name" => "value", "type" => "BOOLEAN"]
-            );
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_BOOLEAN, $index, "value");
             return null;
         }
 
@@ -410,35 +268,18 @@ class TypeValidator extends Validator
     {
         if ($value === null) {
             if ($required) {
-                $this->brb->addIndexedError(
-                    $parameterName,
-                    $index,
-                    BPC::REQUIRED,
-                    ["name" => "value"]
-                );
+                $this->brb->addError($parameterName, BPC::REQUIRED, null, $index, "value");
             }
             return null;
         }
 
         if (($value = mate_sanitize_int($value)) === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::INCORRECT,
-                [
-                    "name" => "value",
-                    "type" => "INTEGER"
-                ]
-            );
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_INTEGER, $index, "value");
             return null;
         }
 
         if ($this->imageRepository->selectById($value) === null) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::NOT_FOUND
-            );
+            $this->brb->addError($parameterName, BPC::NOT_FOUND, null, $index, "value");
             return null;
         }
 
@@ -449,35 +290,18 @@ class TypeValidator extends Validator
     {
         if ($value === null) {
             if ($required) {
-                $this->brb->addIndexedError(
-                    $parameterName,
-                    $index,
-                    BPC::REQUIRED,
-                    ["name" => "value"]
-                );
+                $this->brb->addError($parameterName, BPC::REQUIRED, null, $index, "value");
             }
             return null;
         }
 
         if (($value = mate_sanitize_int($value)) === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::INCORRECT,
-                [
-                    "name" => "value",
-                    "type" => "INTEGER"
-                ]
-            );
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_INTEGER, $index, "value");
             return null;
         }
 
         if ($this->formRepository->selectById($value) === null) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::NOT_FOUND
-            );
+            $this->brb->addError($parameterName, BPC::NOT_FOUND, null, $index, "value");
             return null;
         }
 
@@ -488,35 +312,18 @@ class TypeValidator extends Validator
     {
         if ($value === null) {
             if ($required) {
-                $this->brb->addIndexedError(
-                    $parameterName,
-                    $index,
-                    BPC::REQUIRED,
-                    ["name" => "value"]
-                );
+                $this->brb->addError($parameterName, BPC::REQUIRED, null, $index, "value");
             }
             return null;
         }
 
         if (($value = mate_sanitize_int($value)) === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::INCORRECT,
-                [
-                    "name" => "value",
-                    "type" => "INTEGER"
-                ]
-            );
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_INTEGER, $index, "value");
             return null;
         }
 
         if ($this->enumeratorRepository->containsValueById($field->enumeratorId, $value) === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::NOT_RELATED
-            );
+            $this->brb->addError($parameterName, BPC::NOT_RELATED, null, $index, "value");
             return null;
         }
 
@@ -527,35 +334,18 @@ class TypeValidator extends Validator
     {
         if ($value === null) {
             if ($required) {
-                $this->brb->addIndexedError(
-                    $parameterName,
-                    $index,
-                    BPC::REQUIRED,
-                    ["name" => "value"]
-                );
+                $this->brb->addError($parameterName, BPC::REQUIRED, null, $index, "value");
             }
             return null;
         }
 
         if (($value = mate_sanitize_int($value)) === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::INCORRECT,
-                [
-                    "name" => "value",
-                    "type" => "INTEGER"
-                ]
-            );
+            $this->brb->addError($parameterName, BPC::INCORRECT, BPC::DATA_INCORRECT_INTEGER, $index, "value");
             return null;
         }
 
         if ($this->unitRepository->containsValueById($field->unitId, $value) === false) {
-            $this->brb->addIndexedError(
-                $parameterName,
-                $index,
-                BPC::NOT_RELATED
-            );
+            $this->brb->addError($parameterName, BPC::NOT_RELATED, null, $index, "value");
             return null;
         }
 
