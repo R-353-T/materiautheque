@@ -6,11 +6,11 @@ class BadParameterCode
 {
     // CODE
 
-    public const REQUIRED = "required";
     public const INCORRECT = "incorrect";
     public const NOT_FOUND = "not_found";
-    public const UNAVAILABLE = "unavailable";
     public const NOT_RELATED = "not_related";
+    public const REQUIRED = "required";
+    public const UNAVAILABLE = "unavailable";
 
     public const NUMBER_MIN = "number_min";
     public const NUMBER_MAX = "number_max";

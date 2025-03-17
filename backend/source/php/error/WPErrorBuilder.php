@@ -30,7 +30,7 @@ class WPErrorBuilder
     public static function internalServerError(string|null $message = null, string|null $trace = null): WP_Error
     {
         return new WP_Error(
-            "internal_server",
+            "internal_server_error",
             ($message !== null ? $message : "Critical error"),
             [
                 "status" => 500,

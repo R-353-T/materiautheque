@@ -23,8 +23,10 @@ class ImageValidator extends Validator
     {
         $parameterName = "file";
 
-        if (isset($_FILES[$parameterName]) === false && $required === true) {
-            $this->brb->addError($parameterName, BPC::REQUIRED);
+        if (isset($_FILES[$parameterName]) === false) {
+            if ($required === true) {
+                $this->brb->addError($parameterName, BPC::REQUIRED);
+            }
             return null;
         }
 
