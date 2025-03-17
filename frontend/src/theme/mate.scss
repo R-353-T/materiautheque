@@ -16,6 +16,7 @@
         @apply m-0;
         @apply uppercase font-bold tracking-wide drop-shadow
             hover:drop-shadow-none;
+        --border-radius: 4px;
     }
 
     ion-input {
@@ -103,15 +104,6 @@ h1.main {
 
     .row-wrapper {
         @apply flex flex-wrap gap-ios;
-    }
-}
-
-.form {
-    @apply flex flex-col w-full gap-ios;
-
-    & > .f-error {
-        @apply p-2 border border-l-4;
-        @apply text-ionDanger border-ionDanger text-xs;
     }
 }
 

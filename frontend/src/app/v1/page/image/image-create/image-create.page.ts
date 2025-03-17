@@ -1,15 +1,16 @@
-import { Component, inject } from "@angular/core";
+import { Component, ElementRef, inject, ViewChild } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { ImageService } from "src/app/v1/service/api/image.service";
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
-import { IMAGE_CREATE_FORM } from "src/app/v1/form/image.form";
 import { SubmitButtonComponent } from "../../../component/form/submit-button/submit-button.component";
-import { IonContent, IonInput } from "@ionic/angular/standalone";
+import { IonContent } from "@ionic/angular/standalone";
 import { ToastService } from "src/app/v1/service/toast.service";
 import { BadRequestError } from "src/app/v1/error/BadRequestError";
-import { InputImageComponent } from "../../../component/form/input-image/input-image.component";
+import { FormComponent } from "../../../component/form/form/form.component";
+import { FORM__IMAGE } from "src/app/v1/form/f.image";
+import { InputComponent } from "../../../component/form/input/input.component";
 
 @Component({
   selector: "app-image-create",
@@ -18,47 +19,58 @@ import { InputImageComponent } from "../../../component/form/input-image/input-i
   standalone: true,
   imports: [
     IonContent,
-    IonInput,
-    HeaderComponent,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    HeaderComponent,
     SubmitButtonComponent,
-    InputImageComponent,
-  ],
+    FormComponent,
+    InputComponent
+],
 })
 export class ImageCreatePage {
-  readonly form = IMAGE_CREATE_FORM;
+  @ViewChild("inputFile")
+  inputFile?: ElementRef;
 
+  readonly baseForm = FORM__IMAGE;
   private readonly navigationService = inject(NavigationService);
   private readonly toastService = inject(ToastService);
   private readonly imageService = inject(ImageService);
 
   ionViewWillEnter() {
-    this.form.reset();
+    this.baseForm.reset();
+    
+    if(this.inputFile) {
+      this.inputFile.nativeElement.value = "";
+    }
+
     this.navigationService.backTo = this.navigationService.lastPage;
   }
 
   create() {
-    if (this.form.valid()) {
-      this.form.formGroup.disable();
+    if (this.baseForm.isOk() && this.baseForm.lock()) {
+      this.imageService.create(this.baseForm)
+        .subscribe({
+          next: async (response) => {
+            this.toastService.showSuccessCreate(response.name);
+            await this.navigationService.goToImage(response.id);
+          },
+          error: (error) => {
+            if (error instanceof BadRequestError) {
+              this.baseForm.badRequest(error);
+            }
 
-      this.imageService.create(this.form).subscribe({
-        next: async (response) => {
-          this.toastService.showSuccessCreate(response.name);
-          await this.navigationService.goToImage(response.id);
-        },
-        error: (error) => {
-          this.form.formGroup.enable();
-          if (error instanceof BadRequestError) {
-            this.form.applyBadRequestErrors(error.params);
-          } else if (error.error && (error.error as string).includes("limit")) {
-            this.form.file.setErrors({ file_too_large: true });
-          } else {
-            this.form.formGroup.setErrors({ not_implemented: true });
-          }
-        },
-      });
+            if(error.status && error.status === 500) {
+              this.baseForm.internalError("image", error);
+            }
+
+            if(error.error && typeof error.error === "string" && error.error.includes("limit")) {
+              this.baseForm.file.setErrors({ file_too_large: true });
+            }
+
+            this.baseForm.unlock();
+          },
+        });
     }
   }
 }

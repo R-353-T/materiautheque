@@ -4,7 +4,7 @@ import { ApiService } from './api.service';
 import { map } from 'rxjs';
 import { IResponse, IResponsePage } from 'src/app/v1/interface/api.interface';
 import { IImage } from 'src/app/v1/interface/image.interface';
-import { ImageForm } from 'src/app/v1/form/image.form';
+import { FImage } from '../../form/f.image';
 
 @Injectable({
   providedIn: 'root'
@@ -31,24 +31,26 @@ export class ImageService {
       .get<IResponsePage<IImage>>(this.ep.list, parameters);
   }
 
-  create(form: ImageForm) {
+  create(form: FImage) {
     const body = new FormData();
-
+    
     body.append("name", form.name.value);
-    body.append("file", form.fileValue!);
+    if(form.fileValue) {
+      body.append("file", form.fileValue);
+    }
     
     return this.api
       .post<IResponse<IImage>>(this.ep.create, body)
       .pipe(map(response => response.data));
   }
 
-  update(form: ImageForm) {
+  update(form: FImage) {
     const body = new FormData();
     
     body.append("id", form.id.value.toString());
     body.append("name", form.name.value);
     
-    if (form.fileValue) {
+    if(form.fileValue) {
       body.append("file", form.fileValue);
     }
 

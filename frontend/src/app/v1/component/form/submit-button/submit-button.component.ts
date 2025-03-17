@@ -1,21 +1,25 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { IonButton, IonSpinner } from '@ionic/angular/standalone';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { IonButton, IonSpinner } from "@ionic/angular/standalone";
 
 @Component({
-  selector: 'app-submit-button',
-  templateUrl: './submit-button.component.html',
-  styleUrls: ['./submit-button.component.scss'],
+  selector: "app-submit-button",
+  templateUrl: "./submit-button.component.html",
+  styleUrls: ["./submit-button.component.scss"],
   standalone: true,
-  imports: [ IonButton, IonSpinner ]
+  imports: [IonButton, IonSpinner],
 })
-export class SubmitButtonComponent  implements OnInit {
+export class SubmitButtonComponent {
+  @Input()
+  loading = false;
+  
+  @Input()
+  disabled = false;
+  
+  @Input()
+  label = "Envoyer";
 
-  @Input() enabled = true;
-  @Input() label = 'Envoyer';
-
-  @Output() submit = new EventEmitter<void>();
-
-  ngOnInit() {}
+  @Output()
+  submit = new EventEmitter<void>();
 
   onSubmit() {
     this.submit.emit();

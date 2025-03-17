@@ -74,8 +74,8 @@ export class ApiService {
       console.warn(`[API] Client-side error: ${error.error.message}`);
     } else {
       if(ApiService.isBadRequest(error)) {
-        console.error(`[API] Bad Request`, error.error.data.params);
-        return throwError(() => new BadRequestError(error.error.message, error.error.data.params));
+        console.error(`[API] Bad Request`, error.error.data);
+        return throwError(() => new BadRequestError(error.error.message, error.error));
       } else {
         console.error(`[API] Server-side error: ${error.status} - ${error.message}`);
       }

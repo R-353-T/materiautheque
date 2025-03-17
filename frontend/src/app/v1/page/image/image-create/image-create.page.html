@@ -4,29 +4,36 @@
   <div class="wrapper">
     <h1 class="main">Ajouter une image</h1>
 
-    <form [formGroup]="form.formGroup" class="form">
-      <div *ngIf="form.errorOf(form.formGroup)" class="f-error">
-        <p>{{ form.errorOf(form.formGroup) }}</p>
-      </div>
+    <app-form
+      [formGroup]="baseForm.formGroup"
+      [errors]="baseForm.getErrors(baseForm.formGroup)"
+    >
+      <app-input
+        [label]="baseForm.formLabels['image']['name']"
+        [control]="baseForm.name"
+        [errors]="baseForm.getErrors(baseForm.name)"
+      >
+        <input type="text" [formControl]="baseForm.name">
+      </app-input>
 
-      <ion-input
-        [formControl]="form.name"
-        type="text"
-        [label]="form.labelGroup.name"
-        [errorText]="form.errorOf(form.name)"
-      ></ion-input>
-
-      <app-input-image
-        [(file)]="form.fileValue"
-        infoText="Seuls les fichiers .png, .jpg et .jpeg de moins de 10 mégaoctets sont acceptés"
-        [errorText]="form.errorOf(form.file)"
-      ></app-input-image>
+      <app-input
+        [label]="baseForm.formLabels['image']['file']"
+        [control]="baseForm.file"
+        [errors]="baseForm.getErrors(baseForm.file)"
+      >
+        <input
+          #inputFile
+          type="file"
+          accept=".png, .jpg, .jpeg"
+          (change)="baseForm.onChangeFile($event)"
+        >
+      </app-input>
 
       <app-submit-button
-        [enabled]="form.formGroup.enabled"
-        (submit)="create()"
         label="Ajouter"
+        [loading]="baseForm.locked"
+        (submit)="create()"
       ></app-submit-button>
-    </form>
+    </app-form>
   </div>
 </ion-content>

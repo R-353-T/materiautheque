@@ -1,18 +1,10 @@
+import { key } from "ionicons/icons";
+
 export type HttpParameters = { [key: string]: string | number | boolean | undefined | null };
 
 export interface IResponse<T> {
     success: boolean;
     data: T;
-}
-
-export interface IBadRequestParam {
-    code: string;
-
-    name?: string;
-    type?: string;
-    foreign?: string;
-    format?: string;
-    index?: number;
 }
 
 export interface IResponsePage<T> {
@@ -22,4 +14,18 @@ export interface IResponsePage<T> {
         size: number;
         total: number;
     }
+}
+
+export interface IBadResponse {
+    code: string;
+    message: string;
+    data: any;
+}
+
+export interface IBadRequestParam {
+    code: string;
+    name: string;
+    index?: number;
+    property?: string;
+    data?: { [key: string]: any; };
 }

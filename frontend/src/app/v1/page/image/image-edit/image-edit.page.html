@@ -4,37 +4,54 @@
   <div class="wrapper">
     <h1 class="main">Modifier une unité</h1>
 
-    <form [formGroup]="form.formGroup" class="form">
-      <div *ngIf="form.errorOf(form.formGroup)" class="f-error">
-        <p>{{ form.errorOf(form.formGroup) }}</p>
-      </div>
+    <app-form
+      [formGroup]="baseForm.formGroup"
+      [errors]="baseForm.getErrors(baseForm.formGroup)"
+    >
+      <app-input
+        [label]="baseForm.formLabels['image']['name']"
+        [control]="baseForm.name"
+        [errors]="baseForm.getErrors(baseForm.name)"
+      >
+        <input type="text" [formControl]="baseForm.name">
+      </app-input>
 
-      <ion-input
-        [formControl]="form.name"
-        type="text"
-        [label]="form.labelGroup.name"
-        [errorText]="form.errorOf(form.name)"
-      ></ion-input>
-
-      <app-input-image
-        [(file)]="form.fileValue"
-        infoText="Seuls les fichiers .png, .jpg et .jpeg de moins de 10 mégaoctets sont acceptés"
-        [errorText]="form.errorOf(form.file)"
-      ></app-input-image>
+      <app-input
+        [label]="baseForm.formLabels['image']['file']"
+        [control]="baseForm.file"
+        [errors]="baseForm.getErrors(baseForm.file)"
+      >
+        <input
+          type="file"
+          accept=".png, .jpg, .jpeg"
+          (change)="baseForm.onChangeFile($event)"
+        >
+      </app-input>
 
       <div class="flex justify-between gap-ios">
         <app-submit-button
-          [enabled]="form.formGroup.enabled"
-          (submit)="update()"
           label="Modifier"
+          [loading]="baseForm.locked"
+          (submit)="update()"
         ></app-submit-button>
 
-        <div class="flex gap-ios" *ngIf="form.formGroup.enabled">
-          <ion-button (click)="form.reset()" color="dark"
-          >Réinitialiser</ion-button>
-          <ion-button (click)="delete()" color="danger">Supprimer</ion-button>
+        <div class="flex gap-ios">
+          <ion-button
+            color="dark"
+            [disabled]="baseForm.locked"
+            (click)="baseForm.reset(image)"
+          >
+            Réinitialiser
+          </ion-button>
+          <ion-button
+            color="danger"
+            [disabled]="baseForm.locked"
+            (click)="delete()"
+          >
+            Supprimer
+          </ion-button>
         </div>
       </div>
-    </form>
+    </app-form>
   </div>
 </ion-content>

@@ -6,7 +6,7 @@ import { UserService } from '../../user/user.service';
 import { NetworkService } from '../../network/network.service';
 import { AppService } from '../../app/app.service';
 import { IAuthLoginResponse, IAuthUser } from 'src/app/v1/interface/auth.interface';
-import { AuthLoginForm } from 'src/app/v1/form/auth.form';
+import { FLogin } from 'src/app/v1/form/f.login';
 
 @Injectable({
   providedIn: 'root'
@@ -24,12 +24,14 @@ export class AuthService {
     this.autoValidate();
   }
 
-  login(form: AuthLoginForm): Observable<IAuthUser> {
-    const username = form.username.value;
-    const password = form.password.value;
+  login(form: FLogin): Observable<IAuthUser> {
+    const body = {
+      username: form.username?.value,
+      password: form.password?.value
+    };
 
     return this.apiService
-      .post<IAuthUser>(this.endpoints.login, { username, password })
+      .post<IAuthUser>(this.endpoints.login, body)
       .pipe(tap(user => this.userService.login(user)));
   }
 
