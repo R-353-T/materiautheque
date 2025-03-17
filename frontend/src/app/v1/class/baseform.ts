@@ -49,31 +49,31 @@ export abstract class BaseForm<T> {
     }
 
     applyBadRequestErrors(errors: IBadRequestParam[]) {
-        for(const error of errors) {
-            if(error.name && this.formGroup.get(error.name)) {
-                const control = this.formGroup.get(error.name)!;
+        // for(const error of errors) {
+        //     if(error.name && this.formGroup.get(error.name)) {
+        //         const control = this.formGroup.get(error.name)!;
 
-                if(error.code in this.errors) {
-                    control.setErrors({ [error.code]: true });
+        //         if(error.code in this.errors) {
+        //             control.setErrors({ [error.code]: true });
 
-                    if(error.code === "incorrect_type") {
-                        control.setErrors({ [error.code]: this.errors[error.code].replace("&1", error.type!) });
-                    }
+        //             if(error.code === "incorrect_type") {
+        //                 control.setErrors({ [error.code]: this.errors[error.code].replace("&1", error.type!) });
+        //             }
 
-                    if(error.code === "not_foreign_of") {
-                        control.setErrors({ [error.code]: this.errors[error.code].replace("&1", error.foreign!) });
-                    }
-                } else {
-                    control.setErrors({ [error.code]: true });
-                }
-            } else {
-                if(error.code in this.errors) {
-                    this.formGroup.setErrors({ [error.code]: this.errors[error.code] });
-                } else {
-                    this.formGroup.setErrors({ [error.code]: true });
-                }
-            }
-        }
+        //             if(error.code === "not_foreign_of") {
+        //                 control.setErrors({ [error.code]: this.errors[error.code].replace("&1", error.foreign!) });
+        //             }
+        //         } else {
+        //             control.setErrors({ [error.code]: true });
+        //         }
+        //     } else {
+        //         if(error.code in this.errors) {
+        //             this.formGroup.setErrors({ [error.code]: this.errors[error.code] });
+        //         } else {
+        //             this.formGroup.setErrors({ [error.code]: true });
+        //         }
+        //     }
+        // }
     }
 
     valid() {

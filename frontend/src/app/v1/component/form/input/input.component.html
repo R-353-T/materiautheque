@@ -1,0 +1,11 @@
+<div class="mate-input flex flex-col gap-2" [class.invalid]="(control.touched || control.dirty) && control.invalid">
+  <div>
+    <label *ngIf="label" class="label">{{ label }}</label>
+    <ng-content></ng-content>
+  </div>
+  <div class="flex flex-col gap-2" *ngIf="errors.length">
+    @for(error of errors; track $index) {
+      <p class="form-error">{{ error }}</p>
+    }
+  </div>
+</div>

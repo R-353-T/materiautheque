@@ -1,0 +1,11 @@
+<div class="flex flex-col gap-ios">
+  @for(error of errors; track $index) {
+    <p class="form-error">{{ error }}</p>
+  }
+  
+  <ng-content></ng-content>
+
+  @for(error of errors; track $index) {
+    <p class="form-error">{{ error }}</p>
+  }
+</div>
