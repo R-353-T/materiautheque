@@ -25,7 +25,9 @@
     }
 
     ion-searchbar {
-        @apply p-0;
+        @apply p-0 min-h-5 border border-ionLight-shade rounded;
+        --border-radius: 4px;
+        --background: var(--ion-color-light-tint);
     }
 
     ion-refresher,

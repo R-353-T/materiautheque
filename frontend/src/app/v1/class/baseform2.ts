@@ -1,5 +1,6 @@
 import { AbstractControl, FormGroup } from "@angular/forms";
 import { BadRequestError } from "../error/BadRequestError";
+import { TooManyRequestError } from "../error/TooManyRequestError";
 
 export class BaseForm2 {
     errors: { [code:string]: string } = {
@@ -97,6 +98,26 @@ export class BaseForm2 {
         }
 
         return errors;
+    }
+
+    public httpError(error: any) {
+        if (error instanceof BadRequestError) {
+          this.badRequest(error);
+        } else if (error instanceof TooManyRequestError) {
+            for(const form_name in this.formGroups) {
+                this.formGroups[form_name].setErrors({ too_many_tries: true });
+            }
+        } else if (error.status && error.status === 403) {
+            for(const form_name in this.formGroups) {
+                this.formGroups[form_name].setErrors({ auth_forbidden: true });
+            }
+        } else if(error.status && error.status === 500) {
+            for(const form_name in this.formGroups) {
+                this.internalError(form_name, error);
+            }
+        } else {
+            console.warn("[BASEFORM] Not implemented error", error);
+        }
     }
 
     public badRequest(error: BadRequestError) {

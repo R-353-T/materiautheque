@@ -42,14 +42,7 @@ export class LoginPage {
           next: async (r) => (await this.navigationService.goToHome()),
 
           error: (error) => {
-            if (error instanceof BadRequestError) {
-              this.baseForm.badRequest(error);
-            } else if (error instanceof TooManyRequestError) {
-              this.baseForm.formGroup.setErrors({ too_many_tries: true });
-            } else if (error.status === 403) {
-              this.baseForm.formGroup.setErrors({ auth_forbidden: true });
-            }
-
+            this.baseForm.httpError(error);
             this.baseForm.unlock();
           },
         });

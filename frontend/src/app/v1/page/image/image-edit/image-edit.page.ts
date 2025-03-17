@@ -11,9 +11,7 @@ import { AlertService } from "src/app/v1/service/alert.service";
 import { SubmitButtonComponent } from "../../../component/form/submit-button/submit-button.component";
 import { IonButton, IonContent, IonInput } from "@ionic/angular/standalone";
 import { ToastService } from "src/app/v1/service/toast.service";
-import { BadRequestError } from "src/app/v1/error/BadRequestError";
-import { InputImageComponent } from "../../../component/form/input-image/input-image.component";
-import { FORM__IMAGE, FORM__IMAGE__UPDATE } from "src/app/v1/form/f.image";
+import { FORM__IMAGE__UPDATE } from "src/app/v1/form/f.image";
 import { FormComponent } from "../../../component/form/form/form.component";
 import { InputComponent } from "../../../component/form/input/input.component";
 
@@ -66,20 +64,7 @@ export class ImageEditPage {
               await this.navigationService.lastPage();
             },
             error: (error) => {
-              console.log(error);
-              
-              if (error instanceof BadRequestError) {
-                this.baseForm.badRequest(error);
-              }
-  
-              if(error.status && error.status === 500) {
-                this.baseForm.internalError("image", error);
-              }
-  
-              if(error.error && typeof error.error === "string" && error.error.includes("limit")) {
-                this.baseForm.file.setErrors({ file_too_large: true });
-              }
-  
+              this.baseForm.httpError(error);
               this.baseForm.unlock();
             },
           }),
@@ -99,10 +84,7 @@ export class ImageEditPage {
               await this.navigationService.goToImageList();
             },
             error: (error) => {
-              if (error instanceof BadRequestError) {
-                this.baseForm.badRequest(error);
-              }
-
+              this.baseForm.httpError(error);
               this.baseForm.unlock();
             },
           }),

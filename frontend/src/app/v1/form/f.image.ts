@@ -59,6 +59,14 @@ export class FImage extends BaseForm2 {
         }
     }
 
+    override httpError(error: any): void {
+        if(error.error && typeof error.error === "string" && error.error.includes("limit")) {
+            this.file.setErrors({ file_too_large: true });
+        } else {
+            super.httpError(error);
+        }
+    }
+
     onChangeFile(event: Event) {
         const input = event.target as HTMLInputElement;
         if (input.files?.length) {

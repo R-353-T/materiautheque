@@ -5,8 +5,8 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <div class="wrapper">
-    <div class="row-wrapper">
+  <div class="wrapper gap-ios">
+    <div>
       <ion-button
         (click)="navigationService.goToImageCreate()"
         [disabled]="!permissionService.hasPermission(permissionService.PERMISSION.image.create)"
@@ -16,9 +16,9 @@
     </div>
 
     <ion-searchbar
-      (ionInput)="search($event)"
-      [debounce]="1000"
       placeholder="Rechercher"
+      [debounce]="1000"
+      (ionInput)="search($event)"
     ></ion-searchbar>
 
     <app-infinite-scroll

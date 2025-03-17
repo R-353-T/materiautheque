@@ -7,7 +7,6 @@ import { HeaderComponent } from "src/app/v1/component/organism/header/header.com
 import { SubmitButtonComponent } from "../../../component/form/submit-button/submit-button.component";
 import { IonContent } from "@ionic/angular/standalone";
 import { ToastService } from "src/app/v1/service/toast.service";
-import { BadRequestError } from "src/app/v1/error/BadRequestError";
 import { FormComponent } from "../../../component/form/form/form.component";
 import { FORM__IMAGE } from "src/app/v1/form/f.image";
 import { InputComponent } from "../../../component/form/input/input.component";
@@ -56,18 +55,7 @@ export class ImageCreatePage {
             await this.navigationService.goToImage(response.id);
           },
           error: (error) => {
-            if (error instanceof BadRequestError) {
-              this.baseForm.badRequest(error);
-            }
-
-            if(error.status && error.status === 500) {
-              this.baseForm.internalError("image", error);
-            }
-
-            if(error.error && typeof error.error === "string" && error.error.includes("limit")) {
-              this.baseForm.file.setErrors({ file_too_large: true });
-            }
-
+            this.baseForm.httpError(error);
             this.baseForm.unlock();
           },
         });
