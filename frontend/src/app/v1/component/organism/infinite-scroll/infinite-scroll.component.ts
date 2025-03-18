@@ -10,7 +10,7 @@ import {
   IonList,
   IonSpinner,
 } from "@ionic/angular/standalone";
-import { InfiniteScrollItem, InfiniteScrollOptions } from "./infinite-scroll-options";
+import { InfiniteScrollOptions, InfiniteScrollItem } from 'src/app/v1/interface/app.interface';
 import { Router, RouterModule } from "@angular/router";
 import { CommonModule } from "@angular/common";
 

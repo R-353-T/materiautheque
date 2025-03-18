@@ -15,7 +15,6 @@ import { InputComponent } from "../../input/input.component";
   standalone: true,
   imports: [
     IonButton,
-    IonInput,
     IonIcon,
     ReactiveFormsModule,
     InputComponent

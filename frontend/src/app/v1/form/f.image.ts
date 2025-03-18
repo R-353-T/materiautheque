@@ -11,16 +11,6 @@ export class FImage extends BaseForm2 {
         })
     }
 
-    public constructor(requiredFile: boolean = true) {
-        super();
-
-        if(requiredFile) {
-            this.formGroups['image'].addControl('file', new FormControl<string|null>(null, [Validators.required]));
-        } else {
-            this.formGroups['image'].addControl('file', new FormControl<string|null>(null, []));
-        }
-    }
-
     override formLabels: { [form_name: string]: { [input_name: string]: string; }; } = {
         image: {
             name: "Nom de l'image",
@@ -47,6 +37,16 @@ export class FImage extends BaseForm2 {
 
     get fileValue() {
         return this._file;
+    }
+
+    constructor(requiredFile: boolean = true) {
+        super();
+
+        if(requiredFile) {
+            this.formGroups['image'].addControl('file', new FormControl<string|null>(null, [Validators.required]));
+        } else {
+            this.formGroups['image'].addControl('file', new FormControl<string|null>(null, []));
+        }
     }
 
     override reset(from?: IImage): void {

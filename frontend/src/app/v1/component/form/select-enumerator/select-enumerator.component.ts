@@ -16,7 +16,7 @@ import {
 } from "@ionic/angular/standalone";
 import { CommonModule } from '@angular/common';
 import { InfiniteScrollComponent } from "../../organism/infinite-scroll/infinite-scroll.component";
-import { InfiniteScrollOptions } from '../../organism/infinite-scroll/infinite-scroll-options';
+import { InfiniteScrollOptions } from 'src/app/v1/interface/app.interface';
 
 @Component({
   selector: 'app-select-enumerator',

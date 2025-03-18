@@ -1,4 +1,18 @@
 import { signal, WritableSignal } from "@angular/core";
+import { ValueDto } from "../model/value-dto";
+
+// **********************************
+// * FILTER                         *
+// **********************************
+
+export interface IFilterValue {
+    dto: ValueDto;
+    disabled: boolean;
+}
+
+// **********************************
+// * INFINITE SCROLL                *
+// **********************************
 
 export class InfiniteScrollItem {
     label: string;

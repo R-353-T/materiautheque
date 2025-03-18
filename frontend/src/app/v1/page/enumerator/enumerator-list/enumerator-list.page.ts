@@ -1,7 +1,6 @@
 import {
   Component,
   inject,
-  OnDestroy,
   OnInit,
   signal,
   ViewChild,
@@ -10,12 +9,15 @@ import {
 import { CommonModule } from "@angular/common";
 import { FormControl, FormsModule } from "@angular/forms";
 import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
-import { InfiniteScrollOptions } from "src/app/v1/component/organism/infinite-scroll/infinite-scroll-options";
+import { IFilterValue, InfiniteScrollOptions } from 'src/app/v1/interface/app.interface';
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { EnumeratorService } from "src/app/v1/service/api/enumerator.service";
 import { InfiniteScrollComponent } from "src/app/v1/component/organism/infinite-scroll/infinite-scroll.component";
 import { ScrollTopButtonComponent } from "src/app/v1/component/atom/scroll-top-button/scroll-top-button.component";
 import { PermissionService } from "src/app/v1/service/permission.service";
+import { Observable } from "rxjs";
+import { FilterComponent } from "src/app/v1/component/atom/filter/filter.component";
+import { TypeService } from "src/app/v1/service/api/type.service";
 import {
   IonButton,
   IonContent,
@@ -23,8 +25,6 @@ import {
   IonRefresherContent,
   IonSearchbar,
 } from "@ionic/angular/standalone";
-import { FilterTypeComponent } from "../../../component/filter/filter-type/filter-type.component";
-import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-enumerator-list",
@@ -42,35 +42,22 @@ import { Subscription } from "rxjs";
     HeaderComponent,
     InfiniteScrollComponent,
     ScrollTopButtonComponent,
-    FilterTypeComponent,
+    FilterComponent,
   ],
 })
-export class EnumeratorListPage implements OnInit, OnDestroy {
+export class EnumeratorListPage {
   @ViewChild(IonContent, { static: true })
   content: IonContent | undefined;
 
   readonly options = new InfiniteScrollOptions();
-  readonly typeIdOption = new FormControl<number | undefined>(undefined);
-  readonly searchOption: WritableSignal<string | undefined | null> = signal(
-    null,
-  );
+  readonly typeIdOption = new FormControl<number | null>(null);
+  readonly searchOption: WritableSignal<string | null> = signal(null);
 
   readonly navigationService = inject(NavigationService);
   readonly permissionService = inject(PermissionService);
+  readonly typeService = inject(TypeService);
 
   private readonly enumeratorService = inject(EnumeratorService);
-
-  private typeFilterSubscription?: Subscription;
-
-  ngOnInit(): void {
-    this.typeFilterSubscription = this.typeIdOption.valueChanges.subscribe(
-      () => this.refresh()
-    )
-  }
-
-  ngOnDestroy(): void {
-    this.typeFilterSubscription?.unsubscribe();
-  }
 
   ionViewWillEnter = () => this.refresh();
 

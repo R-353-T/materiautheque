@@ -7,6 +7,7 @@ import { DateService } from "../date/date.service";
 import { IEnumerator } from "src/app/v1/interface/enumerator.interface";
 import { EnumeratorForm } from "src/app/v1/form/enumerator.form";
 import { TypeEnum } from "src/app/v1/enum/Type";
+import { FEnumerator } from "../../form/f.enumerator";
 
 @Injectable({
   providedIn: "root",
@@ -44,7 +45,7 @@ export class EnumeratorService {
       );
   }
 
-  create(form: EnumeratorForm) {
+  create(form: FEnumerator) {
     const body = {
       name: form.name.value,
       description: form.description.value ?? "",

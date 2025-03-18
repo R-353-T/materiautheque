@@ -14,7 +14,7 @@ import {
 import { UnitService } from 'src/app/v1/service/api/unit.service';
 import { EMPTY_FORM } from 'src/app/v1/form/empty.form';
 import { IUnit } from 'src/app/v1/interface/unit.interface';
-import { InfiniteScrollOptions } from '../../organism/infinite-scroll/infinite-scroll-options';
+import { InfiniteScrollOptions } from 'src/app/v1/interface/app.interface';
 import { Subscription } from 'rxjs';
 import { InfiniteScrollComponent } from "../../organism/infinite-scroll/infinite-scroll.component";
 

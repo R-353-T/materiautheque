@@ -17,9 +17,9 @@
       <app-input
         [label]="baseForm.formLabels['unit']['description']"
         [control]="baseForm.name"
-        [errors]="baseForm.getErrors(baseForm.name)"
+        [errors]="baseForm.getErrors(baseForm.description)"
       >
-        <textarea [value]="baseForm.name.value" disabled></textarea>
+        <textarea [value]="baseForm.description.value" disabled></textarea>
       </app-input>
 
       <h3>Valeurs</h3>

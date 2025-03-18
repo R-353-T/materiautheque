@@ -17,7 +17,7 @@ import { FormsModule } from "@angular/forms";
 import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
 import { InfiniteScrollComponent } from "src/app/v1/component/organism/infinite-scroll/infinite-scroll.component";
 import { ScrollTopButtonComponent } from "src/app/v1/component/atom/scroll-top-button/scroll-top-button.component";
-import { InfiniteScrollOptions } from "src/app/v1/component/organism/infinite-scroll/infinite-scroll-options";
+import { InfiniteScrollOptions } from 'src/app/v1/interface/app.interface';
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { ImageService } from "src/app/v1/service/api/image.service";
 import { PermissionService } from "src/app/v1/service/permission.service";

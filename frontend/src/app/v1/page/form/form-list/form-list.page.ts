@@ -8,7 +8,7 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { InfiniteScrollComponent } from "src/app/v1/component/organism/infinite-scroll/infinite-scroll.component";
 import { ScrollTopButtonComponent } from "src/app/v1/component/atom/scroll-top-button/scroll-top-button.component";
-import { InfiniteScrollOptions } from "src/app/v1/component/organism/infinite-scroll/infinite-scroll-options";
+import { InfiniteScrollOptions } from 'src/app/v1/interface/app.interface';
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { FormService } from "src/app/v1/service/api/form.service";
 import { ActivatedRoute } from "@angular/router";

@@ -12,7 +12,7 @@ import { HeaderComponent } from "src/app/v1/component/organism/header/header.com
 import { ActivatedRoute } from "@angular/router";
 import { Subscription, take } from "rxjs";
 import { InfiniteScrollComponent } from "src/app/v1/component/organism/infinite-scroll/infinite-scroll.component";
-import { InfiniteScrollOptions } from "src/app/v1/component/organism/infinite-scroll/infinite-scroll-options";
+import { InfiniteScrollOptions } from 'src/app/v1/interface/app.interface';
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { ITemplate } from "src/app/v1/interface/template.interface";
 import { IGroup } from "src/app/v1/interface/group.interface";

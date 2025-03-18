@@ -1,21 +1,24 @@
-import { inject, Injectable, signal } from '@angular/core';
-import { environment } from 'src/environments/environment';
-import { ApiService } from './api.service';
-import { BehaviorSubject, map, Observable, take, tap } from 'rxjs';
-import { IResponsePage } from 'src/app/v1/interface/api.interface';
-import { IType } from 'src/app/v1/interface/type.interface';
-import { TypeEnum } from 'src/app/v1/enum/Type';
+import { inject, Injectable, signal } from "@angular/core";
+import { environment } from "src/environments/environment";
+import { ApiService } from "./api.service";
+import { BehaviorSubject, map, Observable, take, tap } from "rxjs";
+import { IResponsePage } from "src/app/v1/interface/api.interface";
+import { IType } from "src/app/v1/interface/type.interface";
+import { TypeEnum } from "src/app/v1/enum/Type";
+import { IFilterValue } from "../../interface/app.interface";
+import { ValueDto } from "../../model/value-dto";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class TypeService {
-  readonly typeList$: Observable<IType[]|undefined>;
+  readonly typeList$: Observable<IType[]>;
+  readonly enumerableFilterList$: Observable<IFilterValue[]>;
   readonly loaded = signal<boolean>(false);
 
   private readonly ep = environment.api.type;
   private readonly api = inject(ApiService);
-  private readonly typeListSubject = new BehaviorSubject<IType[]|undefined>(undefined);
+  private readonly typeListSubject = new BehaviorSubject<IType[]>([]);
 
   get typeList() {
     return this.typeListSubject.value;
@@ -23,6 +26,16 @@ export class TypeService {
 
   constructor() {
     this.typeList$ = this.typeListSubject.asObservable();
+    this.enumerableFilterList$ = this.typeList$.pipe(map((types) =>
+      types
+        .map((t) => {
+          const dto = new ValueDto();
+          dto.id = t.id;
+          dto.value = t.name;
+          return { dto, disabled: t.allowEnumeration === false };
+        })
+    ));
+
     this.list().subscribe();
   }
 
@@ -30,31 +43,31 @@ export class TypeService {
     return this.api
       .get<IResponsePage<IType>>(this.ep.list)
       .pipe(
-        map(response => response.data),
-        tap(types => this.typeListSubject.next(types)),
-        tap(() => this.loaded.set(true))
+        map((response) => response.data),
+        tap((types) => this.typeListSubject.next(types)),
+        tap(() => this.loaded.set(true)),
       );
   }
 
   get(id: number) {
-    if(this.typeList) {
-      const type = this.typeList.find(t => t.id === id);
-      if(type) {
-        return new Observable<IType>(observer => {
+    if (this.typeList) {
+      const type = this.typeList.find((t) => t.id === id);
+      if (type) {
+        return new Observable<IType>((observer) => {
           observer.next(type);
           observer.complete();
         });
       } else {
-        return this.list().pipe(map(types => types.find(t => t.id === id)));
+        return this.list().pipe(map((types) => types.find((t) => t.id === id)));
       }
     } else {
-      return this.list().pipe(map(types => types.find(t => t.id === id)));
+      return this.list().pipe(map((types) => types.find((t) => t.id === id)));
     }
   }
 
   getTypeOf(id?: number) {
-    if(id) {
-      return this.typeList?.find(t => t.id === id);
+    if (id) {
+      return this.typeList?.find((t) => t.id === id);
     } else {
       return undefined;
     }
@@ -64,7 +77,7 @@ export class TypeService {
     return [
       TypeEnum.LABEL,
       TypeEnum.URL,
-      TypeEnum.MONEY
+      TypeEnum.MONEY,
     ].includes(typeId);
   }
 

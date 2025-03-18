@@ -9,7 +9,7 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
 import { InfiniteScrollComponent } from "src/app/v1/component/organism/infinite-scroll/infinite-scroll.component";
-import { InfiniteScrollOptions } from "src/app/v1/component/organism/infinite-scroll/infinite-scroll-options";
+import { InfiniteScrollOptions } from 'src/app/v1/interface/app.interface';
 import { UnitService } from "src/app/v1/service/api/unit.service";
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { PermissionService } from "src/app/v1/service/permission.service";

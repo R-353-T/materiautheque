@@ -7,10 +7,7 @@ import { ScrollTopButtonComponent } from "src/app/v1/component/atom/scroll-top-b
 import { TemplateService } from "src/app/v1/service/api/template.service";
 import { Subscription } from "rxjs";
 import { IonContent } from "@ionic/angular/standalone";
-import {
-  InfiniteScrollItem,
-  InfiniteScrollOptions,
-} from "src/app/v1/component/organism/infinite-scroll/infinite-scroll-options";
+import { InfiniteScrollOptions, InfiniteScrollItem } from 'src/app/v1/interface/app.interface';
 
 @Component({
   selector: "app-template-list",

@@ -5,7 +5,7 @@
 /****************************************************************/
 
 .ios {
-    .ion-page > ion-content {
+    .ion-page>ion-content {
         --padding-start: 14px;
         --padding-end: 14px;
         --padding-top: 14px;
@@ -14,8 +14,7 @@
 
     ion-button {
         @apply m-0;
-        @apply uppercase font-bold tracking-wide drop-shadow
-            hover:drop-shadow-none;
+        @apply uppercase font-bold tracking-wide hover:drop-shadow-none;
         --border-radius: 0px;
     }
 
@@ -100,13 +99,6 @@ h1.main {
     & > header {
         @apply flex justify-between items-center flex-wrap gap-ios mb-7;
     }
-}
-
-.mate-filter {
-    @apply px-ios rounded-ios drop-shadow-sm hover:drop-shadow-none p-ios
-    flex gap-ios items-center flex-wrap cursor-pointer w-full;
-
-    background-color: rgba(0,0,0, 0.07);
 }
 
 .mate-disabled {
