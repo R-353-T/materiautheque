@@ -1,0 +1,14 @@
+@if (typeService.isTypeIsTextInput(typeId)) {
+  <input [formControl]="control" type="text" />
+} @else if (typeService.isTypeIsNumberInput(typeId)) {
+  <input [formControl]="control" type="number" />
+} @else if (typeService.isTypeIsTextArea(typeId)) {
+  <textarea [formControl]="control" type="text"></textarea>
+} @else if (typeService.isTypeIsDateInput(typeId)) {
+  <ion-datetime
+    [showDefaultTitle]="true"
+    [formControl]="control"
+  ></ion-datetime>
+} @else {
+  <p>Something went wrong... Oops... ({{ typeId }})</p>
+}

@@ -5,7 +5,6 @@ import { IResponse, IResponsePage } from "src/app/v1/interface/api.interface";
 import { map } from "rxjs";
 import { DateService } from "../date/date.service";
 import { IEnumerator } from "src/app/v1/interface/enumerator.interface";
-import { EnumeratorForm } from "src/app/v1/form/enumerator.form";
 import { TypeEnum } from "src/app/v1/enum/Type";
 import { FEnumerator } from "../../form/f.enumerator";
 

@@ -19,16 +19,9 @@
       [label]="field.name"
       [errorText]="form.errorOf(control)"></app-input-boolean>
   } @else if (typeService.isTypeIsTextArea(field.typeId)) {
-    <app-input-textarea
-      [control]="control"
-      [label]="field.name + ' :'"
-      [errorText]="form.errorOf(control)"
-    ></app-input-textarea>
+    EMPTY TEXTAREA COMPONENT
   } @else if (typeService.isTypeIsDateInput(field.typeId)) {
-    <app-input-date
-      [control]="control"
-      [errorText]="form.errorOf(control)"
-    ></app-input-date>
+    EMPTY DATE COMPONENT
   } @else {
     <p>Something went wrong... Oops...</p>
   }

@@ -1,10 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { IonInput, IonToggle } from '@ionic/angular/standalone';
+import { IonInput } from '@ionic/angular/standalone';
 import { TypeService } from 'src/app/v1/service/api/type.service';
-import { InputTextareaComponent } from '../input-textarea/input-textarea.component';
-import { InputDateComponent } from '../input-date/input-date.component';
 import { IField } from 'src/app/v1/interface/field.interface';
 import { EMPTY_FORM } from 'src/app/v1/form/empty.form';
 import { InputBooleanComponent } from "../input-boolean/input-boolean.component";
@@ -18,8 +16,6 @@ import { InputBooleanComponent } from "../input-boolean/input-boolean.component"
     ReactiveFormsModule,
     CommonModule,
     IonInput,
-    InputTextareaComponent,
-    InputDateComponent,
     InputBooleanComponent
 ]
 })

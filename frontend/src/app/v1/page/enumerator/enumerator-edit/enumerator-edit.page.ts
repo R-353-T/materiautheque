@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
@@ -7,22 +7,19 @@ import { EnumeratorService } from "src/app/v1/service/api/enumerator.service";
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { AlertService } from "src/app/v1/service/alert.service";
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
-import { Subscription, take } from "rxjs";
+import { take } from "rxjs";
 import { ToastService } from "src/app/v1/service/toast.service";
 import { InputValueListComponent } from "src/app/v1/component/form/enumerator/input-value-list/enumerator-input-value-list.component";
-import {
-  IonButton,
-  IonContent,
-  IonInput,
-  IonTextarea,
-} from "@ionic/angular/standalone";
-import { SelectTypeComponent } from "../../../component/form/select-type/select-type.component";
 import { FORM__ENUMERATOR } from "src/app/v1/form/f.enumerator";
 import { FormComponent } from "../../../component/form/form/form.component";
 import { InputComponent } from "../../../component/form/input/input.component";
 import { SelectComponent } from "../../../component/form/select/select.component";
 import { TypeService } from "src/app/v1/service/api/type.service";
 import { IEnumerator } from "src/app/v1/interface/enumerator.interface";
+import {
+  IonButton,
+  IonContent,
+} from "@ionic/angular/standalone";
 
 @Component({
   selector: "app-enumerator-edit",
@@ -38,7 +35,6 @@ import { IEnumerator } from "src/app/v1/interface/enumerator.interface";
     HeaderComponent,
     SubmitButtonComponent,
     InputValueListComponent,
-    SelectTypeComponent,
     FormComponent,
     InputComponent,
     SelectComponent
@@ -96,7 +92,7 @@ export class EnumeratorEditPage {
             next: async () => {
               this.navigationService.backTo = undefined;
               this.toastService.showSuccessDelete(this.baseForm.name.value);
-              await this.navigationService.goToUnitList();
+              await this.navigationService.goToEnumeratorList();
             },
             error: (error) => {
               this.baseForm.httpError(error);
