@@ -15,7 +15,7 @@ class BadParameterCode
     public const NUMBER_MIN = "number_min";
     public const NUMBER_MAX = "number_max";
 
-    public const STRING_MAX = "string_max";
+    public const STRING_MAX = "maxlength";
 
 
     public const TYPE_NOT_ENUM = "type_not_enum";
@@ -36,10 +36,10 @@ class BadParameterCode
     public const DATA_INCORRECT_DATE = ["type" => "DATE"];
     public const DATA_INCORRECT_FILE = ["type" => "FILE"];
 
-    public const DATA_STRING_MAX_NAME = ["max" => MATE_THEME_API_MAX_NAME_LENGTH];
-    public const DATA_STRING_MAX_DESCRIPTION = ["max" => MATE_THEME_API_MAX_DESCRIPTION_LENGTH];
-    public const DATA_STRING_MAX_URL = ["max" => MATE_THEME_API_MAX_DESCRIPTION_LENGTH];
-    public const DATA_STRING_MAX_TEXT = ["max" => MATE_THEME_API_MAX_TEXT_LENGTH];
+    public const DATA_STRING_MAX_NAME = ["requiredLength" => MATE_THEME_API_MAX_NAME_LENGTH];
+    public const DATA_STRING_MAX_DESCRIPTION = ["requiredLength" => MATE_THEME_API_MAX_DESCRIPTION_LENGTH];
+    public const DATA_STRING_MAX_URL = ["requiredLength" => MATE_THEME_API_MAX_DESCRIPTION_LENGTH];
+    public const DATA_STRING_MAX_TEXT = ["requiredLength" => MATE_THEME_API_MAX_TEXT_LENGTH];
     public const DATA_NUMBER_MAX = ["max" => MATE_THEME_API_MAX_NUMBER];
     public const DATA_NUMBER_MIN = ["min" => MATE_THEME_API_MIN_NUMBER];
 

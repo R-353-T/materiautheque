@@ -5,16 +5,19 @@ namespace mate\schema;
 use mate\abstract\clazz\Schema;
 use mate\model\EnumeratorModel;
 use mate\validator\EnumeratorValidator;
+use mate\validator\TypeValidator;
 use WP_REST_Request;
 
 class EnumeratorSchema extends Schema
 {
     private readonly EnumeratorValidator $validator;
+    private readonly TypeValidator $typeValidator;
 
     public function __construct()
     {
         parent::__construct();
         $this->validator = new EnumeratorValidator($this->brb);
+        $this->typeValidator = new TypeValidator($this->brb);
     }
 
     public function create(WP_REST_Request $request)
@@ -46,7 +49,8 @@ class EnumeratorSchema extends Schema
 
     public function list(WP_REST_Request $request)
     {
-        $typeId = $this->validator->typeId($request->get_param("typeId"), false);
+        $typeId = $this->typeValidator->id($request->get_param("typeId"), false, "typeId");
+        $typeId = $typeId === 0 ? null : $typeId;
 
         return $this->brb->containErrors()
             ? $this->brb->build()

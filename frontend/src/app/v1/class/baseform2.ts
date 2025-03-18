@@ -18,7 +18,7 @@ export class BaseForm2 {
         "number_min": "La valeur doit à dépassée la limite inférieur de $1",
         "number_max": "La valeur doit à dépassée la limite supérieur de $1",
 
-        "string_max": "La valeur est trop longue et doit contenir maximum $1 caractères",
+        "maxlength": "La valeur est trop longue et doit contenir maximum $1 caractères",
 
         "type_not_enum": "Ce type n'est pas énumérable",
         "type_not_multiple": "Ce type ne peut pas contenir plusieurs valeurs",
@@ -91,8 +91,12 @@ export class BaseForm2 {
 
         if (control.invalid && (control.dirty || control.touched)) {
             for (const key in control.errors) {
-                if (control.errors[key] === true) {
+                if(key === "maxlength") {
+                    errors.push(this.errors[key].replace("$1", control.errors[key].requiredLength.toString()));
+                } else if (control.errors[key] === true) {
                     errors.push(this.errors[key]);
+                } else {
+                    errors.push(key);
                 }
             }
         }
@@ -130,7 +134,7 @@ export class BaseForm2 {
                 if(this.formGroups[form_name].get(errparam.name)) {
                     if(errparam.index !== undefined) {
                         const fArray = this.formGroups[form_name].get(errparam.name) as FormArray<FormControl>;
-                        fArray.at(errparam.index)?.setErrors({ [errparam.code]: true });
+                        fArray.at(errparam.index)?.setErrors({ [errparam.code]: errparam.data ?? true });
                     } else {
                         this.formGroups[form_name].get(errparam.name)?.setErrors({ [errparam.code]: true });
                         applied = true;

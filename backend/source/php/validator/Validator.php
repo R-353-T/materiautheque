@@ -18,8 +18,10 @@ class Validator
 
     public function id(mixed $id, bool $required = true, string $parameterName = "id"): int
     {
-        if ($id === null && $required === true) {
-            $this->brb->addError($parameterName, BPC::REQUIRED);
+        if ($id === null) {
+            if ($required) {
+                $this->brb->addError($parameterName, BPC::REQUIRED);
+            }
             return 0;
         }
 
