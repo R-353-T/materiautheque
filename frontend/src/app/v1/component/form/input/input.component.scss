@@ -1,16 +1,20 @@
 .mate-input {
     .label {
         @apply inline-block text-ionDark bg-ionLight-shade text-xs py-1 px-2 uppercase
-        border  border-ionLight-shade duration-500 font-bold;
+        border  border-ionLight-shade font-bold;
         border-bottom: 0;
-        border-radius: 4px 4px 0 0;
         margin-bottom: -1px;
     }
 
-    ::ng-deep input {
-        @apply duration-500 bg-ionLight-tint flex w-full p-ios outline-none border border-ionLight-shade;
+    ::ng-deep input,
+    ::ng-deep textarea {
+        @apply bg-ionLight-tint flex w-full p-ios outline-none border border-ionLight-shade;
         z-index: 0;
-        border-radius: 0 4px 4px 4px;
+        border-radius: 0;
+        
+        &:disabled {
+            @apply cursor-not-allowed;
+        }
     }
 
     &.invalid {

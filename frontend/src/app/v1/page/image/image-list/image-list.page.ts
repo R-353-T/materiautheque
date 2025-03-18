@@ -95,7 +95,6 @@ export class ImageListPage {
         },
         error: (error) => {
           this.options.errorMessage.set(error.message);
-
           event?.target.complete();
           this.options.isLoading.set(false);
         },

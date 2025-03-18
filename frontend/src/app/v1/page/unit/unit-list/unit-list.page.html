@@ -1,23 +1,25 @@
 <app-header></app-header>
 
 <ion-content [fullscreen]="true" [scrollEvents]="true">
-
   <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <div class="wrapper">
+  <div class="wrapper gap-ios">
     <div class="flex gap-ios">
-      <ion-button (click)="navigationService.goToUnitCreate()"
-                  [disabled]="!permissionService.hasPermission(permissionService.PERMISSION.unit.create)">
+      <ion-button
+        (click)="navigationService.goToUnitCreate()"
+        [disabled]="!permissionService.hasPermission(permissionService.PERMISSION.unit.create)"
+      >
         Ajouter
       </ion-button>
     </div>
 
-    <ion-searchbar  (ionInput)="search($event)"
-                    [debounce]="1000"
-                    placeholder="Rechercher"
-                    class="my-1"></ion-searchbar>  
+    <ion-searchbar  
+      placeholder="Rechercher"
+      [debounce]="1000"
+      (ionInput)="search($event)"
+    ></ion-searchbar>  
 
     <app-infinite-scroll [options]="options" (load)="load($event)"></app-infinite-scroll>
   </div>

@@ -6,19 +6,15 @@ import { take } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { UnitService } from "src/app/v1/service/api/unit.service";
-import { UNIT_UPDATE_FORM } from "src/app/v1/form/unit.form";
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
 import { IUnit } from "src/app/v1/interface/unit.interface";
 import { AlertService } from "src/app/v1/service/alert.service";
 import { ToastService } from "src/app/v1/service/toast.service";
-import {
-  IonButton,
-  IonContent,
-  IonInput,
-  IonTextarea,
-} from "@ionic/angular/standalone";
-import { BadRequestError } from "src/app/v1/error/BadRequestError";
-import { InputValueListComponent } from "src/app/v1/component/form/unit/input-value-list/input-value-list.component";
+import { IonButton, IonContent } from "@ionic/angular/standalone";
+import { FORM__UNIT } from "src/app/v1/form/f.unit";
+import { FormComponent } from "../../../component/form/form/form.component";
+import { InputComponent } from "../../../component/form/input/input.component";
+import { UnitInputValueListComponent } from "../../../component/form/unit/input-value-list/unit-input-value-list.component";
 
 @Component({
   selector: "app-unit-edit",
@@ -28,19 +24,19 @@ import { InputValueListComponent } from "src/app/v1/component/form/unit/input-va
   imports: [
     IonContent,
     IonButton,
-    IonInput,
-    IonTextarea,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     HeaderComponent,
-    InputValueListComponent,
     SubmitButtonComponent,
+    FormComponent,
+    InputComponent,
+    UnitInputValueListComponent,
   ],
 })
 export class UnitEditPage {
-  readonly form = UNIT_UPDATE_FORM;
-
+  readonly baseForm = FORM__UNIT;
+  unit?: IUnit;
   private readonly unitService = inject(UnitService);
   private readonly navigationService = inject(NavigationService);
   private readonly alertService = inject(AlertService);
@@ -49,65 +45,52 @@ export class UnitEditPage {
 
   ionViewWillEnter() {
     this.navigationService.backTo = this.navigationService.lastPage;
-    this.form.origin = undefined;
-    this.form.reset();
+    this.baseForm.reset();
 
     this.route.data.pipe(take(1))
       .subscribe({
         next: (data) => {
-          this.form.origin = data["unit"] as IUnit;
-          this.form.reset();
+          this.unit = data["unit"] as IUnit;
+          this.baseForm.reset(this.unit);
         },
       });
   }
 
   async update() {
-    if (this.form.valid()) {
-      this.form.formGroup.disable();
-
+    if (this.baseForm.isOk() && this.baseForm.lock()) {
       await this.alertService.confirmEdit(
         () =>
-          this.unitService.update(this.form).subscribe({
+          this.unitService.update(this.baseForm).subscribe({
             next: async (response) => {
               this.toastService.showSuccessUpdate(response.name);
               await this.navigationService.lastPage();
             },
             error: (error) => {
-              this.form.formGroup.enable();
-              if (error instanceof BadRequestError) {
-                this.form.applyBadRequestErrors(error.params);
-              } else {
-                this.form.formGroup.setErrors({ not_implemented: true });
-              }
+              this.baseForm.httpError(error);
+              this.baseForm.unlock();
             },
           }),
-        () => this.form.formGroup.enable(),
+        () => this.baseForm.unlock(),
       );
     }
   }
 
   async delete() {
-    if (this.form.formGroup.enabled) {
-      this.form.formGroup.disable();
-      const id = this.form.id.value;
-
+    if (this.baseForm.lock()) {
       await this.alertService.confirmDelete(
         () =>
-          this.unitService.delete(id).subscribe({
+          this.unitService.delete(this.baseForm.id.value).subscribe({
             next: async () => {
               this.navigationService.backTo = undefined;
-              this.toastService.showSuccessDelete(this.form.name.value);
+              this.toastService.showSuccessDelete(this.baseForm.name.value);
               await this.navigationService.goToUnitList();
             },
             error: (error) => {
-              if (error instanceof BadRequestError) {
-                this.form.applyBadRequestErrors(error.params);
-              } else {
-                this.form.formGroup.setErrors({ not_implemented: true });
-              }
+              this.baseForm.httpError(error);
+              this.baseForm.unlock();
             },
           }),
-        () => this.form.formGroup.enable(),
+        () => this.baseForm.unlock(),
       );
     }
   }

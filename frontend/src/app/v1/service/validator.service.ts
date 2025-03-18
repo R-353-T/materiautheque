@@ -28,7 +28,6 @@ export class ValidatorService {
         return [Validators.min(-9999999999), Validators.max(9999999999), DecimalValidator()];
       
       case TypeEnum.MONEY:
-        console.log(typeId, "MONEY ??")
         return [NumericValidator()];
       
       case TypeEnum.DATE:

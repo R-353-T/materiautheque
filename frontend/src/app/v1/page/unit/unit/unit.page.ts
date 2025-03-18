@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
 import { map, Observable } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
@@ -13,6 +13,8 @@ import {
   IonContent,
   IonText,
 } from "@ionic/angular/standalone";
+import { InputComponent } from "../../../component/form/input/input.component";
+import { FORM__UNIT } from "src/app/v1/form/f.unit";
 
 @Component({
   selector: "app-unit",
@@ -21,15 +23,18 @@ import {
   standalone: true,
   imports: [
     IonContent,
-    IonText,
     IonButton,
     IonBadge,
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     HeaderComponent,
-  ],
+    InputComponent
+],
 })
 export class UnitPage {
+  readonly baseForm = FORM__UNIT;
+
   unit$?: Observable<IUnit>;
   readonly navigationService = inject(NavigationService);
   readonly permissionService = inject(PermissionService);
@@ -37,7 +42,13 @@ export class UnitPage {
   private readonly route = inject(ActivatedRoute);
 
   ionViewWillEnter() {
-    this.unit$ = this.route.data.pipe(map((data) => data["unit"] as IUnit));
+    this.baseForm.reset();
+
+    this.unit$ = this.route.data.pipe(map((data) => {
+      const unit = data["unit"] as IUnit;
+      this.baseForm.reset(unit);
+      return unit;
+    }));
     this.navigationService.backTo = this.navigationService.lastPage;
   }
 }

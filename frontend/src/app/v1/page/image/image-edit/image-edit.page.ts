@@ -80,7 +80,7 @@ export class ImageEditPage {
           this.imageService.delete(this.baseForm.id.value).subscribe({
             next: async () => {
               this.navigationService.backTo = undefined;
-              this.toastService.showSuccessDelete(this.image?.name ?? "");
+              this.toastService.showSuccessDelete(this.baseForm.name.value);
               await this.navigationService.goToImageList();
             },
             error: (error) => {
@@ -88,7 +88,7 @@ export class ImageEditPage {
               this.baseForm.unlock();
             },
           }),
-        () => this.baseForm.unlock(),
+        () => this.baseForm.unlock()
       );
     }
   }

@@ -4,12 +4,13 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HeaderComponent } from "../../../component/organism/header/header.component";
 import { UnitService } from "src/app/v1/service/api/unit.service";
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
-import { UNIT_CREATE_FORM } from "src/app/v1/form/unit.form";
 import { SubmitButtonComponent } from "../../../component/form/submit-button/submit-button.component";
 import { ToastService } from "src/app/v1/service/toast.service";
-import { BadRequestError } from "src/app/v1/error/BadRequestError";
-import { IonContent, IonInput, IonTextarea } from "@ionic/angular/standalone";
-import { InputValueListComponent } from "src/app/v1/component/form/unit/input-value-list/input-value-list.component";
+import { IonContent } from "@ionic/angular/standalone";
+import { FORM__UNIT } from "src/app/v1/form/f.unit";
+import { InputComponent } from "../../../component/form/input/input.component";
+import { FormComponent } from "../../../component/form/form/form.component";
+import { UnitInputValueListComponent } from "../../../component/form/unit/input-value-list/unit-input-value-list.component";
 
 @Component({
   selector: "app-unit-create",
@@ -20,43 +21,37 @@ import { InputValueListComponent } from "src/app/v1/component/form/unit/input-va
     IonContent,
     CommonModule,
     FormsModule,
-    IonInput,
-    IonTextarea,
     CommonModule,
     ReactiveFormsModule,
     HeaderComponent,
     SubmitButtonComponent,
-    InputValueListComponent
-  ],
+    InputComponent,
+    FormComponent,
+    UnitInputValueListComponent
+],
 })
 export class UnitCreatePage {
-  readonly form = UNIT_CREATE_FORM;
+  readonly baseForm = FORM__UNIT;
 
   private readonly unitService = inject(UnitService);
   private readonly navigationService = inject(NavigationService);
   private readonly toastService = inject(ToastService);
 
   ionViewWillEnter() {
-    this.form.reset();
+    this.baseForm.reset();
     this.navigationService.backTo = this.navigationService.lastPage;
   }
 
   create() {
-    if (this.form.valid()) {
-      this.form.formGroup.disable();
-
-      this.unitService.create(this.form).subscribe({
+    if (this.baseForm.isOk() && this.baseForm.lock()) {
+      this.unitService.create(this.baseForm).subscribe({
         next: async (response) => {
           this.toastService.showSuccessCreate(response.name);
           await this.navigationService.goToUnit(response.id);
         },
         error: (error) => {
-          this.form.formGroup.enable();
-          if (error instanceof BadRequestError) {
-            this.form.applyBadRequestErrors(error.params);
-          } else {
-            this.form.formGroup.setErrors({ not_implemented: true });
-          }
+          this.baseForm.httpError(error);
+          this.baseForm.unlock();
         },
       });
     }

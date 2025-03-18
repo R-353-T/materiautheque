@@ -1,4 +1,4 @@
-import { AbstractControl, FormGroup } from "@angular/forms";
+import { AbstractControl, FormArray, FormControl, FormGroup } from "@angular/forms";
 import { BadRequestError } from "../error/BadRequestError";
 import { TooManyRequestError } from "../error/TooManyRequestError";
 
@@ -128,8 +128,13 @@ export class BaseForm2 {
 
             for(const form_name in this.formGroups) {
                 if(this.formGroups[form_name].get(errparam.name)) {
-                    this.formGroups[form_name].get(errparam.name)?.setErrors({ [errparam.code]: true });
-                    applied = true;
+                    if(errparam.index !== undefined) {
+                        const fArray = this.formGroups[form_name].get(errparam.name) as FormArray<FormControl>;
+                        fArray.at(errparam.index)?.setErrors({ [errparam.code]: true });
+                    } else {
+                        this.formGroups[form_name].get(errparam.name)?.setErrors({ [errparam.code]: true });
+                        applied = true;
+                    }
                 }
             }
 

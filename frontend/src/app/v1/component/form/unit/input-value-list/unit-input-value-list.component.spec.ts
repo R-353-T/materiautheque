@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { InputValueListComponent } from './input-value-list.component';
+import { InputValueListComponent } from './unit-input-value-list.component';
 
 describe('InputValueListComponent', () => {
   let component: InputValueListComponent;
