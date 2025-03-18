@@ -40,7 +40,7 @@ class EnumeratorSchema extends Schema
         $model->name = $this->validator->uName($request->get_param("name"), $model->id);
         $model->description = $this->validator->description($request->get_param("description"));
         $model->typeId = $this->validator->typeId($request->get_param("typeId"));
-        $model->valueList = $this->validator->valueList($request->get_param("valueList"), $model->id);
+        $model->valueList = $this->validator->valueList($request->get_param("valueList"), $model->typeId, $model->id);
 
         return $this->brb->containErrors()
             ? $this->brb->build()

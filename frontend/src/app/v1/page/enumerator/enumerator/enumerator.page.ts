@@ -16,6 +16,7 @@ import {
 } from '@ionic/angular/standalone';
 import { FormatDatePipe } from 'src/app/v1/pipe/format-date.pipe';
 import { TypeEnum } from 'src/app/v1/enum/Type';
+import { TypeService } from 'src/app/v1/service/api/type.service';
 
 @Component({
   selector: 'app-enumerator',
@@ -40,6 +41,7 @@ export class EnumeratorPage {
   enumerator$?: Observable<IEnumerator>;
   readonly navigationService = inject(NavigationService);
   readonly permissionService = inject(PermissionService);
+  readonly typeService = inject(TypeService);
 
   private readonly route = inject(ActivatedRoute);
 

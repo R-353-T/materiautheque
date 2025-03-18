@@ -16,17 +16,18 @@
     </header>
 
     <div class="flex flex-col gap-ios">
-      <app-input
-        [label]="baseForm.formLabels['enumerator']['description']"
-        [control]="baseForm.description"
-        [errors]="baseForm.getErrors(baseForm.description)"
-      >
+      <app-input [label]="baseForm.formLabels['enumerator']['description']">
         <textarea [value]="baseForm.description.value" disabled></textarea>
       </app-input>
 
+      <app-input [label]="baseForm.formLabels['enumerator']['typeId']">
+        <input
+          type="text"
+          [value]="typeService.getTypeOf(baseForm.typeId.value)?.name"
+          disabled
+        >
+      </app-input>
       <h3>Valeurs</h3>
-
-
 
       <div class="valueList">
         @for(value of enumerator.valueList; track $index) {
@@ -35,9 +36,9 @@
             {{ $index + 1 }}
           </p>
           @if(baseForm.typeId.value === typeEnum.DATE) {
-            <p class="content">{{ value.value | formatDate }}</p>
+          <p class="content">{{ value.value | formatDate }}</p>
           } @else {
-            <p class="content">{{ value.value }}</p>
+          <p class="content">{{ value.value }}</p>
           }
         </div>
         } @if(enumerator.valueList.length === 0) {
