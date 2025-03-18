@@ -11,7 +11,6 @@ import {
   IonBadge,
   IonButton,
   IonContent,
-  IonText,
 } from "@ionic/angular/standalone";
 import { InputComponent } from "../../../component/form/input/input.component";
 import { FORM__UNIT } from "src/app/v1/form/f.unit";
@@ -43,12 +42,11 @@ export class UnitPage {
 
   ionViewWillEnter() {
     this.baseForm.reset();
-
+    this.navigationService.backTo = this.navigationService.lastPage;
     this.unit$ = this.route.data.pipe(map((data) => {
       const unit = data["unit"] as IUnit;
       this.baseForm.reset(unit);
       return unit;
     }));
-    this.navigationService.backTo = this.navigationService.lastPage;
   }
 }

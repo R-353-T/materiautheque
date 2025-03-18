@@ -7,12 +7,15 @@ import { ActivatedRoute } from '@angular/router';
 import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
 import { PermissionService } from 'src/app/v1/service/permission.service';
 import { IEnumerator } from 'src/app/v1/interface/enumerator.interface';
+import { InputComponent } from "../../../component/form/input/input.component";
+import { FORM__ENUMERATOR } from 'src/app/v1/form/f.enumerator';
 import {
   IonContent,
-  IonText,
   IonButton,
   IonBadge,
 } from '@ionic/angular/standalone';
+import { FormatDatePipe } from 'src/app/v1/pipe/format-date.pipe';
+import { TypeEnum } from 'src/app/v1/enum/Type';
 
 @Component({
   selector: 'app-enumerator',
@@ -21,15 +24,18 @@ import {
   standalone: true,
   imports: [
     IonContent,
-    IonText,
     IonButton,
     IonBadge,
     CommonModule,
     FormsModule,
-    HeaderComponent
+    HeaderComponent,
+    InputComponent,
+    FormatDatePipe
 ]
 })
 export class EnumeratorPage {
+  readonly baseForm = FORM__ENUMERATOR;
+  readonly typeEnum = TypeEnum;
 
   enumerator$?: Observable<IEnumerator>;
   readonly navigationService = inject(NavigationService);
@@ -38,7 +44,12 @@ export class EnumeratorPage {
   private readonly route = inject(ActivatedRoute);
 
   ionViewWillEnter() {
-    this.enumerator$ = this.route.data.pipe(map((data) => data['enumerator'] as IEnumerator));
+    this.baseForm.reset();
     this.navigationService.backTo = this.navigationService.lastPage;
+    this.enumerator$ = this.route.data.pipe(map((data) => {
+      const enumerator = data['enumerator'] as IEnumerator;
+      this.baseForm.reset(enumerator);
+      return enumerator;
+    }));
   }
 }

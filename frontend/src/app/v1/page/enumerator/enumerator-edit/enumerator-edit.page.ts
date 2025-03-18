@@ -5,14 +5,11 @@ import { HeaderComponent } from "src/app/v1/component/organism/header/header.com
 import { ActivatedRoute } from "@angular/router";
 import { EnumeratorService } from "src/app/v1/service/api/enumerator.service";
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
-import { ENUMERATOR_UPDATE_FORM } from "src/app/v1/form/enumerator.form";
 import { AlertService } from "src/app/v1/service/alert.service";
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
-import { IEnumerator } from "src/app/v1/interface/enumerator.interface";
 import { Subscription, take } from "rxjs";
 import { ToastService } from "src/app/v1/service/toast.service";
-import { BadRequestError } from "src/app/v1/error/BadRequestError";
-import { InputValueListComponent } from "src/app/v1/component/form/enumerator/input-value-list/input-value-list.component";
+import { InputValueListComponent } from "src/app/v1/component/form/enumerator/input-value-list/enumerator-input-value-list.component";
 import {
   IonButton,
   IonContent,
@@ -20,6 +17,12 @@ import {
   IonTextarea,
 } from "@ionic/angular/standalone";
 import { SelectTypeComponent } from "../../../component/form/select-type/select-type.component";
+import { FORM__ENUMERATOR } from "src/app/v1/form/f.enumerator";
+import { FormComponent } from "../../../component/form/form/form.component";
+import { InputComponent } from "../../../component/form/input/input.component";
+import { SelectComponent } from "../../../component/form/select/select.component";
+import { TypeService } from "src/app/v1/service/api/type.service";
+import { IEnumerator } from "src/app/v1/interface/enumerator.interface";
 
 @Component({
   selector: "app-enumerator-edit",
@@ -28,8 +31,6 @@ import { SelectTypeComponent } from "../../../component/form/select-type/select-
   standalone: true,
   imports: [
     IonContent,
-    IonInput,
-    IonTextarea,
     IonButton,
     CommonModule,
     FormsModule,
@@ -37,11 +38,16 @@ import { SelectTypeComponent } from "../../../component/form/select-type/select-
     HeaderComponent,
     SubmitButtonComponent,
     InputValueListComponent,
-    SelectTypeComponent
+    SelectTypeComponent,
+    FormComponent,
+    InputComponent,
+    SelectComponent
 ],
 })
-export class EnumeratorEditPage implements OnInit, OnDestroy {
-  readonly form = ENUMERATOR_UPDATE_FORM;
+export class EnumeratorEditPage {
+  readonly baseForm = FORM__ENUMERATOR;
+  readonly typeService = inject(TypeService);
+  enumerator?: IEnumerator;
 
   private readonly enumeratorService = inject(EnumeratorService);
   private readonly navigationService = inject(NavigationService);
@@ -50,81 +56,54 @@ export class EnumeratorEditPage implements OnInit, OnDestroy {
   private readonly alertService = inject(AlertService);
   private readonly route = inject(ActivatedRoute);
 
-  private typeChangeSubscription ?: Subscription;
-
-  ngOnInit() {
-    this.typeChangeSubscription = this.form.typeId.valueChanges.subscribe(() => {
-      if(this.form.typeId.enabled) {
-        this.form.valueList.clear();
-      }
-    });
-  }
-
-  ngOnDestroy() {
-    this.typeChangeSubscription?.unsubscribe();
-  }
-
   ionViewWillEnter() {
     this.navigationService.backTo = this.navigationService.lastPage;
-    this.form.origin = undefined;
-    this.form.reset();
+    this.baseForm.reset();
 
     this.route.data.pipe(take(1))
       .subscribe({
         next: (data) => {
-          this.form.origin = data["enumerator"] as IEnumerator;
-          this.form.reset();
+          this.enumerator = data["enumerator"] as IEnumerator;
+          this.baseForm.reset(this.enumerator);
         },
       });
   }
 
   async update() {
-    if (this.form.valid()) {
-      this.form.formGroup.disable();
-
+    if (this.baseForm.isOk() && this.baseForm.lock()) {
       await this.alertService.confirmEdit(
         () =>
-          this.enumeratorService.update(this.form).subscribe({
+          this.enumeratorService.update(this.baseForm).subscribe({
             next: async (response) => {
               this.toastService.showSuccessUpdate(response.name);
               await this.navigationService.lastPage();
             },
             error: (error) => {
-              this.form.formGroup.enable();
-              if (error instanceof BadRequestError) {
-                this.form.applyBadRequestErrors(error.params);
-              } else {
-                this.form.formGroup.setErrors({ not_implemented: true });
-              }
+              this.baseForm.httpError(error);
+              this.baseForm.unlock();
             },
           }),
-        () => this.form.formGroup.enable(),
+        () => this.baseForm.unlock(),
       );
     }
   }
 
   async delete() {
-    if (this.form.formGroup.enabled) {
-      this.form.formGroup.disable();
-      const id = this.form.id.value;
-
+    if (this.baseForm.lock()) {
       await this.alertService.confirmDelete(
         () =>
-          this.enumeratorService.delete(id).subscribe({
+          this.enumeratorService.delete(this.baseForm.id.value).subscribe({
             next: async () => {
               this.navigationService.backTo = undefined;
-              this.toastService.showSuccessDelete(this.form.name.value);
-              await this.navigationService.goToEnumeratorList();
+              this.toastService.showSuccessDelete(this.baseForm.name.value);
+              await this.navigationService.goToUnitList();
             },
             error: (error) => {
-              if (error instanceof BadRequestError) {
-                this.form.applyBadRequestErrors(error.params);
-              } else {
-                this.form.formGroup.setErrors({ not_implemented: true });
-              }
+              this.baseForm.httpError(error);
+              this.baseForm.unlock();
             },
           }),
-        () => this.form.formGroup.enable(),
+        () => this.baseForm.unlock(),
       );
     }
   }

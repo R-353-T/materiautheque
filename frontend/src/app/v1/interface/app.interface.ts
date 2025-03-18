@@ -2,6 +2,15 @@ import { signal, WritableSignal } from "@angular/core";
 import { ValueDto } from "../model/value-dto";
 
 // **********************************
+// * SELECT                         *
+// **********************************
+
+export interface ISelectValue {
+    dto: ValueDto;
+    disabled: boolean;
+}
+
+// **********************************
 // * FILTER                         *
 // **********************************
 

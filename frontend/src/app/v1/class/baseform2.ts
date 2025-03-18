@@ -28,7 +28,16 @@ export class BaseForm2 {
         "file_too_large": "Le fichier est trop volumineux",
 
         "circular_reference": "La valeur provoque une reference circulaire",
-        "template_missmatch": "Le template n'est pas correspondant"
+        "template_missmatch": "Le template n'est pas correspondant",
+
+        // local app validation
+
+        "invalidType": "Le type de la valeur du champ est incorrect",
+        "invalidUrl": "Ceci n'est pas une URL valide (http, https ou ftp)",
+        "invalidBoolean": "Ceci n'est pas un booléen valide (true ou false)",
+        "invalidNumber": "Ceci n'est pas un nombre valide (0-9, -, .)",
+        "invalidDecimalFormat": "La valeur du champ ne peut contenir que six decimales et quinze chiffres maximum",
+        "invalidDateFormat": "Le format de la date est incorrect"
     }
 
     types: { [code:string]: string } = {
@@ -98,6 +107,8 @@ export class BaseForm2 {
                 } else {
                     errors.push(key);
                 }
+
+                console.log(key);
             }
         }
 

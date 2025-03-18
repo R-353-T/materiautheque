@@ -2,12 +2,13 @@ import { FormArray, FormControl, FormGroup, Validators } from "@angular/forms";
 import { BaseForm2 } from "../class/baseform2";
 import { IEnumerator } from "../interface/enumerator.interface";
 import { ValueDto } from "../model/value-dto";
+import { ValidatorService } from "../service/validator.service";
 
 export class FEnumerator extends BaseForm2
 {
     override formGroups = {
         enumerator: new FormGroup({
-            id: new FormControl<number|null>(null, [Validators.required]),
+            id: new FormControl<number|null>(null, []),
             name: new FormControl<string|null>("", [Validators.required, Validators.maxLength(255)]),
             description: new FormControl<string|null>("", [Validators.maxLength(4096)]),
             typeId: new FormControl<number>(1, [Validators.required]),
@@ -45,13 +46,14 @@ export class FEnumerator extends BaseForm2
 
     override reset(from?: IEnumerator): void {
         super.reset();
-        this.valueList.clear();
-        this.controlIdList = [];
+        this.typeId.setValue(1);
+        this.clearValueList();
 
         if(from) {
             this.id.setValue(from.id);
             this.name.setValue(from.name);
             this.description.setValue(from.description);
+            this.typeId.setValue(from.typeId);
 
             from.valueList.forEach((value) => {
                 this.controlIdList.push({
@@ -62,8 +64,13 @@ export class FEnumerator extends BaseForm2
         }
     }
 
+    clearValueList() {
+        this.valueList.clear();
+        this.controlIdList = [];
+    }
+
     addValue(initial: string = "") {
-        const control = new FormControl(initial, [Validators.required]);
+        const control = new FormControl(initial, [Validators.required, ...ValidatorService.validatorByTypeId(this.typeId.value)]);
         this.valueList.push(control);
         return control;
     }

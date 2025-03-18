@@ -65,7 +65,7 @@ export class EnumeratorService {
       );
   }
 
-  update(form: EnumeratorForm) {
+  update(form: FEnumerator) {
     const body = {
       id: form.id.value,
       name: form.name.value,

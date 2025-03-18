@@ -4,14 +4,15 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { EnumeratorService } from "src/app/v1/service/api/enumerator.service";
 import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
-import { ENUMERATOR_CREATE_FORM } from "src/app/v1/form/enumerator.form";
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
 import { ToastService } from "src/app/v1/service/toast.service";
-import { BadRequestError } from "src/app/v1/error/BadRequestError";
-import { IonContent, IonInput, IonTextarea } from "@ionic/angular/standalone";
-import { InputValueListComponent } from "src/app/v1/component/form/enumerator/input-value-list/input-value-list.component";
-import { SelectTypeComponent } from "../../../component/form/select-type/select-type.component";
-import { Subscription } from "rxjs";
+import { IonContent } from "@ionic/angular/standalone";
+import { InputValueListComponent } from "src/app/v1/component/form/enumerator/input-value-list/enumerator-input-value-list.component";
+import { FORM__ENUMERATOR } from "src/app/v1/form/f.enumerator";
+import { FormComponent } from "../../../component/form/form/form.component";
+import { InputComponent } from "../../../component/form/input/input.component";
+import { SelectComponent } from "../../../component/form/select/select.component";
+import { TypeService } from "src/app/v1/service/api/type.service";
 
 @Component({
   selector: "app-enumerator-create",
@@ -20,58 +21,40 @@ import { Subscription } from "rxjs";
   standalone: true,
   imports: [
     IonContent,
-    IonInput,
-    IonTextarea,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     HeaderComponent,
     SubmitButtonComponent,
     InputValueListComponent,
-    SelectTypeComponent
+    FormComponent,
+    InputComponent,
+    SelectComponent
 ],
 })
-export class EnumeratorCreatePage implements OnInit, OnDestroy {
-  readonly form = ENUMERATOR_CREATE_FORM;
+export class EnumeratorCreatePage {
+  readonly baseForm = FORM__ENUMERATOR;
+  readonly typeService = inject(TypeService);
 
   private readonly enumeratorService = inject(EnumeratorService);
   private readonly navigationService = inject(NavigationService);
   private readonly toastService = inject(ToastService);
 
-  private typeChangeSubscription ?: Subscription;
-
-  ngOnInit() {
-    this.typeChangeSubscription = this.form.typeId.valueChanges.subscribe(() => {
-      if(this.form.typeId.enabled) {
-        this.form.valueList.clear();
-      }
-    });
-  }
-
-  ngOnDestroy() {
-    this.typeChangeSubscription?.unsubscribe();
-  }
-
   ionViewWillEnter() {
-    this.form.reset();
+    this.baseForm.reset();
     this.navigationService.backTo = this.navigationService.lastPage;
   }
 
   create() {
-    if (this.form.valid()) {
-      this.form.formGroup.disable();
-      this.enumeratorService.create(this.form).subscribe({
+    if (this.baseForm.isOk() && this.baseForm.lock()) {
+      this.enumeratorService.create(this.baseForm).subscribe({
         next: async (response) => {
           this.toastService.showSuccessCreate(response.name);
           await this.navigationService.goToEnumerator(response.id);
         },
         error: (error) => {
-          this.form.formGroup.enable();
-          if (error instanceof BadRequestError) {
-            this.form.applyBadRequestErrors(error.params);
-          } else {
-            this.form.formGroup.setErrors({ not_implemented: true });
-          }
+          this.baseForm.httpError(error);
+          this.baseForm.unlock();
         },
       });
     }

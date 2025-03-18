@@ -1,12 +1,15 @@
 .valueList {
-    @apply flex flex-col border border-ionLight-shade px-ios rounded-ios;
+    @apply flex flex-col gap-ios; 
 
     .value {
-        @apply flex;
-        @apply border-b border-ionLight-shade;
+        @apply flex bg-ionLight-tint cursor-not-allowed border border-ionLight-shade;
+    
+        .label {
+            @apply font-bold flex justify-center items-center bg-ionLight-shade px-ios min-w-12 text-sm;
+        }
 
-        &:last-child {
-            @apply border-b-0;
+        .content {
+            @apply text-ionDark p-ios text-base
         }
     }
 }

@@ -1,0 +1,55 @@
+<div class="mate-select" color="light" (click)="focus.set(true)">
+    <p>{{ selected()?.dto?.value ?? "—" }}</p>
+    <ion-icon slot="end" name="swap-vertical"></ion-icon>
+</div>
+
+<ion-modal
+    [isOpen]="focus()"
+    (willDismiss)="focus.set(false)"
+    class="mate-select-modal"
+>
+    <ng-template>
+        <ion-header>
+            <ion-toolbar>
+                <ion-title>{{ label }}</ion-title>
+                <ion-buttons slot="end">
+                    <ion-button (click)="focus.set(false)">
+                        <ion-icon
+                            color="dark"
+                            slot="icon-only"
+                            name="close"
+                        ></ion-icon>
+                    </ion-button>
+                </ion-buttons>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content class="flex flex-col">
+            <div
+                *ngIf="required === false"
+                class="mate-select-button"
+                (click)="select(null)"
+                [class.selected]="control.value === null"
+            >
+                <ion-icon
+                    name="checkmark"
+                    *ngIf="control.value === null"
+                ></ion-icon>
+                <p>—</p>
+            </div>
+
+            @for (value of valueList; track $index) {
+                <div
+                    class="mate-select-button"
+                    (click)="value.disabled === false && select(value)"
+                    [class.selected]="control.value === value.dto.id"
+                    [class.disabled]="value.disabled"
+                >
+                    <ion-icon
+                        name="checkmark"
+                        *ngIf="control.value === value.dto.id"
+                    ></ion-icon>
+                    <p>{{ value.dto.value }}</p>
+                </div>
+            }</ion-content>
+    </ng-template>
+</ion-modal>

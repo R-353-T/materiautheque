@@ -42,7 +42,6 @@
       @for (value of valueList; track $index) {
         <div
           class="mate-filter-button"
-          *ngIf="required === false"
           (click)="value.disabled === false && select(value)"
           [class.selected]="control.value === value.dto.id"
           [class.disabled]="value.disabled"

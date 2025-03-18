@@ -5,6 +5,7 @@ namespace mate\validator;
 use mate\enumerator\BadParameterCode as BPC;
 use mate\error\BadRequestBuilder;
 use mate\model\EnumeratorValueModel;
+use mate\model\TypeModel;
 use mate\repository\EnumeratorRepository;
 use mate\repository\TypeRepository;
 
@@ -62,7 +63,7 @@ class EnumeratorValidator extends Validator
         return $typeId;
     }
 
-    public function valueList(mixed $valueList, mixed $enumeratorId = null): ?array
+    public function valueList(mixed $valueList, int $typeId, mixed $enumeratorId = null): ?array
     {
         if ($this->brb->hasError("id", "typeId")) {
             return null;
@@ -79,12 +80,12 @@ class EnumeratorValidator extends Validator
         }
 
         return array_map(
-            fn($index) => $this->valueDto($valueList[$index], $index, $enumeratorId),
+            fn($index) => $this->valueDto($valueList[$index], $index, $typeId, $enumeratorId),
             array_keys($valueList)
         );
     }
 
-    private function valueDto(mixed $value, int $index, ?int $enumeratorId = null): ?EnumeratorValueModel
+    private function valueDto(mixed $value, int $index, int $typeId, ?int $enumeratorId = null): ?EnumeratorValueModel
     {
         $model = new EnumeratorValueModel();
         $model->position = $index;
@@ -95,19 +96,19 @@ class EnumeratorValidator extends Validator
         }
 
         $this->dtoId($value, $enumeratorId, $model);
-        $this->dtoValue($value, $model);
+        $this->dtoValue($value, $model, $this->typeRepository->selectById($typeId));
         return $model;
     }
 
-    private function dtoValue(array $dto, EnumeratorValueModel $model): void
+    private function dtoValue(array $dto, EnumeratorValueModel $model, TypeModel $type): void
     {
         if (isset($dto["value"]) === false) {
             $this->brb->addError(self::VL, BPC::REQUIRED, null, $model->position, "value");
             return;
         }
 
-        if (($value = $this->typeValidator->MIXED($dto["value"], $dto["type"]->id, $model->position, self::VL))) {
-            $column = $dto["type"]->column;
+        if (($value = $this->typeValidator->MIXED($dto["value"], $type->id, $model->position, self::VL))) {
+            $column = $type->column;
             $model->$column = $value;
         }
     }

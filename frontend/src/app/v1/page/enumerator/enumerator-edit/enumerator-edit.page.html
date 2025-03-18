@@ -1,47 +1,72 @@
 <app-header></app-header>
 
 <ion-content [fullscreen]="true">
-  <div class="wrapper">
-    <h1 class="main">Modifier un énumérateur</h1>
+  <div class="wrapper" *ngIf="typeService.loaded()">
+    <h1 class="main">Ajouter un énumérateur</h1>
 
-    <form [formGroup]="form.formGroup" class="form">
-      <ion-input
-        [formControl]="form.name"
-        type="text"
-        [label]="form.labelGroup.name"
-        [errorText]="form.errorOf(form.name)"
-      ></ion-input>
+    <app-form
+      [formGroup]="baseForm.formGroup"
+      [errors]="baseForm.getErrors(baseForm.formGroup)"
+      *ngIf="typeService.enumerableSelectList$ | async as typeList"
+    >
+      <app-input
+        [label]="baseForm.formLabels['enumerator']['name']"
+        [control]="baseForm.name"
+        [errors]="baseForm.getErrors(baseForm.name)"
+      >
+        <input type="text" [formControl]="baseForm.name">
+      </app-input>
 
-      <ion-textarea
-        [formControl]="form.description"
-        type="text"
-        [label]="form.labelGroup.description"
-        [errorText]="form.errorOf(form.description)"
-      ></ion-textarea>
+      <app-input
+        [label]="baseForm.formLabels['enumerator']['description']"
+        [control]="baseForm.description"
+        [errors]="baseForm.getErrors(baseForm.description)"
+      >
+        <textarea [formControl]="baseForm.description"></textarea>
+      </app-input>
 
-      <app-select-type
-        [control]="form.typeId"
-        [label]="form.labelGroup.typeId"
-        [required]="true"
-        only="enumerable"
-      ></app-select-type>
+      <app-input
+        [label]="baseForm.formLabels['enumerator']['typeId']"
+        [control]="baseForm.typeId"
+        [errors]="baseForm.getErrors(baseForm.typeId)"
+      >
+        <app-select
+          [control]="baseForm.typeId"
+          [label]="baseForm.formLabels['enumerator']['typeId']"
+          [required]="true"
+          [valueList]="typeList"
+          (change)="baseForm.clearValueList()"
+        ></app-select>
+      </app-input>
 
-      <app-input-value-list [form]="form"></app-input-value-list>
+      <app-enumerator-input-value-list
+        [baseForm]="baseForm"
+      ></app-enumerator-input-value-list>
 
       <div class="flex justify-between gap-ios">
         <app-submit-button
-          [enabled]="form.formGroup.enabled"
-          (submit)="update()"
           label="Modifier"
+          [loading]="baseForm.locked"
+          (submit)="update()"
         ></app-submit-button>
 
-        <div class="flex gap-ios" *ngIf="form.formGroup.enabled">
-          <ion-button (click)="form.reset()" color="dark"
-          >Réinitialiser</ion-button>
-
-          <ion-button (click)="delete()" color="danger">Supprimer</ion-button>
+        <div class="flex gap-ios">
+          <ion-button
+            color="dark"
+            [disabled]="baseForm.locked"
+            (click)="baseForm.reset(enumerator)"
+          >
+            Réinitialiser
+          </ion-button>
+          <ion-button
+            color="danger"
+            [disabled]="baseForm.locked"
+            (click)="delete()"
+          >
+            Supprimer
+          </ion-button>
         </div>
       </div>
-    </form>
+    </app-form>
   </div>
 </ion-content>
