@@ -31,7 +31,7 @@
                 [class.selected]="control.value === null"
             >
                 <ion-icon
-                    name="checkmark"
+                    name="radio-button-on"
                     *ngIf="control.value === null"
                 ></ion-icon>
                 <p>—</p>
@@ -46,9 +46,10 @@
                     [style.backgroundColor]="depthColor(value.depth ?? 0)"
                 >
                     <ion-icon
-                        [name]=" control.value === value.dto.id ? 'checkmark': ''"
+                        [name]="valueIcon(value)"
                         [style.marginRight.px]="depthPadding(value.depth ?? 0)"
                     ></ion-icon>
+
                     <p>{{ value.dto.value }}</p>
                 </div>
             }</ion-content>

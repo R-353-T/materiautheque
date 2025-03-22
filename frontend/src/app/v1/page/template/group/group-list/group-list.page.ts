@@ -15,6 +15,7 @@ import {
   InfiniteScrollOptions,
   ISelectValue,
 } from "src/app/v1/interface/app.interface";
+import { TemplateService } from "src/app/v1/service/api/template.service";
 
 @Component({
   selector: "app-group-list",
@@ -46,6 +47,7 @@ export class GroupListPage {
   readonly navigationService = inject(NavigationService);
 
   private readonly route = inject(ActivatedRoute);
+  private readonly templateService = inject(TemplateService);
 
   ionViewWillEnter() {
     this.setBackTo(undefined);
@@ -70,7 +72,10 @@ export class GroupListPage {
             this.descriptionControl.setValue(null);
           }
 
-          this.mapTemplate(template, undefined);
+          this.groupSelectValueList.set(
+            this.templateService.mapTemplateAsSelectValueList(template),
+          );
+
           this.template.set(template);
           this.setBackTo(group);
           this.title.set(group ? group.name : template.name);
@@ -130,7 +135,7 @@ export class GroupListPage {
   private resetPage() {
     this.descriptionControl.setValue(null);
     this.groupIdControl.setValue(null);
-    
+
     this.groupOptions.reset();
     this.fieldOptions.reset();
 
@@ -150,47 +155,5 @@ export class GroupListPage {
       this.navigationService.backTo = this.navigationService.goToTemplateList
         .bind(this.navigationService);
     }
-  }
-
-  private mapTemplate(
-    template: ITemplate,
-    group: IGroup | undefined,
-    depth: number = 0,
-  ) {
-    const output: ISelectValue[] = [];
-
-    if (group === undefined) {
-      output.push({
-        depth: 0,
-        dto: {
-          id: null,
-          value: template.name,
-        },
-        disabled: false,
-      });
-
-      template.groupList?.forEach((group) => {
-        output.push(...this.mapTemplate(template, group, 1));
-      });
-    } else {
-      output.push({
-        depth: depth,
-        dto: {
-          id: group.id,
-          value: group.name,
-        },
-        disabled: false,
-      });
-
-      group.groupList?.forEach((group) => {
-        output.push(...this.mapTemplate(template, group, depth + 1));
-      });
-    }
-
-    if (depth === 0) {
-      this.groupSelectValueList.set(output);
-    }
-
-    return output;
   }
 }

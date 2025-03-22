@@ -2,12 +2,24 @@
 
 <ion-content [fullscreen]="true">
   <div class="wrapper">
-    <h1 class="main">Ajouter un groupe</h1>
+    <h1 class="main">Modifier un groupe</h1>
 
     <app-form
       [formGroup]="baseForm.formGroup"
       [errors]="baseForm.getErrors(baseForm.formGroup)"
     >
+      <app-input
+        [label]="baseForm.formLabels['group']['parentId']"
+        [errors]="baseForm.getErrors(baseForm.parentId)"
+      >
+        <app-select
+          [required]="true"
+          [label]="baseForm.formLabels['group']['parentId']"
+          [valueList]="groupSelectValueList()"
+          [control]="baseForm.parentId"
+        ></app-select>
+      </app-input>
+
       <app-input
         [label]="baseForm.formLabels['group']['name']"
         [control]="baseForm.name"

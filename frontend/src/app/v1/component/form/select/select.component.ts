@@ -66,6 +66,16 @@ export class SelectComponent implements OnInit, OnDestroy, OnChanges {
     this.change.emit(value);
   }
 
+  valueIcon(value: ISelectValue) {
+    if(this.control.value === value.dto.id) {
+      return 'radio-button-on';
+    } else if(value.disabled) {
+      return '';
+    } else {
+      return 'radio-button-off';
+    }
+  }
+
   depthPadding(depth: number) {
     return depth * 14;
   }

@@ -22,6 +22,9 @@ import { FORM__GROUP } from "src/app/v1/form/f.group";
 import { FormComponent } from "../../../../component/form/form/form.component";
 import { InputComponent } from "../../../../component/form/input/input.component";
 import { GroupInputValueListComponent } from "../../../../component/form/group/group-input-value-list/group-input-value-list.component";
+import { TemplateService } from "src/app/v1/service/api/template.service";
+import { ISelectValue } from "src/app/v1/interface/app.interface";
+import { SelectComponent } from "src/app/v1/component/form/select/select.component";
 
 @Component({
   selector: "app-group-edit",
@@ -38,6 +41,7 @@ import { GroupInputValueListComponent } from "../../../../component/form/group/g
     SubmitButtonComponent,
     FormComponent,
     InputComponent,
+    SelectComponent,
     GroupInputValueListComponent,
   ],
 })
@@ -46,11 +50,13 @@ export class GroupEditPage {
 
   readonly template = signal<ITemplate | undefined>(undefined);
   readonly group = signal<IGroup | undefined>(undefined);
+  readonly groupSelectValueList = signal<ISelectValue[]>([]);
 
   private readonly navigationService = inject(NavigationService);
   private readonly groupService = inject(TemplateGroupService);
   private readonly alertService = inject(AlertService);
   private readonly toastService = inject(ToastService);
+  private readonly templateService = inject(TemplateService);
   private readonly route = inject(ActivatedRoute);
 
   ionViewWillEnter() {
@@ -62,10 +68,14 @@ export class GroupEditPage {
       .subscribe({
         next: (data) => {
           const template = data["template"] as ITemplate;
-          const parentGroup = data["group"] as IGroup | undefined;
+          const group = data["group"] as IGroup;
+          
+          this.groupSelectValueList.set(
+            this.templateService.mapTemplateAsSelectValueList(template, group.id),
+          );
 
           this.template.set(template);
-          this.group.set(parentGroup);
+          this.group.set(group);
           this.baseForm.reset(this.group());
         },
       });
