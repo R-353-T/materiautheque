@@ -7,7 +7,6 @@ import { ActivatedRoute } from "@angular/router";
 import { take } from "rxjs";
 import { TemplateGroupService } from "src/app/v1/service/api/template-group.service";
 import { ITemplate } from "src/app/v1/interface/template.interface";
-import { GROUP_UPDATE_FORM } from "src/app/v1/form/group.form";
 import { AlertService } from "src/app/v1/service/alert.service";
 import { IGroup } from "src/app/v1/interface/group.interface";
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
@@ -19,7 +18,10 @@ import {
   IonInput,
   IonTextarea,
 } from "@ionic/angular/standalone";
-import { BadRequestError } from "src/app/v1/error/BadRequestError";
+import { FORM__GROUP } from "src/app/v1/form/f.group";
+import { FormComponent } from "../../../../component/form/form/form.component";
+import { InputComponent } from "../../../../component/form/input/input.component";
+import { GroupInputValueListComponent } from "../../../../component/form/group/group-input-value-list/group-input-value-list.component";
 
 @Component({
   selector: "app-group-edit",
@@ -28,21 +30,22 @@ import { BadRequestError } from "src/app/v1/error/BadRequestError";
   standalone: true,
   imports: [
     IonContent,
-    IonInput,
-    IonIcon,
-    IonTextarea,
     IonButton,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     HeaderComponent,
-    SubmitButtonComponent
+    SubmitButtonComponent,
+    FormComponent,
+    InputComponent,
+    GroupInputValueListComponent,
   ],
 })
 export class GroupEditPage {
-  readonly form = GROUP_UPDATE_FORM;
+  readonly baseForm = FORM__GROUP;
 
   readonly template = signal<ITemplate | undefined>(undefined);
+  readonly group = signal<IGroup | undefined>(undefined);
 
   private readonly navigationService = inject(NavigationService);
   private readonly groupService = inject(TemplateGroupService);
@@ -51,76 +54,70 @@ export class GroupEditPage {
   private readonly route = inject(ActivatedRoute);
 
   ionViewWillEnter() {
+    this.resetPage();
     this.navigationService.backTo = this.navigationService.lastPage;
-    this.form.origin = undefined;
-    this.form.reset();
 
-    this.route.data.pipe(take(1))
+    this.route.data
+      .pipe(take(1))
       .subscribe({
         next: (data) => {
           const template = data["template"] as ITemplate;
-          this.form.origin = data["group"] as IGroup;
+          const parentGroup = data["group"] as IGroup | undefined;
 
-          if(template) {
-            this.template.set(template);
-          }
-
-          this.form.reset();
+          this.template.set(template);
+          this.group.set(parentGroup);
+          this.baseForm.reset(this.group());
         },
       });
   }
 
   async update() {
-    if (this.form.valid()) {
-      this.form.formGroup.disable();
-
+    if (this.baseForm.isOk(true) && this.baseForm.lock()) {
       await this.alertService.confirmEdit(
         () =>
-          this.groupService.update(this.form).subscribe({
+          this.groupService.update(this.baseForm).subscribe({
             next: async (response) => {
               this.toastService.showSuccessUpdate(response.name);
               await this.navigationService.lastPage();
             },
             error: (error) => {
-              // this.form.formGroup.enable();
-              // if (error instanceof BadRequestError) {
-              //   this.form.applyBadRequestErrors(error.params);
-              // } else {
-              //   this.form.formGroup.setErrors({ not_implemented: true });
-              // }
+              this.baseForm.httpError(error);
+              this.baseForm.unlock();
             },
           }),
-        () => this.form.formGroup.enable(),
+        () => this.baseForm.formGroup.enable(),
       );
     }
   }
 
   async delete() {
-    if (this.form.formGroup.enabled) {
-      this.form.formGroup.disable();
-      const id = this.form.id.value;
-
+    if (this.baseForm.lock()) {
       await this.alertService.confirmDelete(
         () =>
-          this.groupService.delete(id!).subscribe({
+          this.groupService.delete(this.baseForm.id.value).subscribe({
             next: async () => {
+              const group = this.group();
               this.navigationService.backTo = undefined;
-              this.toastService.showSuccessDelete(this.form.name.value);
+              this.toastService.showSuccessDelete(this.baseForm.name.value);
               await this.navigationService.goToTemplateGroupList(
-                this.template()!.id,
-                this.form.origin!.parentId ?? undefined,
+                group!.templateId,
+                group!.parentId ?? undefined,
               );
             },
             error: (error) => {
-              // if (error instanceof BadRequestError) {
-              //   this.form.applyBadRequestErrors(error.params);
-              // } else {
-              //   this.form.formGroup.setErrors({ not_implemented: true });
-              // }
+              this.baseForm.httpError(error);
+              this.baseForm.unlock();
             },
           }),
-        () => this.form.formGroup.enable(),
+        () => this.baseForm.unlock(),
       );
     }
+  }
+
+  private resetPage() {
+    this.navigationService.backTo = this.navigationService.lastPage;
+    this.baseForm.reset();
+    this.template.set(undefined);
+    this.group.set(undefined);
   }
 }

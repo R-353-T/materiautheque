@@ -4,9 +4,6 @@ import { environment } from "src/environments/environment";
 import { BehaviorSubject, map, Observable, tap } from "rxjs";
 import { ITemplate } from "src/app/v1/interface/template.interface";
 import { IResponse, IResponsePage } from "src/app/v1/interface/api.interface";
-import { TemplateForm } from "src/app/v1/form/template.form";
-import { IGroup } from "../../interface/group.interface";
-import { ValueDto } from "../../model/value-dto";
 import { FTemplate } from "../../form/f.template";
 
 @Injectable({

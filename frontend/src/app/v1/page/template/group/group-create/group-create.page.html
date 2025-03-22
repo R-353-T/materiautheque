@@ -4,35 +4,40 @@
   <div class="wrapper">
     <h1 class="main">Ajouter un groupe</h1>
 
-    <form [formGroup]="form.formGroup" class="form" *ngIf="template() as t">
-      <div *ngIf="form.errorOf(form.formGroup)" class="f-error">
-        <p>{{ form.errorOf(form.formGroup) }}</p>
-      </div>
+    <app-form
+      [formGroup]="baseForm.formGroup"
+      [errors]="baseForm.getErrors(baseForm.formGroup)"
+    >
+      <app-input [label]="baseForm.formLabels['group']['parentId']">
+        <app-select
+          [required]="true"
+          [label]="baseForm.formLabels['group']['parentId']"
+          [valueList]="groupSelectValueList()"
+          [control]="baseForm.parentId"
+        ></app-select>
+      </app-input>
+      
+      <app-input
+        [label]="baseForm.formLabels['group']['name']"
+        [control]="baseForm.name"
+        [errors]="baseForm.getErrors(baseForm.name)"
+      >
+        <input type="text" [formControl]="baseForm.name">
+      </app-input>
 
-      <ion-input
-        [formControl]="form.name"
-        type="text"
-        [label]="form.labelGroup.name"
-        [errorText]="form.errorOf(form.name)"
-      ></ion-input>
-
-      <ion-textarea
-        [formControl]="form.description"
-        type="text"
-        [label]="form.labelGroup.description"
-        [errorText]="form.errorOf(form.description)"
-      ></ion-textarea>
-
-      <!-- <app-select-group
-        [control]="form.parentId"
-        [template]="t"
-        label="Parent :"
-      ></app-select-group> -->
+      <app-input
+        [label]="baseForm.formLabels['group']['description']"
+        [control]="baseForm.description"
+        [errors]="baseForm.getErrors(baseForm.description)"
+      >
+        <textarea [formControl]="baseForm.description"></textarea>
+      </app-input>
 
       <app-submit-button
-        (submit)="create()"
         label="Ajouter"
+        [loading]="baseForm.locked"
+        (submit)="create()"
       ></app-submit-button>
-    </form>
+    </app-form>
   </div>
 </ion-content>

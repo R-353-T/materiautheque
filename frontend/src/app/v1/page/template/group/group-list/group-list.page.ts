@@ -38,42 +38,21 @@ export class GroupListPage {
 
   readonly template = signal<ITemplate | undefined>(undefined);
   readonly group = signal<IGroup | undefined>(undefined);
-
   readonly title = signal<string>("");
 
   readonly descriptionControl = new FormControl<string | null>(null);
   readonly groupIdControl = new FormControl<number | null>(null);
   readonly groupSelectValueList = signal<ISelectValue[]>([]);
-
   readonly navigationService = inject(NavigationService);
 
   private readonly route = inject(ActivatedRoute);
 
-  moveToGroup(selected: ISelectValue|null) {
-    if (selected === null || selected.depth === 0) {
-      this.navigationService.goToTemplateGroupList(this.template()!.id);
-    } else {
-      this.navigationService.goToTemplateGroupList(
-        this.template()!.id,
-        selected.dto.id!,
-      );
-    }
-
-  }
-
-  goToEditor() {
-    const group = this.group();
-    if (group) {
-      this.navigationService.goToTemplateGroupEdit(group.templateId, group.id);
-    } else {
-      this.navigationService.goToTemplateEdit(this.template()!.id);
-    }
-  }
-
   ionViewWillEnter() {
+    this.setBackTo(undefined);
     this.resetPage();
 
-    this.route.data.pipe(take(1))
+    this.route.data
+      .pipe(take(1))
       .subscribe({
         next: (data) => {
           const template = data["template"] as ITemplate;
@@ -84,9 +63,11 @@ export class GroupListPage {
             this.groupIdControl.setValue(group.id);
             this.loadGroups(group);
             this.loadFields(group);
+            this.descriptionControl.setValue(group.description);
           } else {
             this.groupIdControl.setValue(null);
             this.loadGroups(template);
+            this.descriptionControl.setValue(null);
           }
 
           this.mapTemplate(template, undefined);
@@ -98,6 +79,26 @@ export class GroupListPage {
           this.fieldOptions.isComplete.set(true);
         },
       });
+  }
+
+  moveToGroup(selected: ISelectValue | null) {
+    if (selected === null || selected.depth === 0) {
+      this.navigationService.goToTemplateGroupList(this.template()!.id);
+    } else {
+      this.navigationService.goToTemplateGroupList(
+        this.template()!.id,
+        selected.dto.id!,
+      );
+    }
+  }
+
+  goToEditor() {
+    const group = this.group();
+    if (group) {
+      this.navigationService.goToTemplateGroupEdit(group.templateId, group.id);
+    } else {
+      this.navigationService.goToTemplateEdit(this.template()!.id);
+    }
   }
 
   private loadGroups(data: IGroup | ITemplate) {
@@ -127,6 +128,9 @@ export class GroupListPage {
   }
 
   private resetPage() {
+    this.descriptionControl.setValue(null);
+    this.groupIdControl.setValue(null);
+    
     this.groupOptions.reset();
     this.fieldOptions.reset();
 

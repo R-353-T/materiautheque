@@ -1,9 +1,9 @@
 import { FormArray, FormControl, FormGroup, Validators } from "@angular/forms";
 import { BaseForm2 } from "../class/baseform2";
 import { IGroup } from "../interface/group.interface";
+import { ValueDto } from "../model/value-dto";
 
 export class FGroup extends BaseForm2 {
-
     override formGroups: { [form_name: string]: FormGroup<any>; } = {
         group: new FormGroup({
             id: new FormControl<number|null>(null, []),
@@ -20,7 +20,7 @@ export class FGroup extends BaseForm2 {
         group: {
             name: "Nom",
             description: "Description",
-            parentId: "Groupe parent",
+            parentId: "Parent",
             groupList: "Groupes",
             fieldList: "Champs"
         }
@@ -35,13 +35,64 @@ export class FGroup extends BaseForm2 {
     get groupList() { return this.formGroup.get('groupList') as FormArray<FormControl>; }
     get fieldList() { return this.formGroup.get('fieldList') as FormArray<FormControl>; }
 
+    get groupDtoList() {
+        return this.groupList.controls
+            .map((control) => {
+                const dto = new ValueDto();
+                dto.id = this.groupIdList.find((val) =>
+                    val.control === control
+                )?.id ?? null;
+                dto.value = control.value;
+                return dto;
+            });
+    }
+
+    get fieldDtoList() {
+        return this.fieldList.controls
+            .map((control) => {
+                const dto = new ValueDto();
+                dto.id = this.fieldIdList.find((val) =>
+                    val.control === control
+                )?.id ?? null;
+                dto.value = control.value;
+                return dto;
+            });
+    }
+
     private groupIdList: { id: number, control: FormControl }[] = [];
     private fieldIdList: { id: number, control: FormControl }[] = [];
 
     override reset(from?: IGroup): void {
         super.reset();
+        this.groupList.clear();
+        this.fieldList.clear();
+
         this.groupIdList = [];
         this.fieldIdList = [];
+
+        if (from) {
+            this.id.setValue(from.id);
+            this.name.setValue(from.name);
+            this.description.setValue(from.description);
+            this.templateId.setValue(from.templateId);
+            this.parentId.setValue(from.parentId);
+
+            from.groupList?.forEach((child) => {
+                const childControl: FormControl<string | null> = new FormControl(
+                    child.name
+                );
+                this.groupList.push(childControl);
+                this.groupIdList.push({ id: child.id!, control: childControl });
+            });
+
+            from.fieldList?.forEach((child) => {
+                const childControl: FormControl<string | null> = new FormControl(
+                    child.name
+                );
+                this.fieldList.push(childControl);
+                this.fieldIdList.push({ id: child.id!, control: childControl });
+            });
+        }
     }
 
     moveGroupUp(index: number) {
