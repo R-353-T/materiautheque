@@ -3,6 +3,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { IonButton, IonIcon, IonInput } from "@ionic/angular/standalone";
 import { FUnit } from "src/app/v1/form/f.unit";
 import { InputComponent } from "../../input/input.component";
+import { CommonModule } from "@angular/common";
 
 @Component({
   selector: "app-unit-input-value-list",
@@ -12,6 +13,7 @@ import { InputComponent } from "../../input/input.component";
   imports: [
     IonButton,
     IonIcon,
+    CommonModule,
     ReactiveFormsModule,
     InputComponent,
   ],

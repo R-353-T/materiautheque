@@ -1,67 +1,73 @@
-<div class="flex flex-col gap-ios">
-  <h2>{{ baseForm.formLabels["unit"]["valueList"] }}</h2>
-
-  <div>
-    <ion-button
-      fill="outline"
-      size="small"
-      (click)="baseForm.addValue()"
-    >
-      Ajouter une valeur
-    </ion-button>
+<div class="ordered-list">
+  <div class="flex">
+    <label class="ordered-list-label">{{
+        baseForm.formLabels["unit"]["valueList"]
+      }}</label>
   </div>
 
-  @for (control of this.baseForm.valueList.controls; track $index) {
-    <app-input
-      class="value"
-      [class.invalid]="(control.touched || control.dirty) && control.invalid"
-      [control]="control"
-      [errors]="baseForm.getErrors(control)"
-      label="{{$index + 1}}"
-    >
-      <input [formControl]="control" type="text" />
+  <div class="ordered-list-content">
+    <div>
+      <ion-button
+        fill="outline"
+        size="small"
+        (click)="baseForm.addValue()"
+      >
+        Ajouter une valeur
+      </ion-button>
+    </div>
 
-      <div class="value-buttons">
-        <div class="flex">
-          @if ($index > 0) {
-            <ion-button
-              fill="clear"
-              size="small"
-              (click)="baseForm.moveValueUp($index)"
-            >
-              <ion-icon name="arrow-up"></ion-icon>
-            </ion-button>
-          }
+    @for (control of this.baseForm.valueList.controls; track $index) {
+      <app-input
+        class="value"
+        [class.invalid]="(control.touched || control.dirty) && control.invalid"
+        [control]="control"
+        [errors]="baseForm.getErrors(control)"
+        label="{{$index + 1}}"
+      >
+        <input [formControl]="control" type="text" />
 
-          @if ($index < this.baseForm.valueList.length - 1) {
-            <ion-button
-              fill="clear"
-              size="small"
-              (click)="baseForm.moveValueDown($index)"
-            >
-              <ion-icon name="arrow-down"></ion-icon>
-            </ion-button>
-          }
+        <div class="value-buttons" *ngIf="baseForm.valueList.controls.length > 1">
+          <div class="flex">
+            @if ($index > 0) {
+              <ion-button
+                fill="clear"
+                size="small"
+                (click)="baseForm.moveValueUp($index)"
+              >
+                <ion-icon name="arrow-up"></ion-icon>
+              </ion-button>
+            }
+
+            @if ($index < this.baseForm.valueList.length - 1) {
+              <ion-button
+                fill="clear"
+                size="small"
+                (click)="baseForm.moveValueDown($index)"
+              >
+                <ion-icon name="arrow-down"></ion-icon>
+              </ion-button>
+            }
+          </div>
+
+          <ion-button
+            color="danger"
+            size="small"
+            fill="clear"
+            (click)="baseForm.removeValueAt($index)"
+          >
+            Supprimer
+          </ion-button>
         </div>
-
-        <ion-button
-          color="danger"
-          size="small"
-          fill="clear"
-          (click)="baseForm.removeValueAt($index)"
-        >
-          Supprimer
-        </ion-button>
-      </div>
-    </app-input>
-  }
-  <div>
-    <ion-button
-      fill="outline"
-      size="small"
-      (click)="baseForm.addValue()"
-    >
-      Ajouter une valeur
-    </ion-button>
+      </app-input>
+    }
+    <div>
+      <ion-button
+        fill="outline"
+        size="small"
+        (click)="baseForm.addValue()"
+      >
+        Ajouter une valeur
+      </ion-button>
+    </div>
   </div>
 </div>

@@ -8,6 +8,7 @@ import { ValueDto } from "../model/value-dto";
 export interface ISelectValue {
     dto: ValueDto;
     disabled: boolean;
+    depth?: number;
 }
 
 // **********************************

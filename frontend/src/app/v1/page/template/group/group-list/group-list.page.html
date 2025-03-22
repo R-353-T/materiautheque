@@ -2,36 +2,30 @@
 
 <ion-content [fullscreen]="true">
   <div class="wrapper" *ngIf="template() as t">
-    <app-select-group
-      [control]="groupIdSelector"
-      [template]="t"
-      label=">"
-      class="mb-ios"
-    ></app-select-group>
-
     <header>
-      <h2>{{ name() }}</h2>
+      <h2>{{ title() }}</h2>
 
-      @if(group()) {
       <ion-button
-        *ngIf="group() as group"
-        (click)="navigationService.goToTemplateGroupEdit(group.templateId, group.id)"
+        (click)="goToEditor()"
       >
         Éditer
       </ion-button>
-      } @else {
-      <ion-button (click)="navigationService.goToTemplateEdit(t.id)">
-        Éditer
-      </ion-button>
-      }
     </header>
 
     <div class="flex flex-col mb-7 gap-ios">
-      <h3>Description</h3>
+      <app-input label="Navigation rapide">
+        <app-select
+          [required]="true"
+          label="NAVIGATION RAPIDE"
+          [valueList]="groupSelectValueList()"
+          [control]="groupIdControl"
+          (change)="moveToGroup($event)"
+        ></app-select>
+      </app-input>
 
-      <ion-text class="description" *ngIf="group() as g">
-        {{ g.description }}
-      </ion-text>
+      <app-input label="Description" *ngIf="descriptionControl.value">
+        <textarea [value]="descriptionControl.value" disabled></textarea>
+      </app-input>
     </div>
 
     <header>

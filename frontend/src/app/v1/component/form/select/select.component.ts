@@ -36,7 +36,7 @@ export class SelectComponent {
   required: boolean = false;
 
   @Output()
-  change = new EventEmitter();
+  change = new EventEmitter<ISelectValue|null>();
 
   readonly focus = signal<boolean>(false);
   readonly selected = signal<ISelectValue|null>(null);
@@ -44,6 +44,9 @@ export class SelectComponent {
 
   ngOnInit(): void {
     this.selected.set(this.valueList.find(v => v.dto.id === this.control.value) ?? null);
+
+    console.log(this.valueList.find(v => v.dto.id === this.control.value));
+    console.log(this.control.value);
 
     this.subscription = this.control.valueChanges.subscribe(value => {
       this.selected.set(this.valueList.find(v => v.dto.id === value) ?? null);
@@ -57,6 +60,6 @@ export class SelectComponent {
   select(value: ISelectValue | null) {
     this.control.setValue(value?.dto.id ?? null);
     this.focus.set(false);
-    this.change.emit();
+    this.change.emit(value);
   }
 }

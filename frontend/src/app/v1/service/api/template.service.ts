@@ -5,6 +5,9 @@ import { BehaviorSubject, map, Observable, tap } from "rxjs";
 import { ITemplate } from "src/app/v1/interface/template.interface";
 import { IResponse, IResponsePage } from "src/app/v1/interface/api.interface";
 import { TemplateForm } from "src/app/v1/form/template.form";
+import { IGroup } from "../../interface/group.interface";
+import { ValueDto } from "../../model/value-dto";
+import { FTemplate } from "../../form/f.template";
 
 @Injectable({
   providedIn: "root",
@@ -43,7 +46,7 @@ export class TemplateService {
       .pipe(map((response) => response.data));
   }
 
-  update(form: TemplateForm) {
+  update(form: FTemplate) {
     const body = {
       id: form.id.value,
       name: form.name.value,

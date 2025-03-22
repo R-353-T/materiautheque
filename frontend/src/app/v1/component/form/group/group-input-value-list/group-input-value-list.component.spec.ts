@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { SelectGroupComponent } from './select-group.component';
+import { GroupInputValueListComponent } from './group-input-value-list.component';
 
-describe('SelectGroupComponent', () => {
-  let component: SelectGroupComponent;
-  let fixture: ComponentFixture<SelectGroupComponent>;
+describe('GroupInputValueListComponent', () => {
+  let component: GroupInputValueListComponent;
+  let fixture: ComponentFixture<GroupInputValueListComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SelectGroupComponent ],
+      declarations: [ GroupInputValueListComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SelectGroupComponent);
+    fixture = TestBed.createComponent(GroupInputValueListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

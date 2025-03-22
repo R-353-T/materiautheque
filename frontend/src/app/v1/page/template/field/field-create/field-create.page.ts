@@ -12,8 +12,6 @@ import { IGroup } from "src/app/v1/interface/group.interface";
 import { ITemplate } from "src/app/v1/interface/template.interface";
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
 import { ToastService } from "src/app/v1/service/toast.service";
-import { BadRequestError } from "src/app/v1/error/BadRequestError";
-import { SelectGroupComponent } from "../../../../component/form/select-group/select-group.component";
 import { SelectEnumeratorComponent } from "../../../../component/form/select-enumerator/select-enumerator.component";
 import { SelectTypeComponent } from "../../../../component/form/select-type/select-type.component";
 import { SelectUnitComponent } from "../../../../component/form/select-unit/select-unit.component";
@@ -39,7 +37,6 @@ import {
     ReactiveFormsModule,
     HeaderComponent,
     SubmitButtonComponent,
-    SelectGroupComponent,
     SelectEnumeratorComponent,
     SelectTypeComponent,
     SelectUnitComponent
@@ -109,12 +106,12 @@ export class FieldCreatePage implements OnInit, OnDestroy {
           );
         },
         error: (error) => {
-          if (error instanceof BadRequestError) {
-            this.form.applyBadRequestErrors(error.params);
-          } else {
-            this.form.formGroup.setErrors({ not_implemented: true });
-          }
-          this.form.formGroup.enable();
+          // if (error instanceof BadRequestError) {
+          //   this.form.applyBadRequestErrors(error.params);
+          // } else {
+          //   this.form.formGroup.setErrors({ not_implemented: true });
+          // }
+          // this.form.formGroup.enable();
         },
       });
     }

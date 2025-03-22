@@ -1,5 +1,5 @@
 .mate-select {
-    @apply bg-ionLight-tint flex w-full items-center p-ios outline-none border border-ionLight-shade cursor-pointer gap-ios uppercase;
+    @apply bg-ionLight-tint flex w-full items-center p-ios outline-none border border-ionLight-shade cursor-pointer gap-ios;
     
     ion-icon {
         @apply ml-auto;
@@ -18,6 +18,13 @@
 
         &.selected {
             @apply text-ionPrimary font-bold;
+        }
+
+        &:not(.selected)::before {
+            @apply block;
+            @apply w-4 h-4;
+            content: '';
+
         }
 
         &.disabled {

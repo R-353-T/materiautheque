@@ -43,6 +43,7 @@
                     (click)="value.disabled === false && select(value)"
                     [class.selected]="control.value === value.dto.id"
                     [class.disabled]="value.disabled"
+                    [style.paddingLeft.px]="((value.depth ?? 0) + 1) * 14"
                 >
                     <ion-icon
                         name="checkmark"

@@ -23,12 +23,12 @@
         [errorText]="form.errorOf(form.description)"
       ></ion-textarea>
 
-      <app-select-group
+      <!-- <app-select-group
         [control]="form.parentId"
         [preventRecursionId]="form.id.value"
         [template]="t"
         label="Parent :"
-      ></app-select-group>
+      ></app-select-group> -->
 
       <h3>Groupes</h3>
 
@@ -102,7 +102,6 @@
 
       <div class="flex justify-between gap-ios">
         <app-submit-button
-          [enabled]="form.formGroup.enabled"
           (submit)="update()"
           label="Modifier"
         ></app-submit-button>

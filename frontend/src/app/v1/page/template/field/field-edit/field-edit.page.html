@@ -23,13 +23,13 @@
         [errorText]="form.errorOf(form.description)"
       ></ion-textarea>
 
-      <app-select-group
+      <!-- <app-select-group
         [control]="form.groupId"
         [preventRecursionId]="form.id.value"
         [template]="t"
         label="Groupe :"
         [required]="true"
-      ></app-select-group>
+      ></app-select-group> -->
 
       <ion-toggle
         [formControl]="form.isRequired"
@@ -61,7 +61,6 @@
 
       <div class="flex justify-between gap-ios">
         <app-submit-button
-          [enabled]="form.formGroup.enabled"
           (submit)="update()"
           label="Modifier"
         ></app-submit-button>

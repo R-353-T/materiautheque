@@ -23,13 +23,13 @@
         [errorText]="form.errorOf(form.description)"
       ></ion-textarea>
 
-      <app-select-group
+      <!-- <app-select-group
         [control]="form.groupId"
         [preventRecursionId]="form.id.value"
         [template]="t"
         label="Groupe :"
         [required]="true"
-      ></app-select-group>
+      ></app-select-group> -->
 
       <ion-toggle
         [formControl]="form.isRequired"
@@ -60,7 +60,6 @@
       ></app-select-unit>
 
       <app-submit-button
-        [enabled]="form.formGroup.enabled"
         (submit)="create()"
         label="Ajouter"
       ></app-submit-button>

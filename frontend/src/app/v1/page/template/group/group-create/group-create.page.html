@@ -23,14 +23,13 @@
         [errorText]="form.errorOf(form.description)"
       ></ion-textarea>
 
-      <app-select-group
+      <!-- <app-select-group
         [control]="form.parentId"
         [template]="t"
         label="Parent :"
-      ></app-select-group>
+      ></app-select-group> -->
 
       <app-submit-button
-        [enabled]="form.formGroup.enabled"
         (submit)="create()"
         label="Ajouter"
       ></app-submit-button>

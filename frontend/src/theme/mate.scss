@@ -30,12 +30,6 @@
         --background: transparent;
     }
 
-    // ion-refresher,
-    // ion-refresher-content,
-    // ion-datetime {
-    //     @apply bg-white;
-    // }
-
     ion-toolbar {
         --background: var(--ion-color-light-tint);
     }
@@ -83,10 +77,6 @@ h5 {
     @apply text-base tracking-normal;
 }
 
-/*––––––––––––––––––––––––––––––*/
-/* Custom classes               */
-/*––––––––––––––––––––––––––––––*/
-
 h1.main {
     @apply py-7;
     @apply text-center;
@@ -101,40 +91,42 @@ h1.main {
     }
 }
 
-.mate-disabled {
-    @apply opacity-50;
-}
+/*––––––––––––––––––––––––––––––*/
+/* ordered list                 */
+/*––––––––––––––––––––––––––––––*/
 
-ion-item.mate-selected {
-    @apply font-bold;
+.ordered-list {
+    @apply flex flex-col;
 
-    h3 {
-        @apply font-bold;
+    .ordered-list-label {
+        @apply inline-block text-ionDark bg-ionLight-shade text-xs py-1 px-2 uppercase
+        border  border-ionLight-shade font-bold;
+        border-bottom: 0;
+        margin-bottom: -1px;
     }
-}
 
-.i-error {
-    @apply text-ionDanger text-xs;
-    margin-top: 5px;
-}
-
-.i-info {
-    @apply text-sm text-gray-500 italic;
-    margin-top: 5px;
-}
-
-.c-input {
-    @apply w-full pb-4 border-b;
-    @apply border-ionLight-shade;
-
-    &.invalid {
-        @apply border-ionDanger-tint !important;
+    .ordered-list-content {
+        @apply flex flex-col gap-ios p-ios border border-ionLight-shade;
     }
+
+    .value {
+        @apply flex flex-col;
+    
+        .value-buttons {
+            @apply flex justify-between border border-t-0 border-ionLight-shade;
+        }
+    
+        &.invalid {
+            .value-buttons {
+                @apply border-ionDanger;
+            }
+        }
+    }    
 }
 
-.description {
-    @apply text-ionDark bg-ionLight-tint border border-ionLight-shade p-ios text-base;
-}
+/*––––––––––––––––––––––––––––––*/
+/* Back Log / Patch Notes       */
+/*––––––––––––––––––––––––––––––*/
 
 .backlog {
     @apply flex flex-col gap-ios;

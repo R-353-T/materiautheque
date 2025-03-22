@@ -25,7 +25,6 @@ import {
 import { SelectEnumeratorComponent } from "../../../../component/form/select-enumerator/select-enumerator.component";
 import { SelectTypeComponent } from "../../../../component/form/select-type/select-type.component";
 import { SelectUnitComponent } from "../../../../component/form/select-unit/select-unit.component";
-import { SelectGroupComponent } from "../../../../component/form/select-group/select-group.component";
 import { TypeEnum } from "src/app/v1/enum/Type";
 
 @Component({
@@ -46,8 +45,7 @@ import { TypeEnum } from "src/app/v1/enum/Type";
     SubmitButtonComponent,
     SelectEnumeratorComponent,
     SelectTypeComponent,
-    SelectUnitComponent,
-    SelectGroupComponent,
+    SelectUnitComponent
   ],
 })
 export class FieldEditPage implements OnInit, OnDestroy {
@@ -123,12 +121,12 @@ export class FieldEditPage implements OnInit, OnDestroy {
               await this.navigationService.lastPage();
             },
             error: (error) => {
-              this.form.formGroup.enable();
-              if (error instanceof BadRequestError) {
-                this.form.applyBadRequestErrors(error.params);
-              } else {
-                this.form.formGroup.setErrors({ not_implemented: true });
-              }
+              // this.form.formGroup.enable();
+              // if (error instanceof BadRequestError) {
+              //   this.form.applyBadRequestErrors(error.params);
+              // } else {
+              //   this.form.formGroup.setErrors({ not_implemented: true });
+              // }
             },
           }),
         () => this.form.formGroup.enable(),
@@ -153,11 +151,11 @@ export class FieldEditPage implements OnInit, OnDestroy {
               );
             },
             error: (error) => {
-              if (error instanceof BadRequestError) {
-                this.form.applyBadRequestErrors(error.params);
-              } else {
-                this.form.formGroup.setErrors({ not_implemented: true });
-              }
+              // if (error instanceof BadRequestError) {
+              //   this.form.applyBadRequestErrors(error.params);
+              // } else {
+              //   this.form.formGroup.setErrors({ not_implemented: true });
+              // }
             },
           }),
         () => this.form.formGroup.enable(),

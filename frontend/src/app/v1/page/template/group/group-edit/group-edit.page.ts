@@ -20,7 +20,6 @@ import {
   IonTextarea,
 } from "@ionic/angular/standalone";
 import { BadRequestError } from "src/app/v1/error/BadRequestError";
-import { SelectGroupComponent } from "../../../../component/form/select-group/select-group.component";
 
 @Component({
   selector: "app-group-edit",
@@ -37,8 +36,7 @@ import { SelectGroupComponent } from "../../../../component/form/select-group/se
     FormsModule,
     ReactiveFormsModule,
     HeaderComponent,
-    SubmitButtonComponent,
-    SelectGroupComponent,
+    SubmitButtonComponent
   ],
 })
 export class GroupEditPage {
@@ -84,12 +82,12 @@ export class GroupEditPage {
               await this.navigationService.lastPage();
             },
             error: (error) => {
-              this.form.formGroup.enable();
-              if (error instanceof BadRequestError) {
-                this.form.applyBadRequestErrors(error.params);
-              } else {
-                this.form.formGroup.setErrors({ not_implemented: true });
-              }
+              // this.form.formGroup.enable();
+              // if (error instanceof BadRequestError) {
+              //   this.form.applyBadRequestErrors(error.params);
+              // } else {
+              //   this.form.formGroup.setErrors({ not_implemented: true });
+              // }
             },
           }),
         () => this.form.formGroup.enable(),
@@ -114,11 +112,11 @@ export class GroupEditPage {
               );
             },
             error: (error) => {
-              if (error instanceof BadRequestError) {
-                this.form.applyBadRequestErrors(error.params);
-              } else {
-                this.form.formGroup.setErrors({ not_implemented: true });
-              }
+              // if (error instanceof BadRequestError) {
+              //   this.form.applyBadRequestErrors(error.params);
+              // } else {
+              //   this.form.formGroup.setErrors({ not_implemented: true });
+              // }
             },
           }),
         () => this.form.formGroup.enable(),

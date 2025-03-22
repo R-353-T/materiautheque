@@ -4,68 +4,37 @@
   <div class="wrapper">
     <h1 class="main">Modifier un modèle</h1>
 
-    <form [formGroup]="form.formGroup" class="form" *ngIf="form.origin">
-      <div *ngIf="form.errorOf(form.formGroup)" class="f-error">
-        <p>{{ form.errorOf(form.formGroup) }}</p>
-      </div>
-      <h3>Groupes</h3>
-
-      <ion-input
-        [formControl]="form.name"
-        type="text"
-        [label]="form.labelGroup.name"
-        [errorText]="form.errorOf(form.name)"
-      ></ion-input>
-
-      <!-- GROUP LIST -->
-
-      <div
-        class="flex flex-col border border-ionLight-shade rounded-ios p-ios gap-ios"
+    <app-form
+      [formGroup]="baseForm.formGroup"
+      [errors]="baseForm.getErrors(baseForm.formGroup)"
+    >
+      <app-input
+        label="nom"
+        [control]="baseForm.name"
+        [errors]="baseForm.getErrors(baseForm.name)"
       >
-        @for (control of this.form.groupList.controls; track $index) {
-        <div
-          class="flex flex-col border border-ionLight-shade rounded-ios p-ios"
-        >
-          <p>{{ control.value }}</p>
+        <input type="text" [value]="baseForm.name.value" disabled />
+      </app-input>
 
-          <div class="flex justify-between">
-            <div class="flex">
-              @if($index > 0) {
-              <ion-button
-                fill="clear"
-                size="small"
-                (click)="form.moveGroupUp($index)"
-              >
-                <ion-icon name="arrow-up"></ion-icon>
-              </ion-button>
-              } @if($index < form.groupList.length - 1) { <ion-button
-                fill="clear"
-                size="small"
-                (click)="form.moveGroupDown($index)"
-              >
-                <ion-icon name="arrow-down"></ion-icon>
-              </ion-button>
-              }
-            </div>
-          </div>
-        </div>
-        }
-      </div>
-
-      <!-- END GROUP LIST -->
+      <app-group-input-value-list [baseForm]="baseForm"></app-group-input-value-list>
 
       <div class="flex justify-between gap-ios">
         <app-submit-button
-          [enabled]="form.formGroup.enabled"
-          (submit)="update()"
           label="Modifier"
+          [loading]="baseForm.locked"
+          (submit)="update()"
         ></app-submit-button>
 
-        <div class="flex gap-ios" *ngIf="form.formGroup.enabled">
-          <ion-button (click)="form.reset()" color="dark"
-          >Réinitialiser</ion-button>
+        <div class="flex gap-ios">
+          <ion-button
+            color="dark"
+            [disabled]="baseForm.locked"
+            (click)="baseForm.reset(template)"
+          >
+            Réinitialiser
+          </ion-button>
         </div>
       </div>
-    </form>
+    </app-form>
   </div>
 </ion-content>

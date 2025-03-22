@@ -11,9 +11,7 @@ import { GROUP_CREATE_FORM } from "src/app/v1/form/group.form";
 import { IGroup } from "src/app/v1/interface/group.interface";
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
 import { ToastService } from "src/app/v1/service/toast.service";
-import { BadRequestError } from "src/app/v1/error/BadRequestError";
 import { IonContent, IonInput, IonTextarea } from "@ionic/angular/standalone";
-import { SelectGroupComponent } from "../../../../component/form/select-group/select-group.component";
 
 @Component({
   selector: "app-group-create",
@@ -28,8 +26,7 @@ import { SelectGroupComponent } from "../../../../component/form/select-group/se
     FormsModule,
     ReactiveFormsModule,
     HeaderComponent,
-    SubmitButtonComponent,
-    SelectGroupComponent
+    SubmitButtonComponent
 ],
 })
 export class GroupCreatePage {
@@ -83,12 +80,12 @@ export class GroupCreatePage {
           );
         },
         error: (error) => {
-          this.form.formGroup.enable();
-          if (error instanceof BadRequestError) {
-            this.form.applyBadRequestErrors(error.params);
-          } else {
-            this.form.formGroup.setErrors({ not_implemented: true });
-          }
+          // this.form.formGroup.enable();
+          // if (error instanceof BadRequestError) {
+          //   this.form.applyBadRequestErrors(error.params);
+          // } else {
+          //   this.form.formGroup.setErrors({ not_implemented: true });
+          // }
         },
       });
     }

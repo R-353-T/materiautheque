@@ -45,9 +45,7 @@ export class UnitListPage {
   content: IonContent | undefined;
 
   readonly options = new InfiniteScrollOptions();
-  readonly searchOption: WritableSignal<string | undefined | null> = signal(
-    null,
-  );
+  readonly searchOption: WritableSignal<string | undefined | null> = signal(null);
 
   readonly navigationService = inject(NavigationService);
   readonly permissionService = inject(PermissionService);
