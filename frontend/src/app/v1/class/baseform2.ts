@@ -68,13 +68,17 @@ export class BaseForm2 {
         this.locked = false;
     }
 
-    isOk() {
+    isOk(force=false) {
         let isOk = true;
 
-        for (const form_name in this.formGroups) {
-            this.formGroups[form_name].markAllAsTouched();
+        for (const formName in this.formGroups) {
+            if(force) {
+                this.formGroups[formName].setErrors(null);
+            }
 
-            if (this.formGroups[form_name].invalid) {
+            this.formGroups[formName].markAllAsTouched();
+
+            if (this.formGroups[formName].invalid) {
                 isOk = false;
             }
         }
@@ -117,7 +121,7 @@ export class BaseForm2 {
 
     public httpError(error: any) {
         if (error instanceof BadRequestError) {
-          this.badRequest(error);
+            this.badRequest(error);
         } else if (error instanceof TooManyRequestError) {
             for(const form_name in this.formGroups) {
                 this.formGroups[form_name].setErrors({ too_many_tries: true });

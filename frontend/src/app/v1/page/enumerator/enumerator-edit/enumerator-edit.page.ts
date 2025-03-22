@@ -56,7 +56,8 @@ export class EnumeratorEditPage {
     this.navigationService.backTo = this.navigationService.lastPage;
     this.baseForm.reset();
 
-    this.route.data.pipe(take(1))
+    this.route.data
+      .pipe(take(1))
       .subscribe({
         next: (data) => {
           this.enumerator = data["enumerator"] as IEnumerator;
@@ -66,7 +67,7 @@ export class EnumeratorEditPage {
   }
 
   async update() {
-    if (this.baseForm.isOk() && this.baseForm.lock()) {
+    if (this.baseForm.isOk(true) && this.baseForm.lock()) {
       await this.alertService.confirmEdit(
         () =>
           this.enumeratorService.update(this.baseForm).subscribe({

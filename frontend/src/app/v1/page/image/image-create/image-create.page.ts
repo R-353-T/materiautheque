@@ -47,7 +47,7 @@ export class ImageCreatePage {
   }
 
   create() {
-    if (this.baseForm.isOk() && this.baseForm.lock()) {
+    if (this.baseForm.isOk(true) && this.baseForm.lock()) {
       this.imageService.create(this.baseForm)
         .subscribe({
           next: async (response) => {

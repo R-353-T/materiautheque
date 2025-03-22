@@ -20,13 +20,6 @@
             @apply text-ionPrimary font-bold;
         }
 
-        &:not(.selected)::before {
-            @apply block;
-            @apply w-4 h-4;
-            content: '';
-
-        }
-
         &.disabled {
             @apply text-ionLight-shade cursor-not-allowed hover:bg-white;
         }

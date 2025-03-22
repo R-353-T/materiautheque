@@ -36,7 +36,7 @@ export class LoginPage {
   }
 
   login() {
-    if (this.baseForm.isOk() && this.baseForm.lock()) {
+    if (this.baseForm.isOk(true) && this.baseForm.lock()) {
       this.authService.login(this.baseForm)
         .subscribe({
           next: async (r) => (await this.navigationService.goToHome()),

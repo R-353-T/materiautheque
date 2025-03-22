@@ -43,7 +43,7 @@ export class UnitCreatePage {
   }
 
   create() {
-    if (this.baseForm.isOk() && this.baseForm.lock()) {
+    if (this.baseForm.isOk(true) && this.baseForm.lock()) {
       this.unitService.create(this.baseForm).subscribe({
         next: async (response) => {
           this.toastService.showSuccessCreate(response.name);

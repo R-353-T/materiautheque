@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, signal, SimpleChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { IonButton, IonIcon, IonHeader, IonModal, IonToolbar, IonTitle, IonButtons, IonContent } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
@@ -22,7 +22,7 @@ import { ISelectValue } from 'src/app/v1/interface/app.interface';
     CommonModule
   ]
 })
-export class SelectComponent {
+export class SelectComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   control: FormControl = new FormControl();
 
@@ -45,9 +45,6 @@ export class SelectComponent {
   ngOnInit(): void {
     this.selected.set(this.valueList.find(v => v.dto.id === this.control.value) ?? null);
 
-    console.log(this.valueList.find(v => v.dto.id === this.control.value));
-    console.log(this.control.value);
-
     this.subscription = this.control.valueChanges.subscribe(value => {
       this.selected.set(this.valueList.find(v => v.dto.id === value) ?? null);
     });
@@ -56,10 +53,36 @@ export class SelectComponent {
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
   }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['valueList']) {
+      this.selected.set(this.valueList.find(v => v.dto.id === this.control.value) ?? null);
+    }
+  }
   
   select(value: ISelectValue | null) {
     this.control.setValue(value?.dto.id ?? null);
     this.focus.set(false);
     this.change.emit(value);
+  }
+
+  depthPadding(depth: number) {
+    return depth * 14;
+  }
+
+  depthColor(depth: number) {
+    const depthColors = [
+      "#FFFFFF",
+      "#FEFEFE",
+      "#F6F6F6",
+      "#F2F2F2",
+      "#EDEDED",
+      "#E9E9E9",
+      "#E5E5E5",
+      "#E1E1E1",
+      "#DDDDDD"
+    ];
+
+    return depthColors[depth];
   }
 }

@@ -43,11 +43,11 @@
                     (click)="value.disabled === false && select(value)"
                     [class.selected]="control.value === value.dto.id"
                     [class.disabled]="value.disabled"
-                    [style.paddingLeft.px]="((value.depth ?? 0) + 1) * 14"
+                    [style.backgroundColor]="depthColor(value.depth ?? 0)"
                 >
                     <ion-icon
-                        name="checkmark"
-                        *ngIf="control.value === value.dto.id"
+                        [name]=" control.value === value.dto.id ? 'checkmark': ''"
+                        [style.marginRight.px]="depthPadding(value.depth ?? 0)"
                     ></ion-icon>
                     <p>{{ value.dto.value }}</p>
                 </div>

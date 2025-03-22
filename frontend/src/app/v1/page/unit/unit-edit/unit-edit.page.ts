@@ -57,7 +57,7 @@ export class UnitEditPage {
   }
 
   async update() {
-    if (this.baseForm.isOk() && this.baseForm.lock()) {
+    if (this.baseForm.isOk(true) && this.baseForm.lock()) {
       await this.alertService.confirmEdit(
         () =>
           this.unitService.update(this.baseForm).subscribe({
