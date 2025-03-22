@@ -28,7 +28,7 @@ class GroupRepository extends Repository
         $result = null;
         $parentIdArr = $model->parentId !== null
             ? [$model->parentId, PDO::PARAM_INT]
-            : [null, PDO::PARAM_INT];
+            : [null, PDO::PARAM_NULL];
 
         try {
             $this->db->transaction();

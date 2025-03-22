@@ -21,7 +21,7 @@ class GroupValidator extends Validator
             return null;
         }
 
-        if (($parentId = $this->id($parentId, false, "parentId")) !== null) {
+        if (($parentId = $this->id($parentId, false, "parentId")) !== 0) {
             if (
                 ($id === null
                 && ($parent = $this->repository->selectById($parentId)) !== null
@@ -39,6 +39,8 @@ class GroupValidator extends Validator
             if ($id !== null && $this->repository->circularParentId($id, $parentId)) {
                 $this->brb->addError("parentId", BPC::GROUP_CIRCULAR_REFERENCE);
             }
+        } else {
+            return null;
         }
 
         return $parentId;
