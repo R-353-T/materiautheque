@@ -18,9 +18,9 @@ export class EnumeratorService {
 
   list(
     index: number,
-    size: number,
     search?: string | undefined | null,
     typeId?: number | undefined | null,
+    size: number = 32,
   ) {
     const parameters = {
       index,

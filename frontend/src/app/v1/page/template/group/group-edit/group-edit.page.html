@@ -12,12 +12,10 @@
         [label]="baseForm.formLabels['group']['parentId']"
         [errors]="baseForm.getErrors(baseForm.parentId)"
       >
-        <app-select
-          [required]="true"
-          [label]="baseForm.formLabels['group']['parentId']"
-          [valueList]="groupSelectValueList()"
+        <!-- <app-select
           [control]="baseForm.parentId"
-        ></app-select>
+          [options]="groupSelectOptions"
+        ></app-select> -->
       </app-input>
 
       <app-input

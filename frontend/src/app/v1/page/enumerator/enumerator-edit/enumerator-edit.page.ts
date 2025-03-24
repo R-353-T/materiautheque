@@ -13,13 +13,12 @@ import { InputValueListComponent } from "src/app/v1/component/form/enumerator/in
 import { FORM__ENUMERATOR } from "src/app/v1/form/f.enumerator";
 import { FormComponent } from "../../../component/form/form/form.component";
 import { InputComponent } from "../../../component/form/input/input.component";
-import { SelectComponent } from "../../../component/form/select/select.component";
-import { TypeService } from "src/app/v1/service/api/type.service";
 import { IEnumerator } from "src/app/v1/interface/enumerator.interface";
 import {
   IonButton,
   IonContent,
 } from "@ionic/angular/standalone";
+import { TypeSelectComponent } from "../../../component/type/type-select/type-select.component";
 
 @Component({
   selector: "app-enumerator-edit",
@@ -37,18 +36,16 @@ import {
     InputValueListComponent,
     FormComponent,
     InputComponent,
-    SelectComponent
+    TypeSelectComponent
 ],
 })
 export class EnumeratorEditPage {
   readonly baseForm = FORM__ENUMERATOR;
-  readonly typeService = inject(TypeService);
   enumerator?: IEnumerator;
-
+  
   private readonly enumeratorService = inject(EnumeratorService);
   private readonly navigationService = inject(NavigationService);
   private readonly toastService = inject(ToastService);
-
   private readonly alertService = inject(AlertService);
   private readonly route = inject(ActivatedRoute);
 

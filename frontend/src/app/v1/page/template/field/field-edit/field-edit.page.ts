@@ -14,17 +14,11 @@ import { FIELD_UPDATE_FORM } from "src/app/v1/form/field.form";
 import { AlertService } from "src/app/v1/service/alert.service";
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
 import { ToastService } from "src/app/v1/service/toast.service";
-import { BadRequestError } from "src/app/v1/error/BadRequestError";
 import {
   IonButton,
   IonContent,
-  IonInput,
-  IonTextarea,
   IonToggle,
 } from "@ionic/angular/standalone";
-import { SelectEnumeratorComponent } from "../../../../component/form/select-enumerator/select-enumerator.component";
-import { SelectTypeComponent } from "../../../../component/form/select-type/select-type.component";
-import { SelectUnitComponent } from "../../../../component/form/select-unit/select-unit.component";
 import { TypeEnum } from "src/app/v1/enum/Type";
 
 @Component({
@@ -35,17 +29,12 @@ import { TypeEnum } from "src/app/v1/enum/Type";
   imports: [
     IonContent,
     IonButton,
-    IonInput,
     IonToggle,
-    IonTextarea,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     HeaderComponent,
     SubmitButtonComponent,
-    SelectEnumeratorComponent,
-    SelectTypeComponent,
-    SelectUnitComponent
   ],
 })
 export class FieldEditPage implements OnInit, OnDestroy {
@@ -110,28 +99,28 @@ export class FieldEditPage implements OnInit, OnDestroy {
   }
 
   async update() {
-    if (this.form.valid()) {
-      this.form.formGroup.disable();
+    // if (this.form.valid()) {
+    //   this.form.formGroup.disable();
 
-      await this.alertService.confirmEdit(
-        () =>
-          this.fieldService.update(this.form).subscribe({
-            next: async (response) => {
-              this.toastService.showSuccessUpdate(response.name);
-              await this.navigationService.lastPage();
-            },
-            error: (error) => {
-              // this.form.formGroup.enable();
-              // if (error instanceof BadRequestError) {
-              //   this.form.applyBadRequestErrors(error.params);
-              // } else {
-              //   this.form.formGroup.setErrors({ not_implemented: true });
-              // }
-            },
-          }),
-        () => this.form.formGroup.enable(),
-      );
-    }
+    //   await this.alertService.confirmEdit(
+    //     () =>
+    //       this.fieldService.update(this.form).subscribe({
+    //         next: async (response) => {
+    //           this.toastService.showSuccessUpdate(response.name);
+    //           await this.navigationService.lastPage();
+    //         },
+    //         error: (error) => {
+    //           // this.form.formGroup.enable();
+    //           // if (error instanceof BadRequestError) {
+    //           //   this.form.applyBadRequestErrors(error.params);
+    //           // } else {
+    //           //   this.form.formGroup.setErrors({ not_implemented: true });
+    //           // }
+    //         },
+    //       }),
+    //     () => this.form.formGroup.enable(),
+    //   );
+    // }
   }
 
   async delete() {

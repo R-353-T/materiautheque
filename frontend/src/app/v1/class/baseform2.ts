@@ -111,8 +111,6 @@ export class BaseForm2 {
                 } else {
                     errors.push(key);
                 }
-
-                console.log(key);
             }
         }
 

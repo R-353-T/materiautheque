@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { SelectEnumeratorComponent } from './select-enumerator.component';
+import { TypeFilterComponent } from './type-filter.component';
 
-describe('SelectEnumeratorComponent', () => {
-  let component: SelectEnumeratorComponent;
-  let fixture: ComponentFixture<SelectEnumeratorComponent>;
+describe('TypeFilterComponent', () => {
+  let component: TypeFilterComponent;
+  let fixture: ComponentFixture<TypeFilterComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SelectEnumeratorComponent ],
+      declarations: [ TypeFilterComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SelectEnumeratorComponent);
+    fixture = TestBed.createComponent(TypeFilterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

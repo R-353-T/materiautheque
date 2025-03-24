@@ -3,14 +3,14 @@ import { environment } from 'src/environments/environment';
 import { ApiService } from './api.service';
 import { map, take } from 'rxjs';
 import { IResponse, IResponsePage } from 'src/app/v1/interface/api.interface';
-import { FieldForm } from 'src/app/v1/form/field.form';
 import { IField } from 'src/app/v1/interface/field.interface';
+import { FField } from '../../form/f.field';
+import { TypeService } from './type.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TemplateFieldService {
-
   private readonly ep = environment.api.field;
   private readonly api = inject(ApiService);
 
@@ -25,7 +25,7 @@ export class TemplateFieldService {
       .pipe(map(response => response.data));
   }
 
-  create(form: FieldForm) {
+  create(form: FField) {
     const body = {
       name: form.name.value,
       description: form.description.value ?? "",
@@ -42,7 +42,7 @@ export class TemplateFieldService {
       .pipe(map(response => response.data));
   }
 
-  update(form: FieldForm) {
+  update(form: FField) {
     const body = {
       id: form.id.value,
       name: form.name.value,

@@ -1,13 +1,13 @@
-import { Component, inject, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, inject, OnInit, ViewChild } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
-import { InfiniteScrollComponent } from "src/app/v1/component/organism/infinite-scroll/infinite-scroll.component";
 import { ScrollTopButtonComponent } from "src/app/v1/component/atom/scroll-top-button/scroll-top-button.component";
 import { TemplateService } from "src/app/v1/service/api/template.service";
-import { Subscription } from "rxjs";
 import { IonContent } from "@ionic/angular/standalone";
-import { InfiniteScrollOptions, InfiniteScrollItem } from 'src/app/v1/interface/app.interface';
+import { List, ListItemOptions } from 'src/app/v1/interface/app.interface';
+import { ListComponent } from "src/app/v1/component/organism/list/list.component";
+import { ListItemComponent } from "src/app/v1/component/organism/list-item/list-item.component";
 
 @Component({
   selector: "app-template-list",
@@ -19,41 +19,39 @@ import { InfiniteScrollOptions, InfiniteScrollItem } from 'src/app/v1/interface/
     CommonModule,
     FormsModule,
     HeaderComponent,
-    InfiniteScrollComponent,
     ScrollTopButtonComponent,
+    ListComponent,
+    ListItemComponent
   ],
 })
-export class TemplateListPage implements OnInit, OnDestroy {
+export class TemplateListPage implements OnInit {
   @ViewChild(IonContent, { static: true })
   content: IonContent | undefined;
 
-  readonly options = new InfiniteScrollOptions();
-
-  private subscription?: Subscription;
+  readonly list = new List();
   private readonly templateService = inject(TemplateService);
 
   ngOnInit() {
-    this.options.isLoading.set(true);
+    this.list.options.loading.set(true);
 
-    this.subscription = this.templateService.templateList$.subscribe({
+    const subscription = this.templateService.templateList$.subscribe({
       next: (templateList) => {
-        for (const template of templateList ?? []) {
-          this.options.items.push(
-            new InfiniteScrollItem(
-              template.name,
-              undefined,
-              undefined,
-              ["/template/group-list/", template.id, "_"],
-            ),
-          );
-        }
+        if(templateList === undefined || templateList.length === 0) return;
 
-        this.options.isComplete.set(templateList !== undefined);
+        for (const template of templateList) {
+          const item = new ListItemOptions();
+          item.id = template.id;
+          item.label = template.name;
+          item.mode.set("redirection");
+          item.redirection = ["/template/group-list/", template.id, "_"];
+          this.list.add(item);
+        }
+      },
+
+      error: (error) => {
+        this.list.options.errors.set([error.message]);
+        subscription.unsubscribe();
       },
     });
-  }
-
-  ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
   }
 }

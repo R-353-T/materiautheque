@@ -1,3 +1,7 @@
 ::ng-deep .form-error {
-    @apply border-l-8 border-ionDanger p-2 px-ios text-ionDanger text-xs bg-ionLight;
+    @apply border-l-8 border-ionDanger p-2 px-ios text-ionDanger text-xs bg-red-50;
+}
+
+::ng-deep .form-hint {
+    @apply italic border-l-8 border-ionPrimary p-2 px-ios text-ionPrimary text-xs bg-blue-50;
 }

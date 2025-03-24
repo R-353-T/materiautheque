@@ -1,0 +1,12 @@
+<div class="mate-list-item" (click)="onClick()" [class.disabled]="options.disabled()">
+  <div class="mate-list-item-icon">
+    @if(icon() !== null) {
+      <ion-icon [name]="icon()" size="large"></ion-icon>
+    }
+  </div>
+
+  <div class="mate-list-item-content">
+    <h5 class="label">{{ options.label }}</h5>
+    <p class="description">{{ options.description }}</p>
+  </div>
+</div>

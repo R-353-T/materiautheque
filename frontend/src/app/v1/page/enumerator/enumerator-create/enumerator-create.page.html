@@ -1,13 +1,12 @@
 <app-header></app-header>
 
 <ion-content [fullscreen]="true">
-  <div class="wrapper" *ngIf="typeService.loaded()">
+  <div class="wrapper">
     <h1 class="main">Ajouter un énumérateur</h1>
 
     <app-form
       [formGroup]="baseForm.formGroup"
       [errors]="baseForm.getErrors(baseForm.formGroup)"
-      *ngIf="typeService.enumerableSelectList$ | async as typeList"
     >
       <app-input
         [label]="baseForm.formLabels['enumerator']['name']"
@@ -30,13 +29,10 @@
         [control]="baseForm.typeId"
         [errors]="baseForm.getErrors(baseForm.typeId)"
       >
-        <app-select
+        <app-type-select
           [control]="baseForm.typeId"
-          [label]="baseForm.formLabels['enumerator']['typeId']"
           [required]="true"
-          [valueList]="typeList"
-          (change)="baseForm.clearValueList()"
-        ></app-select>
+        ></app-type-select>
       </app-input>
 
       <app-enumerator-input-value-list

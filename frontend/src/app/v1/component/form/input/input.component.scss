@@ -8,13 +8,17 @@
 
     ::ng-deep input,
     ::ng-deep textarea {
-        @apply bg-ionLight-tint flex w-full p-ios outline-none border border-ionLight-shade;
+        @apply bg-white flex w-full p-ios outline-none border border-ionLight-shade;
         z-index: 0;
         border-radius: 0;
         
         &:disabled {
-            @apply cursor-not-allowed;
+            @apply cursor-not-allowed bg-ionLight-tint;
         }
+    }
+
+    ::ng-deep ion-toggle {
+        @apply bg-white flex p-ios outline-none border border-ionLight-shade;
     }
 
     &.invalid {
@@ -22,8 +26,9 @@
             @apply border-ionDanger bg-ionDanger text-white;
         }
 
-        ::ng-deep input {
-            @apply border-ionDanger bg-red-100;
+        ::ng-deep input,
+        ::ng-deep textarea {
+            @apply border-ionDanger bg-red-50;
         }
     }
 }

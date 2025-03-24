@@ -20,4 +20,7 @@ export class InputComponent {
 
   @Input()
   errors: string[] = [];
+
+  @Input()
+  hint?: string;
 }

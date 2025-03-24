@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { filter, addCircle, arrowBack, arrowDown, arrowForward, arrowUp, close, create, list, menu, removeCircle, share, swapVertical, chevronExpand, checkmark, radioButtonOff, radioButtonOn } from 'ionicons/icons';
+import { filter, addCircle, arrowBack, arrowDown, arrowForward, arrowUp, close, create, list, menu, removeCircle, share, swapVertical, chevronExpand, checkmark, radioButtonOff, radioButtonOn, square, chevronForward, checkbox } from 'ionicons/icons';
 import { MainMenuComponent } from "./v1/component/organism/main-menu/main-menu.component";
 
 @Component({
@@ -17,6 +17,7 @@ export class AppComponent {
       arrowDown,
       arrowForward,
       checkmark,
+      chevronForward,
       close,
       menu,
       swapVertical,
@@ -24,10 +25,12 @@ export class AppComponent {
       create,
       addCircle,
       removeCircle,
+      checkbox,
       filter,
       chevronExpand,
       radioButtonOff,
-      radioButtonOn
+      radioButtonOn,
+      square
     });
   }
 }

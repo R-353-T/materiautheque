@@ -2,9 +2,9 @@
   <div>
     <label>{{ label }}</label>
   </div>
-  <div class="button" color="light" (click)="focus.set(true)">
-    <p>{{ selected()?.dto?.value ?? "—" }}</p>
-    <ion-icon slot="end" name="filter"></ion-icon>
+  <div class="mate-filter-button" (click)="focus.set(true)">
+    <p>{{ preview() }}</p>
+    <ion-icon name="filter"></ion-icon>
   </div>
 </div>
 
@@ -29,29 +29,17 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="flex flex-col">
-      <div
-        *ngIf="required === false"
-        class="mate-filter-button"
-        (click)="select(null)"
-        [class.selected]="control.value === null"
+      <app-list
+        *ngIf="list"
+        [options]="list.options"
+        (load)="loadMore.emit($event)"
       >
-        <ion-icon name="checkmark" *ngIf="control.value === null"></ion-icon>
-        <p>—</p>
-      </div>
-
-      @for (value of valueList; track $index) {
-        <div
-          class="mate-filter-button"
-          (click)="value.disabled === false && select(value)"
-          [class.selected]="control.value === value.dto.id"
-          [class.disabled]="value.disabled"
-        >
-          <ion-icon
-            name="checkmark"
-            *ngIf="control.value === value.dto.id"
-          ></ion-icon>
-          <p>{{ value.dto.value }}</p>
-        </div>
-      }</ion-content>
+        @for (item of list.items(); track $index) {
+          <app-list-item
+            [options]="item"
+            (click)="onSelect(item)"
+          ></app-list-item>
+        }</app-list>
+    </ion-content>
   </ng-template>
 </ion-modal>

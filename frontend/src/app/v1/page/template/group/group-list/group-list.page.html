@@ -14,13 +14,12 @@
 
     <div class="flex flex-col mb-7 gap-ios">
       <app-input label="Navigation rapide">
-        <app-select
-          [required]="true"
+        <!-- <app-select
           label="NAVIGATION RAPIDE"
-          [valueList]="groupSelectValueList()"
-          [control]="groupIdControl"
+          [control]="groupSelectOptions.control"
+          [options]="groupSelectOptions"
           (change)="moveToGroup($event)"
-        ></app-select>
+        ></app-select> -->
       </app-input>
 
       <app-input label="Description" *ngIf="descriptionControl.value">

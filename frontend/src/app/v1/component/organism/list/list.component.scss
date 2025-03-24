@@ -1,0 +1,18 @@
+.mate-list {
+    @apply flex flex-col gap-ios;
+
+    .mate-list-content {
+        @apply flex flex-col;
+
+
+        ::ng-deep {
+            app-list-item {
+                @apply border-b border-ionLight-shade;
+                
+                &:last-child {
+                    @apply border-b-0;
+                }
+            }
+        }
+    }
+}

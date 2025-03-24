@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
@@ -11,8 +11,7 @@ import { InputValueListComponent } from "src/app/v1/component/form/enumerator/in
 import { FORM__ENUMERATOR } from "src/app/v1/form/f.enumerator";
 import { FormComponent } from "../../../component/form/form/form.component";
 import { InputComponent } from "../../../component/form/input/input.component";
-import { SelectComponent } from "../../../component/form/select/select.component";
-import { TypeService } from "src/app/v1/service/api/type.service";
+import { TypeSelectComponent } from "../../../component/type/type-select/type-select.component";
 
 @Component({
   selector: "app-enumerator-create",
@@ -29,12 +28,11 @@ import { TypeService } from "src/app/v1/service/api/type.service";
     InputValueListComponent,
     FormComponent,
     InputComponent,
-    SelectComponent
+    TypeSelectComponent
 ],
 })
 export class EnumeratorCreatePage {
   readonly baseForm = FORM__ENUMERATOR;
-  readonly typeService = inject(TypeService);
 
   private readonly enumeratorService = inject(EnumeratorService);
   private readonly navigationService = inject(NavigationService);

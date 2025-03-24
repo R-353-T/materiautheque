@@ -16,24 +16,23 @@
     </div>
 
     <ion-searchbar
-      [debounce]="1000"
+      [debounce]="600"
       placeholder="Rechercher"
-      (ionInput)="search($event)"
+      (ionInput)="onSearch($event)"
     ></ion-searchbar>
 
-    <div class="flex gap-ios" *ngIf="typeService.enumerableFilterList$ | async as typeList">
-      <app-filter
-        label="Type"
-        [control]="typeIdOption"
-        [valueList]="typeList"
-        (change)="refresh()"
-      ></app-filter>
+    <div class="flex gap-ios">
+      <app-type-filter [selection]="typeIdOption" (change)="refresh()"></app-type-filter>
     </div>
 
-    <app-infinite-scroll
-      [options]="options"
-      (load)="load($event)"
-    ></app-infinite-scroll>
+    <app-list
+      [options]="list.options"
+      (load)="loadNext($event)"
+    >
+      @for (item of list.items(); track $index) {
+      <app-list-item [options]="item"></app-list-item>
+      }
+    </app-list>
   </div>
   
   <app-scroll-top-button [content]="content"></app-scroll-top-button>

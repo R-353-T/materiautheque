@@ -24,7 +24,7 @@
     }
 
     ion-searchbar {
-        @apply p-0 min-h-5 border border-ionLight-shade bg-ionLight-tint;
+        @apply p-0 min-h-5 border border-ionLight-shade bg-white;
         --border-radius: 0px;
         padding: 7px var(--ion-padding-ios);
         --background: transparent;

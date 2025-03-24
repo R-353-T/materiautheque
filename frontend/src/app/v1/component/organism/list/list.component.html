@@ -1,0 +1,27 @@
+<div class="mate-list">
+  @for(error of options.errors(); track $index) {
+    <div class="mate-list-error">{{ error }}</div>
+  }
+
+  <div class="mate-list-content">
+    <ng-content></ng-content>
+  </div>
+
+  @for(error of options.errors(); track $index) {
+    <div class="mate-list-error">{{ error }}</div>
+  }
+
+  @if(options.infinite() && options.complete() === false) {
+    <ion-infinite-scroll (ionInfinite)="onLoad($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+
+    @if(options.loading() === false) {
+      <ion-button color="primary" (click)="onLoad()">
+        <ion-icon icon="arrow-down"
+                  class="mr-ios"></ion-icon>
+        Charger plus d'éléments
+      </ion-button>
+    }
+  }
+</div>

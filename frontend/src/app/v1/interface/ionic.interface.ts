@@ -1,0 +1,1 @@
+export type SearchBarValue = string|undefined|null;  

@@ -1,14 +1,35 @@
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, signal } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { IonButton, IonIcon, IonHeader, IonModal, IonToolbar, IonTitle, IonButtons, IonContent } from '@ionic/angular/standalone';
-import { Subscription } from 'rxjs';
-import { IFilterValue } from 'src/app/v1/interface/app.interface';
+import { CommonModule } from "@angular/common";
+import { ListComponent } from "../../organism/list/list.component";
+import { ListItemComponent } from "../../organism/list-item/list-item.component";
+import {
+  FilterType,
+  List,
+  ListItemOptions,
+} from "src/app/v1/interface/app.interface";
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonModal,
+  IonTitle,
+  IonToolbar,
+} from "@ionic/angular/standalone";
+import {
+  Component,
+  computed,
+  effect,
+  EventEmitter,
+  Input,
+  Output,
+  signal,
+} from "@angular/core";
 
 @Component({
-  selector: 'app-filter',
-  templateUrl: './filter.component.html',
-  styleUrls: ['./filter.component.scss'],
+  selector: "app-filter",
+  templateUrl: "./filter.component.html",
+  styleUrls: ["./filter.component.scss"],
   standalone: true,
   imports: [
     IonButton,
@@ -19,42 +40,80 @@ import { IFilterValue } from 'src/app/v1/interface/app.interface';
     IonTitle,
     IonButtons,
     IonContent,
-    CommonModule
-  ]
+    CommonModule,
+    ListComponent,
+    ListItemComponent
+],
 })
-export class FilterComponent implements OnInit, OnDestroy {
-  @Input()
-  control: FormControl = new FormControl();
-
+export class FilterComponent {
   @Input()
   label?: string;
 
   @Input()
-  valueList: IFilterValue[] = [];
+  selection = signal<FilterType>(null);
 
   @Input()
   required: boolean = false;
 
+  @Input()
+  multiple: boolean = false;
+
+  @Input()
+  list = new List();
+
   @Output()
-  change = new EventEmitter();
+  change = new EventEmitter<FilterType>();
+
+  @Output()
+  loadMore = new EventEmitter<any>();
+
+  preview = computed(() => {
+    const selection = this.selection();
+
+    if(selection instanceof Array) {
+      return selection.length.toString();
+    } else if(typeof selection === "number") {
+      return selection.toString(); 
+    } else {
+      return selection?.label || 'missing value';
+    }
+  });
 
   readonly focus = signal<boolean>(false);
-  readonly selected = signal<IFilterValue|null>(null);
-  private subscription?: Subscription;
 
-  ngOnInit(): void {
-    this.subscription = this.control.valueChanges.subscribe(value => {
-      this.selected.set(this.valueList.find(v => v.dto.id === value) ?? null);
+  constructor() {
+    effect(() => {
+      const items = this.list.items();
+      const type = this.selection();
+
+      if(typeof type === "number" || type === null) {
+        for(const i of items) {
+          if(i.id === type) {
+            i.selected.set(true);
+            this.selection.set(i);
+            this.onSelect(i);
+          } 
+        }
+      }
     });
   }
 
-  ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
-  }
-  
-  select(value: IFilterValue | null) {
-    this.control.setValue(value?.dto.id ?? null);
-    this.focus.set(false);
-    this.change.emit();
+  onSelect(item: ListItemOptions) {
+    if(this.multiple === false) {
+      for(const i of this.list.items()) {
+        i.selected.set(false);
+      }
+
+      item.selected.set(true);
+      this.selection.set(item);
+      this.focus.set(false);
+    } else {
+      const selected = this.list
+        .items()
+        .filter(i => i.selected());
+      this.selection.set(selected);
+    }
+
+    this.change.emit(this.selection());
   }
 }

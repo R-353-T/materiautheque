@@ -2,8 +2,13 @@
 
 <ion-content [fullscreen]="true" [scrollEvents]="true">
   <div class="wrapper">
-    <app-infinite-scroll [options]="options"></app-infinite-scroll>
+    <app-list [options]="list.options">
+      @for (item of list.items(); track $index) {
+        <app-list-item [options]="item"></app-list-item>
+      }
+    </app-list>
   </div>
+
 
   <app-scroll-top-button [content]="content"></app-scroll-top-button>
 </ion-content>

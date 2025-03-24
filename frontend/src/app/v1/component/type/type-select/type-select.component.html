@@ -1,0 +1,9 @@
+<app-select
+    *ngIf="this.list.items().length > 0"
+    [label]="label"
+    [control]="control"
+    [required]="required"
+    [multiple]="multiple"
+    [list]="list"
+    (change)="change.emit($event)"
+></app-select>

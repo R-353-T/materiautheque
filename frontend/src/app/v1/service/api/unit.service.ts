@@ -21,8 +21,8 @@ export class UnitService {
 
   list(
     index: number,
-    size: number,
     search?: string | undefined | null,
+    size: number = 32,
   ) {
     const parameters = {
       index,

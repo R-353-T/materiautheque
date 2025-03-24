@@ -6,7 +6,6 @@ import { ITemplate } from "src/app/v1/interface/template.interface";
 import { IResponse, IResponsePage } from "src/app/v1/interface/api.interface";
 import { FTemplate } from "../../form/f.template";
 import { IGroup } from "../../interface/group.interface";
-import { ISelectValue } from "../../interface/app.interface";
 
 @Injectable({
   providedIn: "root",
@@ -57,6 +56,7 @@ export class TemplateService {
       .pipe(map((response) => response.data));
   }
 
+  // TODO: Fix with item list
   mapTemplateAsSelectValueList(
     template: ITemplate,
     excludeIn: number | undefined = undefined, 
@@ -64,7 +64,7 @@ export class TemplateService {
     depth: number = 0,
     disabled: boolean = false
   ) {
-    const output: ISelectValue[] = [];
+    const output: any[] = [];
 
     if (group === undefined) {
       output.push({

@@ -5,7 +5,6 @@ import { BehaviorSubject, map, Observable, take, tap } from "rxjs";
 import { IResponsePage } from "src/app/v1/interface/api.interface";
 import { IType } from "src/app/v1/interface/type.interface";
 import { TypeEnum } from "src/app/v1/enum/Type";
-import { IFilterValue, ISelectValue } from "../../interface/app.interface";
 import { ValueDto } from "../../model/value-dto";
 
 @Injectable({
@@ -13,9 +12,6 @@ import { ValueDto } from "../../model/value-dto";
 })
 export class TypeService {
   readonly typeList$: Observable<IType[]>;
-
-  readonly enumerableFilterList$: Observable<IFilterValue[]>;
-  readonly enumerableSelectList$: Observable<ISelectValue[]>;
   
   readonly loaded = signal<boolean>(false);
 
@@ -29,26 +25,6 @@ export class TypeService {
 
   constructor() {
     this.typeList$ = this.typeListSubject.asObservable();
-    
-    this.enumerableFilterList$ = this.typeList$.pipe(map((types) =>
-      types
-        .map((t) => {
-          const dto = new ValueDto();
-          dto.id = t.id;
-          dto.value = t.name;
-          return { dto, disabled: t.allowEnumeration === false };
-        })
-    ));
-
-    this.enumerableSelectList$ = this.typeList$.pipe(map((types) =>
-      types
-        .map((t) => {
-          const dto = new ValueDto();
-          dto.id = t.id;
-          dto.value = t.name;
-          return { dto, disabled: t.allowEnumeration === false };
-        })
-    ));
 
     this.list().subscribe();
   }

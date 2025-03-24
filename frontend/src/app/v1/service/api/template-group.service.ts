@@ -1,11 +1,9 @@
-import { computed, inject, Injectable, signal } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { ApiService } from "./api.service";
 import { environment } from "src/environments/environment";
 import { map, take } from "rxjs";
 import { IGroup } from "src/app/v1/interface/group.interface";
 import { IResponse, IResponsePage } from "src/app/v1/interface/api.interface";
-import { GroupForm } from "src/app/v1/form/group.form";
-import { group } from "@angular/animations";
 import { FGroup } from "../../form/f.group";
 
 @Injectable({

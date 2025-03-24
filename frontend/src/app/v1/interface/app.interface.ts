@@ -1,23 +1,58 @@
 import { signal, WritableSignal } from "@angular/core";
 import { ValueDto } from "../model/value-dto";
+import { FormControl } from "@angular/forms";
 
-// **********************************
-// * SELECT                         *
-// **********************************
+// filter
 
-export interface ISelectValue {
-    dto: ValueDto;
-    disabled: boolean;
-    depth?: number;
+export type FilterType = ListItemOptions | ListItemOptions[] | number | null;
+export type SelectType = ListItemOptions | ListItemOptions[] | number | null;
+
+// **********
+// ** LIST **
+// **********
+
+export class ListOptions {
+    errors = signal<string[]>([]);
+    infinite = signal<boolean>(false);
+    loading = signal<boolean>(false);
+    complete = signal<boolean>(false);
 }
 
-// **********************************
-// * FILTER                         *
-// **********************************
+export class ListItemOptions {
+    id: number | null = null;
+    label: string | null = null;
+    description?: string;
+    mode = signal<"radio" | "checkbox" | "redirection" | "none">("none");
+    disabled = signal<boolean>(false);
+    selected = signal<boolean>(false);
+    depth = signal<number>(0);
+    redirection: any[] = ["/"];
+}
 
-export interface IFilterValue {
-    dto: ValueDto;
-    disabled: boolean;
+export class List {
+    index = signal<number>(1);
+    items = signal<ListItemOptions[]>([]);
+    options = new ListOptions();
+
+    refresh() {
+        this.index.set(1);
+        this.items.set([]);
+        this.options.errors.set([]);
+        this.options.complete.set(false);
+    }
+
+    add(item: ListItemOptions) {
+        this.items.update(items => {
+            items.push(item);
+            return items;
+        });
+    }
+
+    next(index: number, complete = false) {
+        this.index.set(index);
+        this.options.complete.set(complete);
+        this.options.loading.set(false);
+    }
 }
 
 // **********************************
@@ -74,7 +109,7 @@ export class InfiniteScrollOptions {
         image?: string,
         route?: any[],
         id?: number,
-        selected?: boolean
+        selected?: boolean,
     ) {
         const item = new InfiniteScrollItem(
             label,
@@ -82,7 +117,7 @@ export class InfiniteScrollOptions {
             image,
             route,
             id,
-            selected
+            selected,
         );
 
         this.items.push(item);

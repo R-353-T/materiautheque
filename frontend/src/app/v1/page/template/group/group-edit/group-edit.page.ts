@@ -11,20 +11,13 @@ import { AlertService } from "src/app/v1/service/alert.service";
 import { IGroup } from "src/app/v1/interface/group.interface";
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
 import { ToastService } from "src/app/v1/service/toast.service";
-import {
-  IonButton,
-  IonContent,
-  IonIcon,
-  IonInput,
-  IonTextarea,
-} from "@ionic/angular/standalone";
 import { FORM__GROUP } from "src/app/v1/form/f.group";
 import { FormComponent } from "../../../../component/form/form/form.component";
 import { InputComponent } from "../../../../component/form/input/input.component";
 import { GroupInputValueListComponent } from "../../../../component/form/group/group-input-value-list/group-input-value-list.component";
 import { TemplateService } from "src/app/v1/service/api/template.service";
-import { ISelectValue } from "src/app/v1/interface/app.interface";
-import { SelectComponent } from "src/app/v1/component/form/select/select.component";
+import { SelectComponent } from "src/app/v1/component/atom/select/select.component";
+import { IonButton, IonContent } from "@ionic/angular/standalone";
 
 @Component({
   selector: "app-group-edit",
@@ -50,7 +43,7 @@ export class GroupEditPage {
 
   readonly template = signal<ITemplate | undefined>(undefined);
   readonly group = signal<IGroup | undefined>(undefined);
-  readonly groupSelectValueList = signal<ISelectValue[]>([]);
+  // readonly groupSelectOptions = new SelectOptions();
 
   private readonly navigationService = inject(NavigationService);
   private readonly groupService = inject(TemplateGroupService);
@@ -69,10 +62,9 @@ export class GroupEditPage {
         next: (data) => {
           const template = data["template"] as ITemplate;
           const group = data["group"] as IGroup;
-          
-          this.groupSelectValueList.set(
-            this.templateService.mapTemplateAsSelectValueList(template, group.id),
-          );
+
+          // this.groupSelectOptions.valueList = this.templateService
+          //   .mapTemplateAsSelectValueList(template, group.id);
 
           this.template.set(template);
           this.group.set(group);
@@ -125,6 +117,7 @@ export class GroupEditPage {
   }
 
   private resetPage() {
+    // this.groupSelectOptions.required.set(true);
     this.navigationService.backTo = this.navigationService.lastPage;
     this.baseForm.reset();
     this.template.set(undefined);

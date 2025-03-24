@@ -10,12 +10,11 @@ import { ITemplate } from "src/app/v1/interface/template.interface";
 import { IGroup } from "src/app/v1/interface/group.interface";
 import { IonButton, IonContent, IonText } from "@ionic/angular/standalone";
 import { InputComponent } from "src/app/v1/component/form/input/input.component";
-import { SelectComponent } from "src/app/v1/component/form/select/select.component";
+import { SelectComponent } from "src/app/v1/component/atom/select/select.component";
+import { TemplateService } from "src/app/v1/service/api/template.service";
 import {
   InfiniteScrollOptions,
-  ISelectValue,
 } from "src/app/v1/interface/app.interface";
-import { TemplateService } from "src/app/v1/service/api/template.service";
 
 @Component({
   selector: "app-group-list",
@@ -42,9 +41,8 @@ export class GroupListPage {
   readonly title = signal<string>("");
 
   readonly descriptionControl = new FormControl<string | null>(null);
-  readonly groupIdControl = new FormControl<number | null>(null);
-  readonly groupSelectValueList = signal<ISelectValue[]>([]);
   readonly navigationService = inject(NavigationService);
+  // readonly groupSelectOptions = new SelectOptions();
 
   private readonly route = inject(ActivatedRoute);
   private readonly templateService = inject(TemplateService);
@@ -62,20 +60,17 @@ export class GroupListPage {
 
           if (group) {
             this.group.set(group);
-            this.groupIdControl.setValue(group.id);
+            // this.groupSelectOptions.control.setValue(group.id);
             this.loadGroups(group);
             this.loadFields(group);
             this.descriptionControl.setValue(group.description);
           } else {
-            this.groupIdControl.setValue(null);
+            // this.groupSelectOptions.control.setValue(null);
             this.loadGroups(template);
             this.descriptionControl.setValue(null);
           }
 
-          this.groupSelectValueList.set(
-            this.templateService.mapTemplateAsSelectValueList(template),
-          );
-
+          // this.groupSelectOptions.valueList = this.templateService.mapTemplateAsSelectValueList(template);
           this.template.set(template);
           this.setBackTo(group);
           this.title.set(group ? group.name : template.name);
@@ -86,16 +81,16 @@ export class GroupListPage {
       });
   }
 
-  moveToGroup(selected: ISelectValue | null) {
-    if (selected === null || selected.depth === 0) {
-      this.navigationService.goToTemplateGroupList(this.template()!.id);
-    } else {
-      this.navigationService.goToTemplateGroupList(
-        this.template()!.id,
-        selected.dto.id!,
-      );
-    }
-  }
+  // moveToGroup(selected: ISelectValue | null) {
+  //   if (selected === null || selected.depth === 0) {
+  //     this.navigationService.goToTemplateGroupList(this.template()!.id);
+  //   } else {
+  //     this.navigationService.goToTemplateGroupList(
+  //       this.template()!.id,
+  //       selected.dto.id!,
+  //     );
+  //   }
+  // }
 
   goToEditor() {
     const group = this.group();
@@ -133,8 +128,9 @@ export class GroupListPage {
   }
 
   private resetPage() {
+    // this.groupSelectOptions.required.set(true);
     this.descriptionControl.setValue(null);
-    this.groupIdControl.setValue(null);
+    // this.groupSelectOptions.control.setValue(null);
 
     this.groupOptions.reset();
     this.fieldOptions.reset();

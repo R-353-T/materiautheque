@@ -21,7 +21,7 @@ export class FLogin extends BaseForm2 {
         login: {
             username: "Nom d'utilisateur",
             password: "Mot de passe",
-        },
+        }
     };
 
     get formGroup() {

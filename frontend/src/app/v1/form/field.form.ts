@@ -4,7 +4,6 @@ import { IField } from "../interface/field.interface";
 import { TypeEnum } from "../enum/Type";
 
 export class FieldForm extends BaseForm<IField> {
-
     constructor() {
         super();
         this.errors["type_not_unitable"] = "";
