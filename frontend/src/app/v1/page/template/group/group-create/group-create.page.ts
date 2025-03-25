@@ -13,7 +13,7 @@ import { ToastService } from "src/app/v1/service/toast.service";
 import { IonContent } from "@ionic/angular/standalone";
 import { FORM__GROUP } from "src/app/v1/form/f.group";
 import { FormComponent } from "../../../../component/form/form/form.component";
-import { InputComponent } from "../../../../component/form/input/input.component";
+import { InputComponent } from "../../../../component/atom/input/input.component";
 import { SelectComponent } from "src/app/v1/component/atom/select/select.component";
 import { TemplateService } from "src/app/v1/service/api/template.service";
 

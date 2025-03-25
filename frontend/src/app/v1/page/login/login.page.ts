@@ -8,7 +8,7 @@ import { SubmitButtonComponent } from "../../component/form/submit-button/submit
 import { BadRequestError } from "src/app/v1/error/BadRequestError";
 import { TooManyRequestError } from "src/app/v1/error/TooManyRequestError";
 import { FORM__LOGIN } from "../../form/f.login";
-import { InputComponent } from "../../component/form/input/input.component";
+import { InputComponent } from "../../component/atom/input/input.component";
 import { FormComponent } from "../../component/form/form/form.component";
 
 @Component({

@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
 import { PermissionService } from 'src/app/v1/service/permission.service';
 import { IEnumerator } from 'src/app/v1/interface/enumerator.interface';
-import { InputComponent } from "../../../component/form/input/input.component";
+import { InputComponent } from "../../../component/atom/input/input.component";
 import { FORM__ENUMERATOR } from 'src/app/v1/form/f.enumerator';
 import {
   IonContent,

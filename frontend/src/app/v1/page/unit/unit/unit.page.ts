@@ -12,7 +12,7 @@ import {
   IonButton,
   IonContent,
 } from "@ionic/angular/standalone";
-import { InputComponent } from "../../../component/form/input/input.component";
+import { InputComponent } from "../../../component/atom/input/input.component";
 import { FORM__UNIT } from "src/app/v1/form/f.unit";
 import { EditTitleComponent } from "src/app/v1/component/title/edit-title/edit-title.component";
 

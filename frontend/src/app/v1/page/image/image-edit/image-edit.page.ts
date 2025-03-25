@@ -13,7 +13,7 @@ import { IonButton, IonContent, IonInput } from "@ionic/angular/standalone";
 import { ToastService } from "src/app/v1/service/toast.service";
 import { FORM__IMAGE__UPDATE } from "src/app/v1/form/f.image";
 import { FormComponent } from "../../../component/form/form/form.component";
-import { InputComponent } from "../../../component/form/input/input.component";
+import { InputComponent } from "../../../component/atom/input/input.component";
 
 @Component({
   selector: "app-image-edit",

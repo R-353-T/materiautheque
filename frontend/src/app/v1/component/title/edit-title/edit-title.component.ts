@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IonButton } from '@ionic/angular/standalone';
 
@@ -7,7 +8,8 @@ import { IonButton } from '@ionic/angular/standalone';
   styleUrls: ['./edit-title.component.scss'],
   standalone: true,
   imports: [
-    IonButton
+    IonButton,
+    CommonModule
   ],
 })
 export class EditTitleComponent {
@@ -15,7 +17,7 @@ export class EditTitleComponent {
   title: string = '';
 
   @Input()
-  id: string|number = '';
+  id: string|number|undefined = '';
 
   @Input()
   buttonDisabled: boolean = false;

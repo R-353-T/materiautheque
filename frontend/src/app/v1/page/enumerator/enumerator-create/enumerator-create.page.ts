@@ -10,7 +10,7 @@ import { IonContent } from "@ionic/angular/standalone";
 import { InputValueListComponent } from "src/app/v1/component/form/enumerator/input-value-list/enumerator-input-value-list.component";
 import { FORM__ENUMERATOR } from "src/app/v1/form/f.enumerator";
 import { FormComponent } from "../../../component/form/form/form.component";
-import { InputComponent } from "../../../component/form/input/input.component";
+import { InputComponent } from "../../../component/atom/input/input.component";
 import { TypeSelectComponent } from "../../../component/type/type-select/type-select.component";
 
 @Component({

@@ -14,7 +14,7 @@ import { ToastService } from "src/app/v1/service/toast.service";
 import { FORM__FIELD } from "src/app/v1/form/f.field";
 import { FormComponent } from "../../../../component/form/form/form.component";
 import { TypeService } from "src/app/v1/service/api/type.service";
-import { InputComponent } from "../../../../component/form/input/input.component";
+import { InputComponent } from "../../../../component/atom/input/input.component";
 import { SelectComponent } from "src/app/v1/component/atom/select/select.component";
 import { IonContent, IonToggle } from "@ionic/angular/standalone";
 

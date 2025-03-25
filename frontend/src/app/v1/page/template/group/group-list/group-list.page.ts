@@ -4,17 +4,16 @@ import { FormControl, FormsModule } from "@angular/forms";
 import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
 import { ActivatedRoute } from "@angular/router";
 import { take } from "rxjs";
-import { InfiniteScrollComponent } from "src/app/v1/component/organism/infinite-scroll/infinite-scroll.component";
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { ITemplate } from "src/app/v1/interface/template.interface";
 import { IGroup } from "src/app/v1/interface/group.interface";
 import { IonButton, IonContent, IonText } from "@ionic/angular/standalone";
-import { InputComponent } from "src/app/v1/component/form/input/input.component";
-import { SelectComponent } from "src/app/v1/component/atom/select/select.component";
+import { InputComponent } from "src/app/v1/component/atom/input/input.component";
 import { TemplateService } from "src/app/v1/service/api/template.service";
-import {
-  InfiniteScrollOptions,
-} from "src/app/v1/interface/app.interface";
+import { EditTitleComponent } from "../../../../component/title/edit-title/edit-title.component";
+import { List, ListItemOptions } from "src/app/v1/interface/app.interface";
+import { ListComponent } from "../../../../component/organism/list/list.component";
+import { ListItemComponent } from "src/app/v1/component/organism/list-item/list-item.component";
 
 @Component({
   selector: "app-group-list",
@@ -27,14 +26,15 @@ import {
     CommonModule,
     FormsModule,
     InputComponent,
-    SelectComponent,
     HeaderComponent,
-    InfiniteScrollComponent,
-  ],
+    EditTitleComponent,
+    ListComponent,
+    ListItemComponent
+],
 })
 export class GroupListPage {
-  readonly fieldOptions = new InfiniteScrollOptions();
-  readonly groupOptions = new InfiniteScrollOptions();
+  readonly fieldList = new List();
+  readonly groupList = new List();
 
   readonly template = signal<ITemplate | undefined>(undefined);
   readonly group = signal<IGroup | undefined>(undefined);
@@ -42,7 +42,6 @@ export class GroupListPage {
 
   readonly descriptionControl = new FormControl<string | null>(null);
   readonly navigationService = inject(NavigationService);
-  // readonly groupSelectOptions = new SelectOptions();
 
   private readonly route = inject(ActivatedRoute);
   private readonly templateService = inject(TemplateService);
@@ -74,9 +73,6 @@ export class GroupListPage {
           this.template.set(template);
           this.setBackTo(group);
           this.title.set(group ? group.name : template.name);
-
-          this.groupOptions.isComplete.set(true);
-          this.fieldOptions.isComplete.set(true);
         },
       });
   }
@@ -101,42 +97,13 @@ export class GroupListPage {
     }
   }
 
-  private loadGroups(data: IGroup | ITemplate) {
-    for (const group of data.groupList ?? []) {
-      this.groupOptions.addItem(
-        group.name,
-        group.description,
-        undefined,
-        ["/template/group-list/", group.templateId, group.id],
-      );
-    }
-
-    this.groupOptions.isLoading.set(false);
-  }
-
-  private loadFields(group: IGroup) {
-    for (const field of group.fieldList) {
-      this.fieldOptions.addItem(
-        field.name,
-        field.description,
-        undefined,
-        ["/template/field/", group.id, field.id],
-      );
-    }
-
-    this.fieldOptions.isLoading.set(false);
-  }
-
   private resetPage() {
     // this.groupSelectOptions.required.set(true);
     this.descriptionControl.setValue(null);
     // this.groupSelectOptions.control.setValue(null);
 
-    this.groupOptions.reset();
-    this.fieldOptions.reset();
-
-    this.groupOptions.isLoading.set(true);
-    this.fieldOptions.isLoading.set(true);
+    this.fieldList.items.set([]);
+    this.groupList.items.set([]);
   }
 
   private setBackTo(group: IGroup | undefined) {
@@ -150,6 +117,36 @@ export class GroupListPage {
     } else {
       this.navigationService.backTo = this.navigationService.goToTemplateList
         .bind(this.navigationService);
+    }
+  }
+
+  private loadGroups(data: IGroup | ITemplate) {
+    const groupList = data.groupList;
+    if(groupList !== undefined) {
+      for (const group of groupList) {
+        const item = new ListItemOptions();
+        item.id = group.id;
+        item.label = group.name;
+        item.description = group.description;
+        item.mode.set("redirection");
+        item.redirection = ["/template/group-list/", group.templateId , group.id];
+        this.groupList.add(item);
+      }
+    }
+  }
+
+  private loadFields(group: IGroup) {
+    const fieldOptions = this.fieldList;
+    if(group.fieldList !== undefined) {
+      for (const field of group.fieldList) {
+        const item = new ListItemOptions();
+        item.id = field.id;
+        item.label = field.name;
+        item.description = field.description;
+        item.mode.set("redirection");
+        item.redirection = ["/template/field/", group.id, field.id];
+        fieldOptions.add(item);
+      }
     }
   }
 }

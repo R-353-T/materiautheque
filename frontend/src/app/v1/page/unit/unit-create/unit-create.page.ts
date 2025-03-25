@@ -8,7 +8,7 @@ import { SubmitButtonComponent } from "../../../component/form/submit-button/sub
 import { ToastService } from "src/app/v1/service/toast.service";
 import { IonContent } from "@ionic/angular/standalone";
 import { FORM__UNIT } from "src/app/v1/form/f.unit";
-import { InputComponent } from "../../../component/form/input/input.component";
+import { InputComponent } from "../../../component/atom/input/input.component";
 import { FormComponent } from "../../../component/form/form/form.component";
 import { UnitInputValueListComponent } from "../../../component/form/unit/input-value-list/unit-input-value-list.component";
 

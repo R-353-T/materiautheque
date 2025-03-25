@@ -16,7 +16,7 @@ import { HeaderComponent } from "src/app/v1/component/organism/header/header.com
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
 import { FormComponent } from "../../../component/form/form/form.component";
 import { FORM__TEMPLATE } from "src/app/v1/form/f.template";
-import { InputComponent } from "src/app/v1/component/form/input/input.component";
+import { InputComponent } from "src/app/v1/component/atom/input/input.component";
 import { GroupInputValueListComponent } from "../../../component/form/group/group-input-value-list/group-input-value-list.component";
 
 @Component({

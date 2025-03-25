@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { IonButton, IonIcon } from '@ionic/angular/standalone';
-import { InputComponent } from '../../input/input.component';
+import { InputComponent } from '../../../atom/input/input.component';
 import { FormInputComponent } from '../../form-input/form-input.component';
 import { FGroup } from 'src/app/v1/form/f.group';
 import { ReactiveFormsModule } from '@angular/forms';

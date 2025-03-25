@@ -1,18 +1,15 @@
 <app-header></app-header>
 
 <ion-content [fullscreen]="true">
-  <div class="wrapper" *ngIf="template() as t">
-    <header>
-      <h2>{{ title() }}</h2>
+  <div class="wrapper gap-ios" *ngIf="template() as t">
+    <app-edit-title
+      [id]=""
+      [title]="title()"
+      (onClick)="goToEditor()"
+    >
+    </app-edit-title>
 
-      <ion-button
-        (click)="goToEditor()"
-      >
-        Éditer
-      </ion-button>
-    </header>
-
-    <div class="flex flex-col mb-7 gap-ios">
+    <div class="flex flex-col gap-ios">
       <app-input label="Navigation rapide">
         <!-- <app-select
           label="NAVIGATION RAPIDE"
@@ -27,10 +24,12 @@
       </app-input>
     </div>
 
-    <header>
-      <h3>Groupes</h3>
+    <!-- GROUP --->
 
-      <div class="flex gap-ios mb-ios justify-between">
+    <div class="flex flex-col gap-ios border border-ionLight-shade p-ios">
+      <div class="flex gap-ios justify-between items-center">
+        <h3 class="uppercase">Groupes</h3>
+
         <ion-button
           fill="outline"
           (click)="navigationService.goToTemplateGroupCreate(t.id, group()?.id)"
@@ -38,26 +37,35 @@
           Ajouter
         </ion-button>
       </div>
-    </header>
 
-    <app-infinite-scroll [options]="groupOptions"></app-infinite-scroll>
+      <app-list [options]="groupList.options">
+        @for (item of groupList.items(); track $index) {
+          <app-list-item [options]="item"></app-list-item>
+        }
+      </app-list>
+    </div>
 
-    <header *ngIf="group() as g">
-      <h3>Champs</h3>
+    <!-- FIELD --->
 
-      <div class="flex gap-ios mb-ios justify-between">
-        <ion-button
-          fill="outline"
-          (click)="navigationService.goToTemplateFieldCreate(g.id)"
-        >
-          Ajouter
-        </ion-button>
+    @if(group() !== undefined) {
+      <div class="flex flex-col gap-ios border border-ionLight-shade p-ios">
+        <div class="flex gap-ios justify-between items-center">
+          <h3 class="uppercase">Champs</h3>
+  
+          <ion-button
+            fill="outline"
+            (click)="navigationService.goToTemplateGroupCreate(t.id, group()?.id)"
+          >
+            Ajouter
+          </ion-button>
+        </div>
+  
+        <app-list [options]="fieldList.options">
+          @for (item of fieldList.items(); track $index) {
+            <app-list-item [options]="item"></app-list-item>
+          }
+        </app-list>
       </div>
-    </header>
-
-    <app-infinite-scroll
-      *ngIf="group() as g"
-      [options]="fieldOptions"
-    ></app-infinite-scroll>
+    }
   </div>
 </ion-content>

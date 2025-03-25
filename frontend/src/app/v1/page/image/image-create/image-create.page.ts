@@ -9,7 +9,7 @@ import { IonContent } from "@ionic/angular/standalone";
 import { ToastService } from "src/app/v1/service/toast.service";
 import { FormComponent } from "../../../component/form/form/form.component";
 import { FORM__IMAGE } from "src/app/v1/form/f.image";
-import { InputComponent } from "../../../component/form/input/input.component";
+import { InputComponent } from "../../../component/atom/input/input.component";
 
 @Component({
   selector: "app-image-create",
