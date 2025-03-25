@@ -1,20 +1,13 @@
 <app-header></app-header>
 
 <ion-content [fullscreen]="true">
-  <div class="wrapper" *ngIf="image$ | async as image">
-    <header>
-      <h2>
-        {{ image.name }}
-        <ion-badge color="light">#{{ image.id }}</ion-badge>
-      </h2>
-
-      <ion-button
-        (click)="navigationService.goToImageEdit(image.id)"
-        [disabled]="!permissionService.hasPermission(permissionService.PERMISSION.image.update)"
-      >
-        Éditer
-      </ion-button>
-    </header>
+  <div class="wrapper gap-ios" *ngIf="image$ | async as image">
+    <app-edit-title
+      [title]="image.name"
+      [id]="image.id"
+      (onClick)="navigationService.goToImageEdit(image.id)"
+      [buttonDisabled]="!permissionService.hasPermission(permissionService.PERMISSION.image.update)">
+    </app-edit-title>
 
     <div class="flex">
       <a href="{{ image.url }}" target="_blank">

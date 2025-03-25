@@ -84,11 +84,7 @@ h1.main {
 
 .wrapper {
     @apply flex flex-col max-w-3xl mx-auto;
-    @apply text-ionDark;
-
-    & > header {
-        @apply flex justify-between items-center flex-wrap gap-ios mb-7;
-    }
+    @apply text-ionDark-shade;
 }
 
 /*––––––––––––––––––––––––––––––*/
@@ -99,7 +95,7 @@ h1.main {
     @apply flex flex-col;
 
     .ordered-list-label {
-        @apply inline-block text-ionDark bg-ionLight-shade text-xs py-1 px-2 uppercase
+        @apply inline-block bg-ionLight-shade text-xs py-1 px-2 uppercase
         border  border-ionLight-shade font-bold;
         border-bottom: 0;
         margin-bottom: -1px;

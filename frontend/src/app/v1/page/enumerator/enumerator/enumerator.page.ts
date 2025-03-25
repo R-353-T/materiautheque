@@ -17,6 +17,7 @@ import {
 import { FormatDatePipe } from 'src/app/v1/pipe/format-date.pipe';
 import { TypeEnum } from 'src/app/v1/enum/Type';
 import { TypeService } from 'src/app/v1/service/api/type.service';
+import { EditTitleComponent } from 'src/app/v1/component/title/edit-title/edit-title.component';
 
 @Component({
   selector: 'app-enumerator',
@@ -31,7 +32,8 @@ import { TypeService } from 'src/app/v1/service/api/type.service';
     FormsModule,
     HeaderComponent,
     InputComponent,
-    FormatDatePipe
+    FormatDatePipe,
+    EditTitleComponent
 ]
 })
 export class EnumeratorPage {

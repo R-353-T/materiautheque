@@ -1,41 +1,35 @@
 <app-header></app-header>
 
 <ion-content [fullscreen]="true">
-  <div class="wrapper" *ngIf="unit$ | async as unit">
-    <header>
-      <h2>
-        {{ unit.name }} <ion-badge color="light">#{{ unit.id }}</ion-badge>
-      </h2>
-      <ion-button
-        (click)="navigationService.goToUnitEdit(unit.id)"
-        [disabled]="!permissionService.hasPermission(permissionService.PERMISSION.unit.update)"
-      >
-        Éditer
-      </ion-button>
-    </header>
-    <div class="flex flex-col gap-ios">
-      <app-input
-        [label]="baseForm.formLabels['unit']['description']"
-        [control]="baseForm.name"
-        [errors]="baseForm.getErrors(baseForm.description)"
-      >
-        <textarea [value]="baseForm.description.value" disabled></textarea>
-      </app-input>
+  <div class="wrapper gap-ios" *ngIf="unit$ | async as unit">
+    <app-edit-title
+      [title]="unit.name"
+      [id]="unit.id"
+      (onClick)="navigationService.goToUnitEdit(unit.id)"
+      [buttonDisabled]="!permissionService.hasPermission(permissionService.PERMISSION.unit.update)">
+    </app-edit-title>
 
-      <h3>Valeurs</h3>
+    <app-input
+      [label]="baseForm.formLabels['unit']['description']"
+      [control]="baseForm.name"
+      [errors]="baseForm.getErrors(baseForm.description)"
+    >
+      <textarea [value]="baseForm.description.value" disabled></textarea>
+    </app-input>
 
-      <div class="valueList">
-        @for(value of unit.valueList; track $index) {
-        <div class="value">
-          <p class="label">
-            {{ $index + 1 }}
-          </p>
-          <p class="content">{{ value.value }}</p>
-        </div>
-        } @if(unit.valueList.length === 0) {
-        <p class="text-ionDark p-ios text-base">Aucune valeur</p>
-        }
+    <h3>Valeurs</h3>
+
+    <div class="valueList">
+      @for(value of unit.valueList; track $index) {
+      <div class="value">
+        <p class="label">
+          {{ $index + 1 }}
+        </p>
+        <p class="content">{{ value.value }}</p>
       </div>
+      } @if(unit.valueList.length === 0) {
+      <p class="text-ionDark p-ios text-base">Aucune valeur</p>
+      }
     </div>
   </div>
 </ion-content>

@@ -1,0 +1,19 @@
+<div class="mate-edit-title">
+  <div class="mate-edit-title-content">
+    <div class="flex">
+      <div class="mate-edit-title-ref">RÉFÉRENCE <b>#{{ id }}</b></div>
+    </div>
+    <h1>
+      {{ title }}
+    </h1>
+  </div>
+
+  <div class="mate-edit-title-button">
+    <ion-button
+      (click)="onClick.emit()"
+      [disabled]="buttonDisabled"
+    >
+      Éditer
+    </ion-button>
+  </div>
+</div>

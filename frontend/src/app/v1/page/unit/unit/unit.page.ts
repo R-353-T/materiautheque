@@ -14,6 +14,7 @@ import {
 } from "@ionic/angular/standalone";
 import { InputComponent } from "../../../component/form/input/input.component";
 import { FORM__UNIT } from "src/app/v1/form/f.unit";
+import { EditTitleComponent } from "src/app/v1/component/title/edit-title/edit-title.component";
 
 @Component({
   selector: "app-unit",
@@ -28,7 +29,8 @@ import { FORM__UNIT } from "src/app/v1/form/f.unit";
     FormsModule,
     ReactiveFormsModule,
     HeaderComponent,
-    InputComponent
+    InputComponent,
+    EditTitleComponent
 ],
 })
 export class UnitPage {
