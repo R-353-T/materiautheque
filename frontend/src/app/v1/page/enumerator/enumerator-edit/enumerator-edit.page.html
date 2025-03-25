@@ -29,8 +29,11 @@
         [control]="baseForm.typeId"
         [errors]="baseForm.getErrors(baseForm.typeId)"
       >
-        <app-type-select [control]="baseForm.typeId"
-        [required]="true"></app-type-select>
+        <app-type-select
+          [control]="baseForm.typeId"
+          [required]="true"
+          (change)="baseForm.clearValueList()"
+        ></app-type-select>
       </app-input>
 
       <app-enumerator-input-value-list
