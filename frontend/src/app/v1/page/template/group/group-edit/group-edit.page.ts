@@ -16,8 +16,8 @@ import { FormComponent } from "../../../../component/form/form/form.component";
 import { InputComponent } from "../../../../component/atom/input/input.component";
 import { GroupInputValueListComponent } from "../../../../component/form/group/group-input-value-list/group-input-value-list.component";
 import { TemplateService } from "src/app/v1/service/api/template.service";
-import { SelectComponent } from "src/app/v1/component/atom/select/select.component";
 import { IonButton, IonContent } from "@ionic/angular/standalone";
+import { GroupSelectComponent } from "../../../../component/group/group-select/group-select.component";
 
 @Component({
   selector: "app-group-edit",
@@ -34,17 +34,14 @@ import { IonButton, IonContent } from "@ionic/angular/standalone";
     SubmitButtonComponent,
     FormComponent,
     InputComponent,
-    SelectComponent,
     GroupInputValueListComponent,
-  ],
+    GroupSelectComponent
+],
 })
 export class GroupEditPage {
   readonly baseForm = FORM__GROUP;
-
   readonly template = signal<ITemplate | undefined>(undefined);
   readonly group = signal<IGroup | undefined>(undefined);
-  // readonly groupSelectOptions = new SelectOptions();
-
   private readonly navigationService = inject(NavigationService);
   private readonly groupService = inject(TemplateGroupService);
   private readonly alertService = inject(AlertService);
@@ -62,9 +59,6 @@ export class GroupEditPage {
         next: (data) => {
           const template = data["template"] as ITemplate;
           const group = data["group"] as IGroup;
-
-          // this.groupSelectOptions.valueList = this.templateService
-          //   .mapTemplateAsSelectValueList(template, group.id);
 
           this.template.set(template);
           this.group.set(group);
@@ -117,7 +111,6 @@ export class GroupEditPage {
   }
 
   private resetPage() {
-    // this.groupSelectOptions.required.set(true);
     this.navigationService.backTo = this.navigationService.lastPage;
     this.baseForm.reset();
     this.template.set(undefined);

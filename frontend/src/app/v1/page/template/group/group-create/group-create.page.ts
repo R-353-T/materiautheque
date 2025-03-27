@@ -14,8 +14,7 @@ import { IonContent } from "@ionic/angular/standalone";
 import { FORM__GROUP } from "src/app/v1/form/f.group";
 import { FormComponent } from "../../../../component/form/form/form.component";
 import { InputComponent } from "../../../../component/atom/input/input.component";
-import { SelectComponent } from "src/app/v1/component/atom/select/select.component";
-import { TemplateService } from "src/app/v1/service/api/template.service";
+import { GroupSelectComponent } from "../../../../component/group/group-select/group-select.component";
 
 @Component({
   selector: "app-group-create",
@@ -31,20 +30,16 @@ import { TemplateService } from "src/app/v1/service/api/template.service";
     SubmitButtonComponent,
     FormComponent,
     InputComponent,
-    SelectComponent,
-  ],
+    GroupSelectComponent
+],
 })
 export class GroupCreatePage {
   readonly baseForm = FORM__GROUP;
-
   readonly template = signal<ITemplate | undefined>(undefined);
   readonly parentGroup = signal<IGroup | undefined>(undefined);
-  // readonly groupSelectOptions = new SelectOptions();
-
   private readonly groupService = inject(TemplateGroupService);
   private readonly navigationService = inject(NavigationService);
   private readonly toastService = inject(ToastService);
-  private readonly templateService = inject(TemplateService);
   private readonly route = inject(ActivatedRoute);
 
   ionViewWillEnter() {
@@ -58,12 +53,16 @@ export class GroupCreatePage {
           const parentGroup = data["group"] as IGroup | undefined;
 
           this.template.set(template);
+
+          if (this.template()) {
+            this.baseForm.templateId.setValue(this.template()!.id);
+          }
+
           this.parentGroup.set(parentGroup);
-
-          // this.groupSelectOptions.valueList = this.templateService
-          //   .mapTemplateAsSelectValueList(template);
-
-          this.setupForm();
+      
+          if (this.parentGroup()) {
+            this.baseForm.parentId.setValue(this.parentGroup()!.id);
+          }
         },
       });
   }
@@ -86,18 +85,7 @@ export class GroupCreatePage {
     }
   }
 
-  private setupForm() {
-    if (this.template()) {
-      this.baseForm.templateId.setValue(this.template()!.id);
-    }
-
-    if (this.parentGroup()) {
-      this.baseForm.parentId.setValue(this.parentGroup()!.id);
-    }
-  }
-
   private resetPage() {
-    // this.groupSelectOptions.required.set(true);
     this.navigationService.backTo = this.navigationService.lastPage;
     this.baseForm.reset();
     this.template.set(undefined);

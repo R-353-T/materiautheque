@@ -2,9 +2,9 @@ import { Component, Input } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { FEnumerator } from "src/app/v1/form/f.enumerator";
-import { InputComponent } from "../../../atom/input/input.component";
-import { FormInputComponent } from "../../form-input/form-input.component";
+import { InputComponent } from "../../atom/input/input.component";
 import { CommonModule } from "@angular/common";
+import { FormInputComponent } from "../../form/form-input/form-input.component";
 
 @Component({
   selector: "app-enumerator-input-value-list",
@@ -17,7 +17,7 @@ import { CommonModule } from "@angular/common";
     CommonModule,
     ReactiveFormsModule,
     InputComponent,
-    FormInputComponent,
+    FormInputComponent
   ],
 })
 export class InputValueListComponent {

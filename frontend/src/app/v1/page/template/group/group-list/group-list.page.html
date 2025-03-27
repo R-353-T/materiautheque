@@ -10,14 +10,13 @@
     </app-edit-title>
 
     <div class="flex flex-col gap-ios">
-      <app-input label="Navigation rapide">
-        <!-- <app-select
-          label="NAVIGATION RAPIDE"
-          [control]="groupSelectOptions.control"
-          [options]="groupSelectOptions"
-          (change)="moveToGroup($event)"
-        ></app-select> -->
-      </app-input>
+      <app-group-filter
+        label="Navigation Rapide"
+        [template]="t"
+        [selection]="fastTravelSelection"
+        (change)="goToGroup($event)"
+      >
+      </app-group-filter>
 
       <app-input label="Description" *ngIf="descriptionControl.value">
         <textarea [value]="descriptionControl.value" disabled></textarea>
@@ -40,32 +39,33 @@
 
       <app-list [options]="groupList.options">
         @for (item of groupList.items(); track $index) {
-          <app-list-item [options]="item"></app-list-item>
+        <app-list-item [options]="item"></app-list-item>
         }
       </app-list>
     </div>
 
     <!-- FIELD --->
 
-    @if(group() !== undefined) {
-      <div class="flex flex-col gap-ios border border-ionLight-shade p-ios">
-        <div class="flex gap-ios justify-between items-center">
-          <h3 class="uppercase">Champs</h3>
-  
-          <ion-button
-            fill="outline"
-            (click)="navigationService.goToTemplateGroupCreate(t.id, group()?.id)"
-          >
-            Ajouter
-          </ion-button>
-        </div>
-  
-        <app-list [options]="fieldList.options">
-          @for (item of fieldList.items(); track $index) {
-            <app-list-item [options]="item"></app-list-item>
-          }
-        </app-list>
+    <div
+      class="flex flex-col gap-ios border border-ionLight-shade p-ios"
+      *ngIf="group() as group"
+    >
+      <div class="flex gap-ios justify-between items-center">
+        <h3 class="uppercase">Champs</h3>
+
+        <ion-button
+          fill="outline"
+          (click)="navigationService.goToTemplateFieldCreate(group.id)"
+        >
+          Ajouter
+        </ion-button>
       </div>
-    }
+
+      <app-list [options]="fieldList.options">
+        @for (item of fieldList.items(); track $index) {
+        <app-list-item [options]="item"></app-list-item>
+        }
+      </app-list>
+    </div>
   </div>
 </ion-content>

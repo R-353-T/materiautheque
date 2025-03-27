@@ -7,15 +7,18 @@
     <app-form
       [formGroup]="baseForm.formGroup"
       [errors]="baseForm.getErrors(baseForm.formGroup)"
+      *ngIf="template() as template"
     >
       <app-input
         [label]="baseForm.formLabels['group']['parentId']"
         [errors]="baseForm.getErrors(baseForm.parentId)"
       >
-        <!-- <app-select
+        <app-group-select
+          *ngIf="group() as group"
+          [template]="template"
           [control]="baseForm.parentId"
-          [options]="groupSelectOptions"
-        ></app-select> -->
+          [ignoreCircularOf]="group.id"
+        ></app-group-select>
       </app-input>
 
       <app-input

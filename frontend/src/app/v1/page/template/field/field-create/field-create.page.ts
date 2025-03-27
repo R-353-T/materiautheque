@@ -17,6 +17,7 @@ import { TypeService } from "src/app/v1/service/api/type.service";
 import { InputComponent } from "../../../../component/atom/input/input.component";
 import { SelectComponent } from "src/app/v1/component/atom/select/select.component";
 import { IonContent, IonToggle } from "@ionic/angular/standalone";
+import { GroupSelectComponent } from "../../../../component/group/group-select/group-select.component";
 
 @Component({
   selector: "app-field-create",
@@ -34,7 +35,8 @@ import { IonContent, IonToggle } from "@ionic/angular/standalone";
     FormComponent,
     InputComponent,
     SelectComponent,
-  ],
+    GroupSelectComponent
+],
 })
 export class FieldCreatePage {
   readonly baseForm = FORM__FIELD;
@@ -83,10 +85,10 @@ export class FieldCreatePage {
     this.templateService.get(group.templateId).subscribe({
       next: (template) => {
         this.template.set(template);
-        const groupSelectValueList = this.templateService
-          .mapTemplateAsSelectValueList(template);
-        groupSelectValueList.shift();
-        groupSelectValueList.forEach((g) => (g.depth = (g.depth ?? 1) - 1));
+        // const groupSelectValueList = this.templateService
+        //   .mapTemplateAsSelectValueList(template);
+        // groupSelectValueList.shift();
+        // groupSelectValueList.forEach((g) => (g.depth = (g.depth ?? 1) - 1));
         // this.groupSelectValueList.set(groupSelectValueList);
       },
     });

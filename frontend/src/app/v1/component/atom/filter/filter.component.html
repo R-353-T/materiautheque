@@ -37,7 +37,7 @@
         @for (item of list.items(); track $index) {
           <app-list-item
             [options]="item"
-            (click)="onSelect(item)"
+            (onClick)="onSelect(item)"
           ></app-list-item>
         }</app-list>
     </ion-content>

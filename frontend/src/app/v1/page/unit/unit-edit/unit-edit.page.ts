@@ -14,7 +14,7 @@ import { IonButton, IonContent } from "@ionic/angular/standalone";
 import { FORM__UNIT } from "src/app/v1/form/f.unit";
 import { FormComponent } from "../../../component/form/form/form.component";
 import { InputComponent } from "../../../component/atom/input/input.component";
-import { UnitInputValueListComponent } from "../../../component/form/unit/input-value-list/unit-input-value-list.component";
+import { UnitInputValueListComponent } from "src/app/v1/component/unit/input-value-list/unit-input-value-list.component";
 
 @Component({
   selector: "app-unit-edit",
@@ -31,7 +31,7 @@ import { UnitInputValueListComponent } from "../../../component/form/unit/input-
     SubmitButtonComponent,
     FormComponent,
     InputComponent,
-    UnitInputValueListComponent,
+    UnitInputValueListComponent
   ],
 })
 export class UnitEditPage {

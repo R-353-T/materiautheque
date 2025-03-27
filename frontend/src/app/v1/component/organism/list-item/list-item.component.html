@@ -1,11 +1,11 @@
-<div class="mate-list-item" (click)="onClick()" [class.disabled]="options.disabled()">
+<div class="mate-list-item" (click)="_onClick()" [class.disabled]="options.disabled()">
   <div class="mate-list-item-icon">
     @if(icon() !== null) {
       <ion-icon [name]="icon()" size="large"></ion-icon>
     }
   </div>
 
-  <div class="mate-list-item-content">
+  <div class="mate-list-item-content" [style.paddingLeft.px]="options.depth() * 28">
     <h5 class="label">{{ options.label }}</h5>
     <p class="description">{{ options.description }}</p>
   </div>

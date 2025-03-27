@@ -5,7 +5,6 @@ import { BehaviorSubject, map, Observable, tap } from "rxjs";
 import { ITemplate } from "src/app/v1/interface/template.interface";
 import { IResponse, IResponsePage } from "src/app/v1/interface/api.interface";
 import { FTemplate } from "../../form/f.template";
-import { IGroup } from "../../interface/group.interface";
 
 @Injectable({
   providedIn: "root",
@@ -54,51 +53,5 @@ export class TemplateService {
     return this.api
       .patch<IResponse<ITemplate>>(this.ep.update, body)
       .pipe(map((response) => response.data));
-  }
-
-  // TODO: Fix with item list
-  mapTemplateAsSelectValueList(
-    template: ITemplate,
-    excludeIn: number | undefined = undefined, 
-    group: IGroup | undefined = undefined,
-    depth: number = 0,
-    disabled: boolean = false
-  ) {
-    const output: any[] = [];
-
-    if (group === undefined) {
-      output.push({
-        depth: 0,
-        dto: {
-          id: null,
-          value: template.name,
-        },
-        disabled,
-      });
-
-      template.groupList?.forEach((group) => {
-        output.push(...this.mapTemplateAsSelectValueList(template, excludeIn, group, 1, disabled));
-      });
-    } else {
-      if(excludeIn === group.id) {
-        disabled = true;
-      }
-
-      output.push({
-        depth: depth,
-        dto: {
-          id: group.id,
-          value: group.name,
-        },
-        disabled,
-      });
-
-
-      group.groupList?.forEach((group) => {
-        output.push(...this.mapTemplateAsSelectValueList(template, excludeIn, group, depth + 1, disabled));
-      });
-    }
-
-    return output;
   }
 }

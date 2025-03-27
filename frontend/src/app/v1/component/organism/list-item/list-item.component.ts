@@ -19,7 +19,7 @@ export class ListItemComponent {
   options: ListItemOptions = new ListItemOptions();
 
   @Output()
-  click = new EventEmitter<ListItemOptions>();
+  onClick = new EventEmitter<ListItemOptions>();
 
   private readonly router = inject(Router);
 
@@ -36,7 +36,7 @@ export class ListItemComponent {
     }
   });
   
-  async onClick() {
+  async _onClick() {
     if(this.options.disabled()) return;
 
     if (this.options.mode() === "redirection") {
@@ -51,6 +51,6 @@ export class ListItemComponent {
       this.options.selected.set(!this.options.selected());
     }
 
-    this.click.emit(this.options);
+    this.onClick.emit(this.options);
   }
 }

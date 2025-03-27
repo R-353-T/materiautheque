@@ -5,17 +5,19 @@
     <h1 class="main">Ajouter un champ</h1>
 
     <app-form
+      *ngIf="template() as template"
       [formGroup]="baseForm.formGroup"
       [errors]="baseForm.getErrors(baseForm.formGroup)"
-      *ngIf="typeService.loaded()"
     >
       <app-input
         [label]="baseForm.formLabels['field']['groupId']"
         [errors]="baseForm.getErrors(baseForm.groupId)"
       >
-        <app-select
+        <app-group-select
+          [template]="template"
           [control]="baseForm.groupId"
-        ></app-select>
+          [required]="true"
+        ></app-group-select>
       </app-input>
 
       <app-input

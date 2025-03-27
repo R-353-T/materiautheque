@@ -12,10 +12,11 @@
         [label]="baseForm.formLabels['group']['parentId']"
         [errors]="baseForm.getErrors(baseForm.parentId)"
       >
-        <!-- <app-select
+        <app-group-select
+          *ngIf="template() as template"
+          [template]="template"
           [control]="baseForm.parentId"
-          [options]="groupSelectOptions"
-        ></app-select> -->
+        ></app-group-select>
       </app-input>
 
       <app-input

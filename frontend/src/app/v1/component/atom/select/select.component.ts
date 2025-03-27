@@ -5,7 +5,6 @@ import { ListComponent } from "../../organism/list/list.component";
 import { ListItemComponent } from "../../organism/list-item/list-item.component";
 import {
   Component,
-  effect,
   EventEmitter,
   Input,
   OnDestroy,

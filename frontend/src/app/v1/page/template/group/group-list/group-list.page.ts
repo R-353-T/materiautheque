@@ -2,8 +2,8 @@ import { Component, inject, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormControl, FormsModule } from "@angular/forms";
 import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
-import { ActivatedRoute } from "@angular/router";
-import { take } from "rxjs";
+import { ActivatedRoute, Router } from "@angular/router";
+import { map, Observable, take } from "rxjs";
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { ITemplate } from "src/app/v1/interface/template.interface";
 import { IGroup } from "src/app/v1/interface/group.interface";
@@ -11,9 +11,10 @@ import { IonButton, IonContent, IonText } from "@ionic/angular/standalone";
 import { InputComponent } from "src/app/v1/component/atom/input/input.component";
 import { TemplateService } from "src/app/v1/service/api/template.service";
 import { EditTitleComponent } from "../../../../component/title/edit-title/edit-title.component";
-import { List, ListItemOptions } from "src/app/v1/interface/app.interface";
+import { FilterType, List, ListItemOptions } from "src/app/v1/interface/app.interface";
 import { ListComponent } from "../../../../component/organism/list/list.component";
 import { ListItemComponent } from "src/app/v1/component/organism/list-item/list-item.component";
+import { GroupFilterComponent } from "../../../../component/group/group-filter/group-filter.component";
 
 @Component({
   selector: "app-group-list",
@@ -29,7 +30,8 @@ import { ListItemComponent } from "src/app/v1/component/organism/list-item/list-
     HeaderComponent,
     EditTitleComponent,
     ListComponent,
-    ListItemComponent
+    ListItemComponent,
+    GroupFilterComponent
 ],
 })
 export class GroupListPage {
@@ -39,11 +41,13 @@ export class GroupListPage {
   readonly template = signal<ITemplate | undefined>(undefined);
   readonly group = signal<IGroup | undefined>(undefined);
   readonly title = signal<string>("");
+  readonly fastTravelSelection = signal<FilterType>(null);
 
   readonly descriptionControl = new FormControl<string | null>(null);
   readonly navigationService = inject(NavigationService);
 
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly templateService = inject(TemplateService);
 
   ionViewWillEnter() {
@@ -59,17 +63,15 @@ export class GroupListPage {
 
           if (group) {
             this.group.set(group);
-            // this.groupSelectOptions.control.setValue(group.id);
+            this.fastTravelSelection.set(group.id);
             this.loadGroups(group);
             this.loadFields(group);
             this.descriptionControl.setValue(group.description);
           } else {
-            // this.groupSelectOptions.control.setValue(null);
             this.loadGroups(template);
             this.descriptionControl.setValue(null);
           }
 
-          // this.groupSelectOptions.valueList = this.templateService.mapTemplateAsSelectValueList(template);
           this.template.set(template);
           this.setBackTo(group);
           this.title.set(group ? group.name : template.name);
@@ -77,16 +79,11 @@ export class GroupListPage {
       });
   }
 
-  // moveToGroup(selected: ISelectValue | null) {
-  //   if (selected === null || selected.depth === 0) {
-  //     this.navigationService.goToTemplateGroupList(this.template()!.id);
-  //   } else {
-  //     this.navigationService.goToTemplateGroupList(
-  //       this.template()!.id,
-  //       selected.dto.id!,
-  //     );
-  //   }
-  // }
+  goToGroup(selected: FilterType) {
+    if(selected instanceof ListItemOptions) {
+      this.router.navigate(selected.redirection);
+    }
+  }
 
   goToEditor() {
     const group = this.group();
@@ -98,10 +95,7 @@ export class GroupListPage {
   }
 
   private resetPage() {
-    // this.groupSelectOptions.required.set(true);
     this.descriptionControl.setValue(null);
-    // this.groupSelectOptions.control.setValue(null);
-
     this.fieldList.items.set([]);
     this.groupList.items.set([]);
   }
