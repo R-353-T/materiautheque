@@ -18,8 +18,8 @@ export class FormService {
   list(
     templateId: number,
     index: number,
-    size: number,
-    search?: string|undefined|null
+    search?: string|undefined|null,
+    size: number = 32,
   ) {
     const parameters = {
       index,

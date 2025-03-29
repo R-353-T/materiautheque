@@ -1,29 +1,35 @@
 <app-header></app-header>
 
 <ion-content [fullscreen]="true" [scrollEvents]="true">
-
   <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <div class="wrapper" *ngIf="template">
-    <header *ngIf="template() as t">
+  <div class="wrapper gap-ios" *ngIf="template">
+    <div *ngIf="template() as t" class="flex gap-ios justify-between">
       <h1>{{ t.name }}</h1>
-  
+
       <div class="flex gap-ios">
-        <ion-button (click)="navigationService.goToFormCreate(t.id)"
-                    [disabled]="!permissionService.hasPermission(permissionService.PERMISSION.form.create)">Ajouter</ion-button>
+        <ion-button
+          (click)="navigationService.goToFormCreate(t.id)"
+          [disabled]="!permissionService.hasPermission(permissionService.PERMISSION.form.create)"
+        >Ajouter</ion-button>
       </div>
-    </header>
+    </div>
 
-    <ion-searchbar  (ionInput)="search($event)"
-                    [debounce]="1000"
-                    placeholder="Rechercher"
-                    class="my-1"></ion-searchbar>  
+    <ion-searchbar
+      (ionInput)="onSearch($event)"
+      [debounce]="600"
+      placeholder="Rechercher"
+      class="my-1"
+    ></ion-searchbar>
 
-    <app-infinite-scroll [options]="options" (load)="load($event)"></app-infinite-scroll>
+    <app-list [options]="list.options" (load)="loadNext($event)">
+      @for (item of list.items(); track $index) {
+      <app-list-item [options]="item"></app-list-item>
+      }
+    </app-list>
   </div>
 
   <app-scroll-top-button [content]="content"></app-scroll-top-button>
-
 </ion-content>

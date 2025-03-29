@@ -48,7 +48,7 @@ export class UnitListPage {
   content: IonContent | undefined;
 
   readonly list = new List();
-  readonly searchOption: WritableSignal<string | undefined | null> = signal(null);
+  readonly searchOption = signal<string | undefined | null>(null);
   readonly navigationService = inject(NavigationService);
   readonly permissionService = inject(PermissionService);
   private readonly unitService = inject(UnitService);

@@ -1,18 +1,22 @@
+
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { ScrollTopButtonComponent } from "src/app/v1/component/atom/scroll-top-button/scroll-top-button.component";
+import { List, ListItemOptions } from 'src/app/v1/interface/app.interface';
+import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
+import { FormService } from "src/app/v1/service/api/form.service";
+import { ActivatedRoute } from "@angular/router";
+import { take } from "rxjs";
+import { ITemplate } from "src/app/v1/interface/template.interface";
+import { PermissionService } from "src/app/v1/service/permission.service";
+import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
 import {
   Component,
   inject,
   signal,
   ViewChild,
+  WritableSignal,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
-import { InfiniteScrollComponent } from "src/app/v1/component/organism/infinite-scroll/infinite-scroll.component";
-import { ScrollTopButtonComponent } from "src/app/v1/component/atom/scroll-top-button/scroll-top-button.component";
-import { InfiniteScrollOptions } from 'src/app/v1/interface/app.interface';
-import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
-import { FormService } from "src/app/v1/service/api/form.service";
-import { ActivatedRoute } from "@angular/router";
-import { take } from "rxjs";
 import {
   IonButton,
   IonContent,
@@ -20,9 +24,8 @@ import {
   IonRefresherContent,
   IonSearchbar,
 } from "@ionic/angular/standalone";
-import { ITemplate } from "src/app/v1/interface/template.interface";
-import { PermissionService } from "src/app/v1/service/permission.service";
-import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
+import { ListComponent } from "../../../component/organism/list/list.component";
+import { ListItemComponent } from "../../../component/organism/list-item/list-item.component";
 
 @Component({
   selector: "app-form-list",
@@ -38,77 +41,74 @@ import { HeaderComponent } from "src/app/v1/component/organism/header/header.com
     CommonModule,
     FormsModule,
     HeaderComponent,
-    InfiniteScrollComponent,
     ScrollTopButtonComponent,
-  ],
+    ListComponent,
+    ListItemComponent
+],
 })
 export class FormListPage {
   @ViewChild(IonContent, { static: true })
   content: IonContent | undefined;
 
-  readonly options = new InfiniteScrollOptions();
+  readonly list = new List();
   readonly template = signal<ITemplate | undefined>(undefined);
   readonly searchOption = signal<string | undefined | null>(null);
   readonly navigationService = inject(NavigationService);
   readonly permissionService = inject(PermissionService);
-
   private readonly formService = inject(FormService);
   private readonly route = inject(ActivatedRoute);
 
   ionViewWillEnter() {
+    this.list.items.set([]);
+
     this.route.data.pipe(take(1))
       .subscribe({
-        next: (data) => this.template.set(data["template"] as ITemplate),
+        next: (data) => {
+          this.template.set(data["template"] as ITemplate);
+          this.refresh();
+        },
       });
-    this.refresh();
   }
 
-  search(event: any) {
+  onSearch(event: any) {
     this.searchOption.set(event.detail.value);
     this.refresh();
   }
 
   refresh(event?: any) {
-    this.options.reset();
-    this.load(event);
-  }
-
-  load(event?: any) {
-    if (this.options.isComplete() || this.options.isLoading() === true) {
+    if(this.list.options.loading() === true) {
       event?.target.complete();
     } else {
-      this.options.isLoading.set(true);
-
-      this.formService.list(
-        this.template()!.id,
-        this.options.pageIndex,
-        this.options.pageSize,
-        this.searchOption()
-      )
-        .subscribe({
-          next: (response) => {
-            for (const form of response.data) {
-              this.options.addItem(
-                form.name,
-                undefined,
-                undefined,
-                ["/form", form.id],
-              );
-            }
-
-            const { index, total } = response.pagination;
-            this.options.isComplete.set(index === total);
-            this.options.pageIndex++;
-            event?.target.complete();
-            this.options.isLoading.set(false);
-          },
-          error: (error) => {
-            this.options.errorMessage.set(error.message);
-
-            event?.target.complete();
-            this.options.isLoading.set(false);
-          },
-        });
+      this.list.refresh();
+      this.loadNext(event);
     }
+  }
+
+  loadNext(event?: any) {
+    this.list.options.loading.set(true);
+
+    this.formService
+    .list(this.template()!.id, this.list.index(), this.searchOption())
+    .subscribe({
+      next: (response) => {
+        for (const form of response.data) {
+          const item = new ListItemOptions();
+          item.id = form.id;
+          item.label = form.name;
+          item.mode.set("redirection");
+          item.redirection = ["/form", form.id];
+          this.list.add(item);
+        }
+
+        const { index, total } = response.pagination;
+        this.list.next(index + 1, index === total);
+        event?.target.complete();
+      },
+      error: (error) => {
+        this.list.options.errors.set([error.message]);
+        this.list.options.loading.set(false);
+        event?.target.complete();
+      },
+    });
   }
 }
