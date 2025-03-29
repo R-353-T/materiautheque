@@ -2,63 +2,97 @@
 
 <ion-content [fullscreen]="true">
   <div class="wrapper gap-ios" *ngIf="field$ | async as field">
-    <header *ngIf="group() as g">
-      <h2>
-        {{ field.name }} <ion-badge color="light">#{{ field.id }}</ion-badge>
-      </h2>
-      <ion-button
-        (click)="navigationService.goToTemplateFieldEdit(g.id, field.id)"
-      >
-        Éditer
-      </ion-button>
-    </header>
+    <app-edit-title
+      [id]="field.id"
+      [title]="field.name"
+      (onClick)="navigationService.goToTemplateFieldEdit(baseForm.groupId.value, field.id)"
+    ></app-edit-title>
 
-    <div class="flex gap-2 flex-wrap">
-      <ion-badge
-        color="success"
-        class="p-ios uppercase font-bold drop-shadow-md"
-        *ngIf="enumerator() as e"
-      >
-        Enumerateur : {{ e.name }}
-      </ion-badge>
+    <app-input
+      [label]="baseForm.formLabels['field']['groupId']"
+      [errors]="baseForm.getErrors(baseForm.groupId)"
+    >
+      <app-group-select
+        *ngIf="template() as template"
+        [template]="template"
+        [control]="baseForm.groupId"
+        [required]="true"
+      ></app-group-select>
+    </app-input>
 
-      <ion-badge
-        color="primary"
-        class="p-ios uppercase font-bold drop-shadow-md"
-        *ngIf="type() as t"
-      >
-        Type : {{ t.name }}
-      </ion-badge>
+    <app-input
+      [label]="baseForm.formLabels['field']['name']"
+      [control]="baseForm.name"
+      [errors]="baseForm.getErrors(baseForm.name)"
+    >
+      <input type="text" [formControl]="baseForm.name">
+    </app-input>
 
-      <ion-badge
-        color="warning"
-        class="p-ios uppercase font-bold drop-shadow-md"
-        *ngIf="unit() as u"
-      >
-        Unité : {{ u.name }}
-      </ion-badge>
+    <app-input
+      [label]="baseForm.formLabels['field']['description']"
+      [control]="baseForm.description"
+      [errors]="baseForm.getErrors(baseForm.description)"
+    >
+      <textarea [formControl]="baseForm.description"></textarea>
+    </app-input>
 
-      <ion-badge
-        color="danger"
-        class="p-ios uppercase font-bold drop-shadow-md"
-        *ngIf="field.isRequired"
+    <div class="flex gap-4">
+      <app-input
+        [label]="baseForm.formLabels['field']['isRequired']"
+        [control]="baseForm.isRequired"
+        [errors]="baseForm.getErrors(baseForm.isRequired)"
+        class="w-1/2"
       >
-        Requis(e)
-      </ion-badge>
+        <ion-toggle
+          [formControl]="baseForm.isRequired"
+          [class.disabled]="baseForm.isRequired.disabled"
+        ></ion-toggle>
+      </app-input>
 
-      <ion-badge
-        color="tertiary"
-        class="p-ios uppercase font-bold drop-shadow-md"
-        *ngIf="field.allowMultipleValues"
+      <app-input
+        [label]="baseForm.formLabels['field']['allowMultipleValues']"
+        [control]="baseForm.allowMultipleValues"
+        [errors]="baseForm.getErrors(baseForm.allowMultipleValues)"
+        class="w-1/2"
       >
-        Valeurs multiples
-      </ion-badge>
+        <ion-toggle
+          [formControl]="baseForm.allowMultipleValues"
+          [class.disabled]="baseForm.allowMultipleValues.disabled"
+        ></ion-toggle>
+      </app-input>
     </div>
 
-    <h3>Description</h3>
+    <app-input
+      *ngIf="baseForm.enumeratorId.value"
+      [label]="baseForm.formLabels['field']['enumeratorId']"
+      [control]="baseForm.enumeratorId"
+    >
+      <app-enumerator-select
+        [control]="baseForm.enumeratorId"
+        (change)="baseForm.changes()"
+      ></app-enumerator-select>
+    </app-input>
 
-    <ion-text class="text-ionDark bg-ionLight-tint p-ios rounded-ios text-base">
-      {{ field.description }}
-    </ion-text>
+    <app-input
+      [label]="baseForm.formLabels['field']['typeId']"
+      [control]="baseForm.typeId"
+    >
+      <app-type-select
+        [control]="baseForm.typeId"
+        [required]="true"
+      ></app-type-select>
+    </app-input>
+
+    <app-input
+      [label]="baseForm.formLabels['field']['unitId']"
+      [control]="baseForm.unitId"
+      [errors]="baseForm.getErrors(baseForm.unitId)"
+      *ngIf="!baseForm.unitId.disabled"
+    >
+      <app-unit-select
+        [label]="baseForm.formLabels['field']['unitId']"
+        [control]="baseForm.unitId"
+      ></app-unit-select>
+    </app-input>
   </div>
 </ion-content>

@@ -8,6 +8,7 @@ import { templateResolver } from "./v1/resolver/template.resolver";
 import { templateFieldResolver } from "./v1/resolver/template-field.resolver";
 import { imageResolver } from "./v1/resolver/image.resolver";
 import { formResolver } from "./v1/resolver/form.resolver";
+import { timeResolver } from "./v1/resolver/time.resolver";
 
 export const routes: Routes = [
   // Commons
@@ -61,7 +62,7 @@ export const routes: Routes = [
       import("./v1/page/image/image-edit/image-edit.page").then((m) =>
         m.ImageEditPage
       ),
-    resolve: { image: imageResolver },
+    resolve: { image: imageResolver, at: timeResolver },
   },
   {
     path: "image/:imageId",
@@ -69,7 +70,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import("./v1/page/image/image/image.page").then((m) => m.ImagePage),
-    resolve: { image: imageResolver },
+    resolve: { image: imageResolver, at: timeResolver },
   },
 
   // Units
@@ -98,7 +99,7 @@ export const routes: Routes = [
       import("./v1/page/unit/unit/unit.page").then((m) => m.UnitPage),
     title: "Unité",
     canActivate: [authGuard],
-    resolve: { unit: unitResolver },
+    resolve: { unit: unitResolver, at: timeResolver },
   },
   {
     path: "unit-edit/:unitId",
@@ -108,7 +109,7 @@ export const routes: Routes = [
       ),
     title: "Éditeur d'unité",
     canActivate: [authGuard],
-    resolve: { unit: unitResolver },
+    resolve: { unit: unitResolver, at: timeResolver },
   },
 
   // Enumerators
@@ -138,7 +139,7 @@ export const routes: Routes = [
       ),
     title: "Énumérateur",
     canActivate: [authGuard],
-    resolve: { enumerator: enumeratorResolver },
+    resolve: { enumerator: enumeratorResolver, at: timeResolver },
   },
   {
     path: "enumerator-edit/:enumeratorId",
@@ -148,7 +149,7 @@ export const routes: Routes = [
       ),
     title: "Éditeur d'énumérateur",
     canActivate: [authGuard],
-    resolve: { enumerator: enumeratorResolver },
+    resolve: { enumerator: enumeratorResolver, at: timeResolver },
   },
 
   // Template
@@ -183,7 +184,7 @@ export const routes: Routes = [
       ),
     title: "Groupes",
     canActivate: [authGuard],
-    resolve: { template: templateResolver, group: templateGroupResolver },
+    resolve: { template: templateResolver, group: templateGroupResolver, at: timeResolver },
   },
   {
     path: "template/group-create/:templateId/:groupId",
@@ -193,7 +194,7 @@ export const routes: Routes = [
       ),
     title: "Nouveau groupe",
     canActivate: [authGuard],
-    resolve: { template: templateResolver, group: templateGroupResolver },
+    resolve: { template: templateResolver, group: templateGroupResolver, at: timeResolver },
   },
   {
     path: "template/group-edit/:templateId/:groupId",
@@ -203,7 +204,7 @@ export const routes: Routes = [
       ),
     title: "Editeur de groupe",
     canActivate: [authGuard],
-    resolve: { template: templateResolver, group: templateGroupResolver },
+    resolve: { template: templateResolver, group: templateGroupResolver, at: timeResolver },
   },
 
   // Template -> Field
@@ -213,21 +214,21 @@ export const routes: Routes = [
     loadComponent: () => import('./v1/page/template/field/field-create/field-create.page').then( m => m.FieldCreatePage),
     title: 'Nouveau champ',
     canActivate: [authGuard],
-    resolve: { group: templateGroupResolver }
+    resolve: { group: templateGroupResolver, at: timeResolver }
   },
   {
     path: 'template/field/:groupId/:fieldId',
     loadComponent: () => import('./v1/page/template/field/field/field.page').then( m => m.FieldPage),
     title: 'Champ',
     canActivate: [authGuard],
-    resolve: { group: templateGroupResolver, field: templateFieldResolver }
+    resolve: { group: templateGroupResolver, field: templateFieldResolver, at: timeResolver }
   },
   {
     path: 'template/field-edit/:groupId/:fieldId',
     loadComponent: () => import('./v1/page/template/field/field-edit/field-edit.page').then( m => m.FieldEditPage),
     title: 'Éditeur de champ',
     canActivate: [authGuard],
-    resolve: { group: templateGroupResolver, field: templateFieldResolver }
+    resolve: { group: templateGroupResolver, field: templateFieldResolver, at: timeResolver }
   },
 
   // Form
@@ -237,28 +238,28 @@ export const routes: Routes = [
     loadComponent: () => import('./v1/page/form/form-list/form-list.page').then( m => m.FormListPage),
     title: 'Formulaires',
     canActivate: [authGuard],
-    resolve: { template: templateResolver }
+    resolve: { template: templateResolver, at: timeResolver }
   },
   {
     path: 'form-create/:templateId',
     loadComponent: () => import('./v1/page/form/form-create/form-create.page').then( m => m.FormCreatePage),
     title: 'Nouveau formulaire',
     canActivate: [authGuard],
-    resolve: { template: templateResolver }
+    resolve: { template: templateResolver, at: timeResolver }
   },
   {
     path: 'form/:formId',
     loadComponent: () => import('./v1/page/form/form/form.page').then( m => m.FormPage),
     title: 'Formulaire',
     canActivate: [authGuard],
-    resolve: { form: formResolver }
+    resolve: { form: formResolver, at: timeResolver }
   },
   {
     path: 'form-edit/:templateId/:formId',
     loadComponent: () => import('./v1/page/form/form-edit/form-edit.page').then( m => m.FormEditPage),
     title: 'Éditeur de formulaire',
     canActivate: [authGuard],
-    resolve: { template: templateResolver, form: formResolver }
+    resolve: { template: templateResolver, form: formResolver, at: timeResolver }
   },
 
   // Redirections

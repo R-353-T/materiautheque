@@ -1,4 +1,4 @@
-<div class="mate-select" (click)="focus.set(true)">
+<div class="mate-select" (click)="onOpen()" [class.disabled]="this.control.disabled">
     <div class="mate-select-button">
         <p>{{ preview }}</p>
         <ion-icon slot="end" name="chevron-expand"></ion-icon>
@@ -29,7 +29,7 @@
             <app-list
                 *ngIf="list"
                 [options]="list.options"
-                (load)="loadMore.emit($event)"
+                (load)="onLoadMore($event)"
             >
                 @for (item of list.items(); track $index) {
                     <app-list-item

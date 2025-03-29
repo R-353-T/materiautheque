@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { SelectComponent } from '../../atom/select/select.component';
 import { FormControl } from '@angular/forms';
 import { List, ListItemOptions, SelectType } from 'src/app/v1/interface/app.interface';
@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
     SelectComponent
   ]
 })
-export class TypeSelectComponent implements OnInit {
+export class TypeSelectComponent implements OnInit, OnChanges {
   @Input()
   label?: string;
 
@@ -29,6 +29,9 @@ export class TypeSelectComponent implements OnInit {
   @Input()
   control = new FormControl<number|null>(null);
 
+  @Input()
+  mode: "enumerable" | "multiple" | "all" = "all";
+
   @Output()
   change = new EventEmitter<SelectType>();
 
@@ -36,7 +39,12 @@ export class TypeSelectComponent implements OnInit {
   private readonly typeService = inject(TypeService);
 
   ngOnInit(): void {
+    this.refresh();
+  }
+
+  refresh() {
     this.list.options.loading.set(true);
+    this.list.items.set([]);
 
     let subscription: Subscription|undefined;
     subscription = this.typeService.typeList$
@@ -57,7 +65,19 @@ export class TypeSelectComponent implements OnInit {
             item.id = t.id;
             item.label = t.name;
             item.mode.set(this.multiple ? "checkbox" : "radio");
-            item.disabled.set(t.allowEnumeration === false);
+            
+            if(this.mode === "enumerable") {
+              item.disabled.set(t.allowEnumeration === false);
+            }
+
+            if(this.mode === "multiple") {
+              item.disabled.set(t.allowMultipleValues === false);
+            }
+
+            if(this.control.value === t.id) {
+              item.selected.set(true);
+            }
+
             this.list.add(item);
           }
 
@@ -68,5 +88,11 @@ export class TypeSelectComponent implements OnInit {
           subscription?.unsubscribe();
         },
       });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['mode']) {
+      this.refresh();
+    }
   }
 }

@@ -13,11 +13,12 @@ import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/s
 import { ToastService } from "src/app/v1/service/toast.service";
 import { FORM__FIELD } from "src/app/v1/form/f.field";
 import { FormComponent } from "../../../../component/form/form/form.component";
-import { TypeService } from "src/app/v1/service/api/type.service";
 import { InputComponent } from "../../../../component/atom/input/input.component";
-import { SelectComponent } from "src/app/v1/component/atom/select/select.component";
 import { IonContent, IonToggle } from "@ionic/angular/standalone";
 import { GroupSelectComponent } from "../../../../component/group/group-select/group-select.component";
+import { EnumeratorSelectComponent } from "../../../../component/enumerator/enumerator-select/enumerator-select.component";
+import { TypeSelectComponent } from "../../../../component/type/type-select/type-select.component";
+import { UnitSelectComponent } from "../../../../component/unit/unit-select/unit-select.component";
 
 @Component({
   selector: "app-field-create",
@@ -34,16 +35,15 @@ import { GroupSelectComponent } from "../../../../component/group/group-select/g
     SubmitButtonComponent,
     FormComponent,
     InputComponent,
-    SelectComponent,
-    GroupSelectComponent
-],
+    GroupSelectComponent,
+    EnumeratorSelectComponent,
+    TypeSelectComponent,
+    UnitSelectComponent,
+  ],
 })
 export class FieldCreatePage {
   readonly baseForm = FORM__FIELD;
   readonly template = signal<ITemplate | undefined>(undefined);
-  readonly typeService = inject(TypeService);
-
-  // readonly groupSelectValueList = signal<ISelectValue[]>([]);
 
   private readonly route = inject(ActivatedRoute);
   private readonly navigationService = inject(NavigationService);
@@ -63,7 +63,12 @@ export class FieldCreatePage {
 
   create() {
     if (this.baseForm.isOk(true) && this.baseForm.lock()) {
-      this.fieldService.create(this.baseForm).subscribe({
+
+      console.log(this.baseForm);
+
+      this.fieldService
+        .create(this.baseForm)
+        .subscribe({
         next: async (response) => {
           this.toastService.showSuccessCreate(response.name);
           await this.navigationService.goToTemplateField(
@@ -82,16 +87,11 @@ export class FieldCreatePage {
   private setupForm(group: IGroup) {
     this.baseForm.groupId.setValue(group.id);
 
-    this.templateService.get(group.templateId).subscribe({
-      next: (template) => {
-        this.template.set(template);
-        // const groupSelectValueList = this.templateService
-        //   .mapTemplateAsSelectValueList(template);
-        // groupSelectValueList.shift();
-        // groupSelectValueList.forEach((g) => (g.depth = (g.depth ?? 1) - 1));
-        // this.groupSelectValueList.set(groupSelectValueList);
-      },
-    });
+    this.templateService
+      .get(group.templateId)
+      .subscribe({
+        next: (template) => this.template.set(template),
+      });
   }
 
   private resetPage() {

@@ -7,7 +7,7 @@ export class FField extends BaseForm2
 {
     override formGroups: { [form_name: string]: FormGroup<any>; } = {
         field: new FormGroup({
-            id: new FormControl<number|null>(null, [Validators.required]),
+            id: new FormControl<number|null>(null, []),
             name: new FormControl<string>("", [Validators.required, Validators.maxLength(255)]),
             description: new FormControl<string>("", [Validators.maxLength(4096)]),
             allowMultipleValues: new FormControl<boolean>(false, []),
@@ -46,7 +46,10 @@ export class FField extends BaseForm2
 
     override reset(from?: IField): void {
         super.reset();
+        this.formGroup.enable();
         this.typeId.setValue(1);
+        this.allowMultipleValues.setValue(false);
+        this.isRequired.setValue(false);
 
         if(from) {
             this.id.setValue(from.id);
@@ -59,19 +62,22 @@ export class FField extends BaseForm2
             this.enumeratorId.setValue(from.enumeratorId);
             this.unitId.setValue(from.unitId);
         }
+
+        this.changes();
     }
 
     changes() {
         if(this.enumeratorId.value !== null) {
             this.typeId.setValue(TypeEnum.ENUMERATOR);
             this.unitId.setValue(null);
-
             this.typeId.disable();
             this.unitId.disable();
         } else {
-            this.typeId.setValue(1);
-            this.unitId.setValue(null);
+            if(this.typeId.value === TypeEnum.ENUMERATOR) {
+                this.typeId.setValue(1);
+            }
 
+            this.unitId.setValue(null);
             this.typeId.enable();
             this.unitId.enable();
         }

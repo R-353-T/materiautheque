@@ -8,6 +8,10 @@
     .mate-select-button {
         @apply w-full flex items-center gap-ios;
     }
+
+    &.disabled {
+        @apply cursor-not-allowed bg-ionLight-tint;
+    }
 }
 
 .mate-select-modal ion-content {

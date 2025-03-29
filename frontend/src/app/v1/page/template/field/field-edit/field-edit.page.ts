@@ -1,25 +1,30 @@
 import { Component, inject, OnDestroy, OnInit, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
 import { ActivatedRoute } from "@angular/router";
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { TemplateService } from "src/app/v1/service/api/template.service";
 import { TemplateFieldService } from "src/app/v1/service/api/template-field.service";
-import { Subscription, take } from "rxjs";
+import { take } from "rxjs";
 import { ITemplate } from "src/app/v1/interface/template.interface";
-import { IGroup } from "src/app/v1/interface/group.interface";
-import { IField } from "src/app/v1/interface/field.interface";
-import { FIELD_UPDATE_FORM } from "src/app/v1/form/field.form";
 import { AlertService } from "src/app/v1/service/alert.service";
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
 import { ToastService } from "src/app/v1/service/toast.service";
+import { HeaderComponent } from "../../../../component/organism/header/header.component";
+import { InputComponent } from "../../../../component/atom/input/input.component";
+import { GroupSelectComponent } from "../../../../component/group/group-select/group-select.component";
+import { FormComponent } from "../../../../component/form/form/form.component";
+import { EnumeratorSelectComponent } from "../../../../component/enumerator/enumerator-select/enumerator-select.component";
+import { TypeSelectComponent } from "../../../../component/type/type-select/type-select.component";
+import { UnitSelectComponent } from "../../../../component/unit/unit-select/unit-select.component";
+import { FORM__FIELD } from "src/app/v1/form/f.field";
 import {
   IonButton,
   IonContent,
   IonToggle,
 } from "@ionic/angular/standalone";
-import { TypeEnum } from "src/app/v1/enum/Type";
+import { IField } from "src/app/v1/interface/field.interface";
+import { IGroup } from "src/app/v1/interface/group.interface";
 
 @Component({
   selector: "app-field-edit",
@@ -34,13 +39,18 @@ import { TypeEnum } from "src/app/v1/enum/Type";
     FormsModule,
     ReactiveFormsModule,
     HeaderComponent,
-    SubmitButtonComponent,
-  ],
+    InputComponent,
+    GroupSelectComponent,
+    FormComponent,
+    EnumeratorSelectComponent,
+    TypeSelectComponent,
+    UnitSelectComponent,
+    SubmitButtonComponent
+],
 })
-export class FieldEditPage implements OnInit, OnDestroy {
-  readonly form = FIELD_UPDATE_FORM;
+export class FieldEditPage {
+  readonly baseForm = FORM__FIELD;
   readonly template = signal<ITemplate | undefined>(undefined);
-  readonly group = signal<IGroup | undefined>(undefined);
 
   private readonly navigationService = inject(NavigationService);
   private readonly templateService = inject(TemplateService);
@@ -49,106 +59,64 @@ export class FieldEditPage implements OnInit, OnDestroy {
   private readonly toastService = inject(ToastService);
   private readonly route = inject(ActivatedRoute);
 
-  private enumeratorSubscription?: Subscription;
-  private typeSubscription?: Subscription;
-
-  ngOnInit() {
-    this.enumeratorSubscription = this.form.enumeratorId.valueChanges.subscribe(
-      {
-        next:
-          () => (this.form.enumeratorId.enabled &&
-            this.form.enumeratorId.value !== null &&
-            this.form.updateEnumerator()),
-      },
-    );
-
-    this.typeSubscription = this.form.typeId.valueChanges.subscribe({
-      next: () => {
-        if (this.form.typeId.enabled && this.form.typeId.value !== null
-          && this.form.typeId.value !== TypeEnum.ENUMERATOR
-        ) {
-          this.form.updateType();
-        }
-      },
-    });
-  }
-
-  ngOnDestroy() {
-    this.enumeratorSubscription?.unsubscribe();
-    this.typeSubscription?.unsubscribe();
-  }
-
   ionViewWillEnter() {
-    this.navigationService.backTo = this.navigationService.lastPage;
-    this.form.origin = undefined;
-    this.form.reset();
+    this.resetPage();
 
-    this.route.data.pipe(take(1))
+    this.route.data
+      .pipe(take(1))
       .subscribe({
         next: (data) => {
-          this.group.set(data["group"] as IGroup);
-          this.form.origin = data["field"] as IField;
+          this.baseForm.reset(data["field"] as IField);
 
-          this.templateService.get(this.group()!.templateId).subscribe({
+          this.templateService.get((data["group"] as IGroup).templateId).subscribe({
             next: (template) => this.template.set(template),
           });
-
-          this.form.reset();
-        },
+        }
       });
   }
 
   async update() {
-    // if (this.form.valid()) {
-    //   this.form.formGroup.disable();
-
-    //   await this.alertService.confirmEdit(
-    //     () =>
-    //       this.fieldService.update(this.form).subscribe({
-    //         next: async (response) => {
-    //           this.toastService.showSuccessUpdate(response.name);
-    //           await this.navigationService.lastPage();
-    //         },
-    //         error: (error) => {
-    //           // this.form.formGroup.enable();
-    //           // if (error instanceof BadRequestError) {
-    //           //   this.form.applyBadRequestErrors(error.params);
-    //           // } else {
-    //           //   this.form.formGroup.setErrors({ not_implemented: true });
-    //           // }
-    //         },
-    //       }),
-    //     () => this.form.formGroup.enable(),
-    //   );
-    // }
+    if (this.baseForm.isOk(true) && this.baseForm.lock()) {
+      await this.alertService.confirmEdit(
+        () =>
+          this.fieldService.update(this.baseForm).subscribe({
+            next: async (response) => {
+              this.toastService.showSuccessUpdate(response.name);
+              await this.navigationService.lastPage();
+            },
+            error: (error) => {
+              this.baseForm.httpError(error);
+              this.baseForm.unlock();
+            },
+          }),
+        () => this.baseForm.unlock()
+      );
+    }
   }
 
   async delete() {
-    if (this.form.formGroup.enabled) {
-      this.form.formGroup.disable();
-      const id = this.form.id.value;
-
+    if (this.baseForm.lock()) {
       await this.alertService.confirmDelete(
         () =>
-          this.fieldService.delete(id).subscribe({
+          this.fieldService.delete(this.baseForm.id.value).subscribe({
             next: async () => {
-              this.toastService.showSuccessDelete(this.form.name.value);
               this.navigationService.backTo = undefined;
-              await this.navigationService.goToTemplateGroupList(
-                this.group()!.templateId,
-                this.group()!.id,
-              );
+              this.toastService.showSuccessDelete(this.baseForm.name.value);
+              await this.navigationService.goToTemplateGroupList(this.template()!.id, this.baseForm.groupId.value);
             },
             error: (error) => {
-              // if (error instanceof BadRequestError) {
-              //   this.form.applyBadRequestErrors(error.params);
-              // } else {
-              //   this.form.formGroup.setErrors({ not_implemented: true });
-              // }
+              this.baseForm.httpError(error);
+              this.baseForm.unlock();
             },
           }),
-        () => this.form.formGroup.enable(),
+        () => this.baseForm.unlock(),
       );
     }
+  }
+
+  private resetPage() {
+    this.baseForm.reset();
+    this.template.set(undefined);
+    this.navigationService.backTo = this.navigationService.lastPage;
   }
 }

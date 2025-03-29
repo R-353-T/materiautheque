@@ -39,10 +39,6 @@ export class ListItemComponent {
   async _onClick() {
     if(this.options.disabled()) return;
 
-    if (this.options.mode() === "redirection") {
-      await this.router.navigate(this.options.redirection);
-    }
-
     if (this.options.mode() === "radio") {
       this.options.selected.set(true);
     }
@@ -52,5 +48,9 @@ export class ListItemComponent {
     }
 
     this.onClick.emit(this.options);
+
+    if (this.options.mode() === "redirection") {
+      await this.router.navigate(this.options.redirection);
+    }
   }
 }

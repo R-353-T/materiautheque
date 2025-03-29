@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, signal, SimpleChanges } from '@angular/core';
 import { FilterComponent } from '../../atom/filter/filter.component';
 import { FilterType, List, ListItemOptions } from 'src/app/v1/interface/app.interface';
 import { ITemplate } from 'src/app/v1/interface/template.interface';
@@ -15,7 +15,7 @@ import { IGroup } from 'src/app/v1/interface/group.interface';
     FilterComponent
   ]
 })
-export class GroupFilterComponent  implements OnInit {
+export class GroupFilterComponent  implements OnInit, OnChanges {
   @Input()
   label?: string = "Type";
 
@@ -37,6 +37,17 @@ export class GroupFilterComponent  implements OnInit {
   readonly list = new List();
 
   ngOnInit(): void {
+    this.refresh();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['template']) {
+      this.refresh();
+    }
+  }
+
+  private refresh() {
+    this.list.items.set([]);
     this.mapTemplate(undefined);
   }
 

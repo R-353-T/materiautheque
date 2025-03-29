@@ -12,13 +12,18 @@
         z-index: 0;
         border-radius: 0;
         
-        &:disabled {
+        &:disabled,
+        &.disabled {
             @apply cursor-not-allowed bg-ionLight-tint;
         }
     }
 
     ::ng-deep ion-toggle {
-        @apply bg-white flex p-ios outline-none border border-ionLight-shade;
+        @apply bg-white flex p-ios outline-none border border-ionLight-shade opacity-100;
+
+        &.disabled {
+            @apply cursor-not-allowed bg-ionLight-tint;
+        }
     }
 
     &.invalid {

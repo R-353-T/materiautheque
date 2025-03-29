@@ -14,11 +14,11 @@ import { FORM__ENUMERATOR } from "src/app/v1/form/f.enumerator";
 import { FormComponent } from "../../../component/form/form/form.component";
 import { InputComponent } from "../../../component/atom/input/input.component";
 import { IEnumerator } from "src/app/v1/interface/enumerator.interface";
+import { TypeSelectComponent } from "../../../component/type/type-select/type-select.component";
 import {
   IonButton,
   IonContent,
 } from "@ionic/angular/standalone";
-import { TypeSelectComponent } from "../../../component/type/type-select/type-select.component";
 
 @Component({
   selector: "app-enumerator-edit",

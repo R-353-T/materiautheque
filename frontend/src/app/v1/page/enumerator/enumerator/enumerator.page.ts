@@ -9,11 +9,7 @@ import { PermissionService } from 'src/app/v1/service/permission.service';
 import { IEnumerator } from 'src/app/v1/interface/enumerator.interface';
 import { InputComponent } from "../../../component/atom/input/input.component";
 import { FORM__ENUMERATOR } from 'src/app/v1/form/f.enumerator';
-import {
-  IonContent,
-  IonButton,
-  IonBadge,
-} from '@ionic/angular/standalone';
+import { IonContent } from '@ionic/angular/standalone';
 import { FormatDatePipe } from 'src/app/v1/pipe/format-date.pipe';
 import { TypeEnum } from 'src/app/v1/enum/Type';
 import { TypeService } from 'src/app/v1/service/api/type.service';
@@ -26,8 +22,6 @@ import { EditTitleComponent } from 'src/app/v1/component/title/edit-title/edit-t
   standalone: true,
   imports: [
     IonContent,
-    IonButton,
-    IonBadge,
     CommonModule,
     FormsModule,
     HeaderComponent,

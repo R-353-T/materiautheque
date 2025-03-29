@@ -3,18 +3,18 @@ import { CommonModule } from "@angular/common";
 import { FormControl, FormsModule } from "@angular/forms";
 import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
 import { ActivatedRoute, Router } from "@angular/router";
-import { map, Observable, take } from "rxjs";
+import { take } from "rxjs";
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { ITemplate } from "src/app/v1/interface/template.interface";
 import { IGroup } from "src/app/v1/interface/group.interface";
-import { IonButton, IonContent, IonText } from "@ionic/angular/standalone";
+import { IonButton, IonContent } from "@ionic/angular/standalone";
 import { InputComponent } from "src/app/v1/component/atom/input/input.component";
-import { TemplateService } from "src/app/v1/service/api/template.service";
 import { EditTitleComponent } from "../../../../component/title/edit-title/edit-title.component";
 import { FilterType, List, ListItemOptions } from "src/app/v1/interface/app.interface";
 import { ListComponent } from "../../../../component/organism/list/list.component";
 import { ListItemComponent } from "src/app/v1/component/organism/list-item/list-item.component";
 import { GroupFilterComponent } from "../../../../component/group/group-filter/group-filter.component";
+import { TemplateService } from "src/app/v1/service/api/template.service";
 
 @Component({
   selector: "app-group-list",
@@ -45,10 +45,10 @@ export class GroupListPage {
 
   readonly descriptionControl = new FormControl<string | null>(null);
   readonly navigationService = inject(NavigationService);
+  private readonly templateService = inject(TemplateService);
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly templateService = inject(TemplateService);
 
   ionViewWillEnter() {
     this.setBackTo(undefined);
@@ -58,8 +58,8 @@ export class GroupListPage {
       .pipe(take(1))
       .subscribe({
         next: (data) => {
-          const template = data["template"] as ITemplate;
           const group = data["group"] as IGroup | undefined;
+          let template = data["template"] as ITemplate;
 
           if (group) {
             this.group.set(group);
@@ -70,11 +70,14 @@ export class GroupListPage {
           } else {
             this.loadGroups(template);
             this.descriptionControl.setValue(null);
+            this.fastTravelSelection.set(null);
           }
 
           this.template.set(template);
           this.setBackTo(group);
           this.title.set(group ? group.name : template.name);
+
+          console.log(this.template());
         },
       });
   }
@@ -96,6 +99,7 @@ export class GroupListPage {
 
   private resetPage() {
     this.descriptionControl.setValue(null);
+    this.template.set(undefined);
     this.fieldList.items.set([]);
     this.groupList.items.set([]);
   }

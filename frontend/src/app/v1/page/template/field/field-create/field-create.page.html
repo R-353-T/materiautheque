@@ -61,9 +61,10 @@
         [control]="baseForm.enumeratorId"
         [errors]="baseForm.getErrors(baseForm.enumeratorId)"
       >
-        <app-select
+        <app-enumerator-select
           [control]="baseForm.enumeratorId"
-        ></app-select>
+          (change)="baseForm.changes()"
+        ></app-enumerator-select>
       </app-input>
 
       <app-input
@@ -71,19 +72,24 @@
         [control]="baseForm.typeId"
         [errors]="baseForm.getErrors(baseForm.typeId)"
       >
-        <app-select
+        <app-type-select
           [control]="baseForm.typeId"
-        ></app-select>
+          [required]="true"
+          [mode]="baseForm.allowMultipleValues.value ? 'multiple' : 'all'"
+          (change)="baseForm.changes()"
+        ></app-type-select>
       </app-input>
 
       <app-input
         [label]="baseForm.formLabels['field']['unitId']"
         [control]="baseForm.unitId"
         [errors]="baseForm.getErrors(baseForm.unitId)"
+        *ngIf="!baseForm.unitId.disabled"
       >
-        <app-select
+        <app-unit-select
+          [label]="baseForm.formLabels['field']['unitId']"
           [control]="baseForm.unitId"
-        ></app-select>
+        ></app-unit-select>
       </app-input>
 
       <app-submit-button
@@ -92,7 +98,5 @@
         (submit)="create()"
       ></app-submit-button>
     </app-form>
-
-    <!-- "form.allowMultipleValues.value ? 'multiple' : undefined" -->
   </div>
 </ion-content>

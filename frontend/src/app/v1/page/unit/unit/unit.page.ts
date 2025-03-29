@@ -7,11 +7,7 @@ import { ActivatedRoute } from "@angular/router";
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { PermissionService } from "src/app/v1/service/permission.service";
 import { IUnit } from "src/app/v1/interface/unit.interface";
-import {
-  IonBadge,
-  IonButton,
-  IonContent,
-} from "@ionic/angular/standalone";
+import { IonContent } from "@ionic/angular/standalone";
 import { InputComponent } from "../../../component/atom/input/input.component";
 import { FORM__UNIT } from "src/app/v1/form/f.unit";
 import { EditTitleComponent } from "src/app/v1/component/title/edit-title/edit-title.component";
@@ -23,8 +19,6 @@ import { EditTitleComponent } from "src/app/v1/component/title/edit-title/edit-t
   standalone: true,
   imports: [
     IonContent,
-    IonButton,
-    IonBadge,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

@@ -1,18 +1,17 @@
 <app-header></app-header>
 
 <ion-content [fullscreen]="true">
-  <div class="wrapper gap-ios" *ngIf="template() as t">
+  <div class="wrapper gap-ios" *ngIf="template() as template">
     <app-edit-title
-      [id]=""
       [title]="title()"
-      (onClick)="goToEditor()"
-    >
+      [id]="group()?.id"
+      (onClick)="goToEditor()">
     </app-edit-title>
 
     <div class="flex flex-col gap-ios">
       <app-group-filter
         label="Navigation Rapide"
-        [template]="t"
+        [template]="template"
         [selection]="fastTravelSelection"
         (change)="goToGroup($event)"
       >
@@ -25,13 +24,16 @@
 
     <!-- GROUP --->
 
-    <div class="flex flex-col gap-ios border border-ionLight-shade p-ios">
-      <div class="flex gap-ios justify-between items-center">
+    <div class="flex flex-col border border-ionLight-shade">
+      <div
+        class="flex gap-ios justify-between items-center border-b border-ionLight-shade bg-ionLight p-ios"
+      >
         <h3 class="uppercase">Groupes</h3>
 
         <ion-button
           fill="outline"
-          (click)="navigationService.goToTemplateGroupCreate(t.id, group()?.id)"
+          class="bg-white"
+          (click)="navigationService.goToTemplateGroupCreate(template.id, group()?.id)"
         >
           Ajouter
         </ion-button>
@@ -47,10 +49,12 @@
     <!-- FIELD --->
 
     <div
-      class="flex flex-col gap-ios border border-ionLight-shade p-ios"
+      class="flex flex-col border border-ionLight-shade"
       *ngIf="group() as group"
     >
-      <div class="flex gap-ios justify-between items-center">
+      <div
+        class="flex gap-ios justify-between items-center border-b border-ionLight-shade bg-ionLight p-ios"
+      >
         <h3 class="uppercase">Champs</h3>
 
         <ion-button

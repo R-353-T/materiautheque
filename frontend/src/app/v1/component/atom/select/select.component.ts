@@ -72,7 +72,7 @@ export class SelectComponent implements OnInit, OnDestroy {
   readonly focus = signal<boolean>(false);
   private subscription?: Subscription;
 
-  preview: string = "...";
+  preview: string = "";
 
   ngOnInit(): void {
     this.updateItemsSelection(this.control.value);
@@ -86,9 +86,16 @@ export class SelectComponent implements OnInit, OnDestroy {
     this.subscription?.unsubscribe();
   }
 
+  onOpen() {
+    if(this.control.disabled === false) {
+      this.focus.set(true);
+    } 
+  }
+
   onSelect(item: ListItemOptions) {
     if (this.multiple === false) {
       this.control.setValue(item.id);
+      this.focus.set(false);
     } else {
       const selected = this.list
         .items()
@@ -98,6 +105,10 @@ export class SelectComponent implements OnInit, OnDestroy {
     }
 
     this.change.emit(this.control.value);
+  }
+
+  onLoadMore(event?: any) {
+    this.loadMore.emit(event);
   }
 
   private updateItemsSelection(value: number|null) {
@@ -125,6 +136,11 @@ export class SelectComponent implements OnInit, OnDestroy {
         this.preview = i.label ?? "...";
         return; // TODO: fix multiple
       }
+    }
+
+    const value = this.control.value;
+    if(value) {
+      this.preview = `#${value.toString()}`;
     }
   }
 }

@@ -1,24 +1,22 @@
-import { Component, inject, OnInit, signal } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
-import { map, Observable, take } from "rxjs";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { map, Observable, take, tap } from "rxjs";
 import { NavigationService } from "src/app/v1/service/navigation/navigation.service";
 import { ActivatedRoute } from "@angular/router";
 import { HeaderComponent } from "src/app/v1/component/organism/header/header.component";
-import { TypeService } from "src/app/v1/service/api/type.service";
-import { EnumeratorService } from "src/app/v1/service/api/enumerator.service";
-import { UnitService } from "src/app/v1/service/api/unit.service";
-import { IUnit } from "src/app/v1/interface/unit.interface";
-import { IEnumerator } from "src/app/v1/interface/enumerator.interface";
 import { IField } from "src/app/v1/interface/field.interface";
-import { IGroup } from "src/app/v1/interface/group.interface";
-import { IType } from "src/app/v1/interface/type.interface";
-import {
-  IonBadge,
-  IonButton,
-  IonContent,
-  IonText,
-} from "@ionic/angular/standalone";
+import { IonContent, IonToggle } from "@ionic/angular/standalone";
+import { EditTitleComponent } from "../../../../component/title/edit-title/edit-title.component";
+import { FORM__FIELD } from "src/app/v1/form/f.field";
+import { InputComponent } from "../../../../component/atom/input/input.component";
+import { GroupSelectComponent } from "../../../../component/group/group-select/group-select.component";
+import { ITemplate } from "src/app/v1/interface/template.interface";
+import { EnumeratorSelectComponent } from "../../../../component/enumerator/enumerator-select/enumerator-select.component";
+import { TypeSelectComponent } from "../../../../component/type/type-select/type-select.component";
+import { UnitSelectComponent } from "../../../../component/unit/unit-select/unit-select.component";
+import { TemplateService } from "src/app/v1/service/api/template.service";
+import { TemplateGroupService } from "src/app/v1/service/api/template-group.service";
 
 @Component({
   selector: "app-field",
@@ -26,65 +24,61 @@ import {
   styleUrls: ["./field.page.scss"],
   standalone: true,
   imports: [
+    IonToggle,
     IonContent,
-    IonButton,
-    IonText,
-    IonBadge,
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     HeaderComponent,
-  ],
+    EditTitleComponent,
+    InputComponent,
+    GroupSelectComponent,
+    EnumeratorSelectComponent,
+    TypeSelectComponent,
+    UnitSelectComponent,
+  ]
 })
 export class FieldPage {
   field$?: Observable<IField>;
 
-  readonly group = signal<IGroup | undefined>(undefined);
-  readonly type = signal<IType | undefined>(undefined);
-  readonly enumerator = signal<IEnumerator | undefined>(undefined);
-  readonly unit = signal<IUnit | undefined>(undefined);
+  template = signal<ITemplate|undefined>(undefined);
 
+  readonly baseForm = FORM__FIELD;
   readonly navigationService = inject(NavigationService);
 
+  private readonly groupService = inject(TemplateGroupService);
+  private readonly templateService = inject(TemplateService);
   private readonly route = inject(ActivatedRoute);
-  private readonly typeService = inject(TypeService);
-  private readonly enumeratorService = inject(EnumeratorService);
-  private readonly unitService = inject(UnitService);
 
   ionViewWillEnter() {
-    this.field$ = this.route.data.pipe(map((data) => data["field"] as IField));
     this.navigationService.backTo = this.navigationService.lastPage;
-    this.type.set(undefined);
-    this.enumerator.set(undefined);
-    this.unit.set(undefined);
-    this.group.set(undefined);
+    this.field$ = this.route.data.pipe(map((data) => data["field"] as IField));
 
     this.route.data.pipe(take(1))
       .subscribe({
         next: (data) => {
           const field = data["field"] as IField;
-          this.group.set(data["group"] as IGroup);
+          this.baseForm.reset(field);
+          this.baseForm.groupId.disable();
+          this.baseForm.typeId.disable();
+          this.baseForm.name.disable();
+          this.baseForm.description.disable();
+          this.baseForm.isRequired.disable();
+          this.baseForm.allowMultipleValues.disable();
+          this.baseForm.enumeratorId.disable();
+          this.baseForm.unitId.disable();
 
-          if (field.typeId !== null) {
-            this.typeService.get(field.typeId).subscribe({
-              next: (type) => this.type.set(type),
-            });
-          }
-
-          if (field.enumeratorId !== null) {
-            this.enumeratorService.get(field.enumeratorId).subscribe({
-              next: (enumerator) => {
-                this.enumerator.set(enumerator);
+          this.groupService
+            .get(field.groupId)
+            .subscribe({
+              next: (group) => {
+                this.templateService
+                  .get(group.templateId)
+                  .subscribe({
+                    next: (template) => this.template.set(template),
+                  });
               },
-            });
-          }
-
-          if (field.unitId !== null) {
-            this.unitService.get(field.unitId).subscribe({
-              next: (unit) => {
-                this.unit.set(unit);
-              },
-            });
-          }
+            })
         },
       });
   }

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { NavigationEnd, Router } from '@angular/router';
+import { BehaviorSubject, filter, Observable, pairwise } from 'rxjs';
 import { Location } from '@angular/common';
 
 @Injectable({
