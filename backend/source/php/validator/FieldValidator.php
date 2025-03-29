@@ -63,8 +63,8 @@ class FieldValidator extends Validator
         }
 
         if ($typeId !== Type::ENUMERATOR && $enumeratorId !== null) {
-            $this->brb->addError("typeId", BPC::INCORRECT);
-            $this->brb->addError("enumeratorId", BPC::INCORRECT);
+            $this->brb->addError("typeId", BPC::REQUIRED);
+            $this->brb->addError("enumeratorId", BPC::REQUIRED);
             return;
         }
     }

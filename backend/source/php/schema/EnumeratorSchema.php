@@ -50,7 +50,6 @@ class EnumeratorSchema extends Schema
     public function list(WP_REST_Request $request)
     {
         $typeId = $this->typeValidator->id($request->get_param("typeId"), false, "typeId");
-        $typeId = $typeId === 0 ? null : $typeId;
 
         return $this->brb->containErrors()
             ? $this->brb->build()

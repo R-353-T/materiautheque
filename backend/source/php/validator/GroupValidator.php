@@ -21,7 +21,7 @@ class GroupValidator extends Validator
             return null;
         }
 
-        if (($parentId = $this->id($parentId, false, "parentId")) !== 0) {
+        if (($parentId = $this->id($parentId, false, "parentId")) !== null) {
             if (
                 ($id === null
                 && ($parent = $this->repository->selectById($parentId)) !== null

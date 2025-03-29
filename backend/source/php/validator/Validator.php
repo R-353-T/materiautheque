@@ -16,13 +16,13 @@ class Validator
         $this->brb = $brb;
     }
 
-    public function id(mixed $id, bool $required = true, string $parameterName = "id"): int
+    public function id(mixed $id, bool $required = true, string $parameterName = "id"): ?int
     {
         if ($id === null) {
             if ($required) {
                 $this->brb->addError($parameterName, BPC::REQUIRED);
             }
-            return 0;
+            return null;
         }
 
         if (($id = mate_sanitize_int($id)) === false) {
