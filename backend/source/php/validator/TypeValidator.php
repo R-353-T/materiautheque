@@ -156,7 +156,7 @@ class TypeValidator extends Validator
         return $value;
     }
 
-    public function NUMBER(mixed $value, int $index, string $pn, bool $required): ?int
+    public function NUMBER(mixed $value, int $index, string $pn, bool $required): null|int|float
     {
         if ($value === null) {
             if ($required) {
@@ -194,7 +194,7 @@ class TypeValidator extends Validator
         return $value;
     }
 
-    public function MONEY(mixed $value, int $index, string $parameterName, bool $required): ?int
+    public function MONEY(mixed $value, int $index, string $parameterName, bool $required): null|int|float|string
     {
         if ($value === null || is_string($value) && strlen($value) === 0) {
             if ($required) {
@@ -206,7 +206,8 @@ class TypeValidator extends Validator
         $int_value = mate_sanitize_int($value);
         $float_value = mate_sanitize_float($value);
 
-        if ($float_value !== false) {
+        if (is_numeric($value)) {
+        } elseif ($float_value !== false) {
             $value = $float_value;
         } elseif ($int_value !== false) {
             $value = $int_value;
