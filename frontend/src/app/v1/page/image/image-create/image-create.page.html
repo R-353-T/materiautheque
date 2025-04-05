@@ -20,6 +20,7 @@
         [label]="baseForm.formLabels['image']['file']"
         [control]="baseForm.file"
         [errors]="baseForm.getErrors(baseForm.file)"
+        [hints]="['Formats acceptés: .png, .jpg, .jpeg', 'Taille maximale: 10Mo']"
       >
         <input
           #inputFile

@@ -2,6 +2,6 @@
   @if(loading === false) {
     <ion-button [disabled]="disabled" (click)="onSubmit()">{{ label }}</ion-button>
   } @else {
-    <ion-spinner color="primary"></ion-spinner>
+    <ion-spinner color="dark" name="dots" class="m-auto"></ion-spinner>
   }
 </div>

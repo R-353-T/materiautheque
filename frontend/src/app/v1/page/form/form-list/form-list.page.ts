@@ -15,7 +15,6 @@ import {
   inject,
   signal,
   ViewChild,
-  WritableSignal,
 } from "@angular/core";
 import {
   IonButton,
@@ -26,6 +25,7 @@ import {
 } from "@ionic/angular/standalone";
 import { ListComponent } from "../../../component/organism/list/list.component";
 import { ListItemComponent } from "../../../component/organism/list-item/list-item.component";
+import { HeaderService } from "src/app/v1/service/header/header.service";
 
 @Component({
   selector: "app-form-list",
@@ -55,17 +55,21 @@ export class FormListPage {
   readonly searchOption = signal<string | undefined | null>(null);
   readonly navigationService = inject(NavigationService);
   readonly permissionService = inject(PermissionService);
+  private readonly headerService = inject(HeaderService);
   private readonly formService = inject(FormService);
   private readonly route = inject(ActivatedRoute);
 
   ionViewWillEnter() {
+    this.template.set(undefined);
     this.list.items.set([]);
 
-    this.route.data.pipe(take(1))
+    this.route.data
+      .pipe(take(1))
       .subscribe({
         next: (data) => {
           this.template.set(data["template"] as ITemplate);
           this.refresh();
+          this.headerService.title = this.template()?.name ?? "";
         },
       });
   }

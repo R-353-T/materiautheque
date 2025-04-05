@@ -14,10 +14,10 @@ import { ToastService } from "src/app/v1/service/toast.service";
 import { FORM__GROUP } from "src/app/v1/form/f.group";
 import { FormComponent } from "../../../../component/form/form/form.component";
 import { InputComponent } from "../../../../component/atom/input/input.component";
-import { GroupInputValueListComponent } from "../../../../component/form/group/group-input-value-list/group-input-value-list.component";
 import { TemplateService } from "src/app/v1/service/api/template.service";
 import { IonButton, IonContent } from "@ionic/angular/standalone";
 import { GroupSelectComponent } from "../../../../component/group/group-select/group-select.component";
+import { GroupInputValueListComponent } from "src/app/v1/component/group/group-input-value-list/group-input-value-list.component";
 
 @Component({
   selector: "app-group-edit",
