@@ -22,5 +22,5 @@ export class InputComponent {
   errors: string[] = [];
 
   @Input()
-  hint?: string;
+  hints: string[] = [];
 }

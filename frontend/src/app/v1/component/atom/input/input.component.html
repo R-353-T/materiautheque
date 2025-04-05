@@ -5,12 +5,12 @@
     </div>
     <ng-content></ng-content>
   </div>
-  <div class="flex flex-col gap-2" *ngIf="errors.length || hint">
+  <div class="flex flex-col gap-2" *ngIf="errors.length || hints.length">
     @for(error of errors; track $index) {
       <p class="form-error">{{ error }}</p>
     }
 
-    @if(hint) {
+    @for(hint of hints; track $index) {
       <p class="form-hint">{{ hint }}</p>
     }
   </div>
