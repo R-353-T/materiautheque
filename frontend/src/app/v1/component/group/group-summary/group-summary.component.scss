@@ -1,0 +1,37 @@
+.mate-group-summary {
+    @apply flex flex-col;
+
+    label {
+        @apply inline-block text-ionDark bg-ionLight-shade text-xs py-1 px-2 uppercase
+        border  border-ionLight-shade font-bold;
+    }
+
+    .mate-group-summary-button {
+        @apply bg-white flex w-full items-center p-ios outline-none border border-ionLight-shade cursor-pointer gap-ios
+        min-w-32;
+
+        ion-icon {
+            @apply ml-auto;
+        }
+    }
+}
+
+.mate-group-summary-modal ion-content {
+    --padding-start: 0px;
+    --padding-end: 0px;
+    --padding-top: 0px;
+    --padding-bottom: 0px;
+
+    .mate-group-summary-button {
+        @apply w-full border-b border-ionLight-shade flex p-ios hover:bg-ionLight cursor-pointer duration-300
+        items-center gap-ios;
+
+        &.selected {
+            @apply text-ionPrimary font-bold;
+        }
+
+        &.disabled {
+            @apply text-ionLight-shade cursor-not-allowed hover:bg-white;
+        }
+    }
+}

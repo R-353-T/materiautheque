@@ -1,0 +1,43 @@
+<div class="mate-group-summary">
+  <div>
+    <label>Sommaire</label>
+  </div>
+  <div class="mate-group-summary-button" (click)="focus.set(true)">
+    <p>{{ preview() }}</p>
+  </div>
+</div>
+
+<ion-modal
+  [isOpen]="focus()"
+  (willDismiss)="focus.set(false)"
+  class="mate-group-summary-modal"
+>
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Sommaire</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="focus.set(false)">
+            <ion-icon
+              color="dark"
+              slot="icon-only"
+              name="close"
+            ></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="flex flex-col">
+      <app-list
+        *ngIf="list"
+        [options]="list.options"
+      >
+        @for (item of list.items(); track $index) {
+          <app-list-item
+            [options]="item"
+            (onClick)="onSelect(item)"
+          ></app-list-item>
+        }</app-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>
