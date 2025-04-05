@@ -31,6 +31,41 @@ export class ListItemComponent {
         return this.options.selected() ? "checkbox" : "square";
       case "redirection":
         return "chevron-forward";
+      case "validation":
+        switch (this.options.valid()) {
+          case true:
+            return "checkmark-circle";
+          case false:
+            return "alert-circle";
+          default:
+            return "ellipse";
+        }
+      default:
+        return null;
+    }
+  });
+
+  iconColor = computed(() => {
+    switch (this.options.mode()) {
+      case "radio":
+        return this.options.selected() ? "primary" : "dark";
+      case "checkbox":
+        return this.options.selected() ? "primary" : "dark";
+      case "redirection":
+        return "dark";
+      case "validation":
+        if(this.options.selected()) {
+          return "primary";
+        } else {
+          switch (this.options.valid()) {
+            case true:
+              return "success";
+            case false:
+              return "danger";
+            default:
+              return "dark";
+          }
+        }
       default:
         return null;
     }

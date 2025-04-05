@@ -6,15 +6,11 @@
   </ion-refresher>
 
   <div class="wrapper gap-ios" *ngIf="template">
-    <div *ngIf="template() as t" class="flex gap-ios justify-between">
-      <h1>{{ t.name }}</h1>
-
-      <div class="flex gap-ios">
-        <ion-button
-          (click)="navigationService.goToFormCreate(t.id)"
-          [disabled]="!permissionService.hasPermission(permissionService.PERMISSION.form.create)"
-        >Ajouter</ion-button>
-      </div>
+    <div *ngIf="template() as t">
+      <ion-button
+        (click)="navigationService.goToFormCreate(t.id)"
+        [disabled]="!permissionService.hasPermission(permissionService.PERMISSION.form.create)"
+      >Ajouter</ion-button>
     </div>
 
     <ion-searchbar

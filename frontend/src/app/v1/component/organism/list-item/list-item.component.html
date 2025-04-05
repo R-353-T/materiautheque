@@ -1,11 +1,26 @@
-<div class="mate-list-item" (click)="_onClick()" [class.disabled]="options.disabled()">
+<div
+  class="mate-list-item"
+  (click)="_onClick()"
+  [ngClass]="{
+    disabled: options.disabled(),
+    selected: options.selected(),
+    valid: options.valid(),
+    invalid: options.valid() === false }"
+>
   <div class="mate-list-item-icon">
-    @if(icon() !== null) {
-      <ion-icon [name]="icon()" size="large"></ion-icon>
+    @if (icon() !== null) {
+      <ion-icon
+        [name]="icon()"
+        size="large"
+        [color]='iconColor()'
+      ></ion-icon>
     }
   </div>
 
-  <div class="mate-list-item-content" [style.paddingLeft.px]="options.depth() * 28">
+  <div
+    class="mate-list-item-content"
+    [style.paddingLeft.px]="options.depth() * 20"
+  >
     <h5 class="label">{{ options.label }}</h5>
     <p class="description">{{ options.description }}</p>
   </div>

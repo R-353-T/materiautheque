@@ -22,9 +22,10 @@ export class ListItemOptions {
     id: number | null = null;
     label: string | null = null;
     description?: string;
-    mode = signal<"radio" | "checkbox" | "redirection" | "none">("none");
+    mode = signal<"radio" | "checkbox" | "redirection" | "none" | "validation">("none");
     disabled = signal<boolean>(false);
     selected = signal<boolean>(false);
+    valid = signal<boolean|undefined>(undefined);
     depth = signal<number>(0);
     redirection: any[] = ["/"];
 }

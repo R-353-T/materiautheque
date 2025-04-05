@@ -1,19 +1,22 @@
-<div class="mate-edit-title">
+<div class="flex flex-col gap-1">
   <div class="mate-edit-title-content">
     <div class="flex" *ngIf="id">
       <div class="mate-edit-title-ref">RÉFÉRENCE <b>#{{ id }}</b></div>
     </div>
+  </div>
+  <div class="mate-edit-title">
     <h1>
       {{ title }}
     </h1>
+
+    <div class="mate-edit-title-button">
+      <ion-button
+        (click)="onClick.emit()"
+        [disabled]="buttonDisabled"
+      >
+        Éditer
+      </ion-button>
+    </div>
   </div>
 
-  <div class="mate-edit-title-button">
-    <ion-button
-      (click)="onClick.emit()"
-      [disabled]="buttonDisabled"
-    >
-      Éditer
-    </ion-button>
-  </div>
 </div>

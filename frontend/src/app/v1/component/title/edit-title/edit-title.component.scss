@@ -1,18 +1,15 @@
 .mate-edit-title {
-    @apply flex justify-between gap-ios;
+    @apply flex items-center justify-between gap-ios;
+}
 
-    .mate-edit-title-button {
-    }
+.mate-edit-title-content {
+    @apply flex flex-grow gap-ios justify-end;
 
-    .mate-edit-title-content {
-        @apply flex flex-col flex-grow gap-ios;
+    .mate-edit-title-ref {
+        @apply text-xs pl-1 flex gap-1 font-bold items-center;
 
-        .mate-edit-title-ref {
-            @apply text-xs pl-1 flex gap-1 font-bold items-center;
-
-            b {
-                @apply bg-ionDark-shade text-ionLight p-1;
-            }
+        b {
+            @apply bg-ionDark-shade text-ionLight p-1;
         }
     }
 }

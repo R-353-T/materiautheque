@@ -13,6 +13,34 @@
         @apply flex flex-col justify-center;
     }
 
+    &.valid {
+        @apply bg-ionSuccess-50; 
+
+        .label {
+            @apply text-ionSuccess;
+        }
+
+        .description {
+            @apply text-ionSuccess-400;
+        }
+    }
+
+    &.invalid {
+        @apply bg-ionDanger-100;
+    }
+
+    &.selected {
+        @apply bg-ionPrimary-100;
+
+        .label {
+            @apply text-ionPrimary;
+        }
+
+        .description {
+            @apply text-ionPrimary-600;
+        }
+    }
+
     &.disabled {
         @apply opacity-50 cursor-not-allowed hover:opacity-50;
     }
