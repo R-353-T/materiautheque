@@ -9,8 +9,16 @@ import { templateFieldResolver } from "./v1/resolver/template-field.resolver";
 import { imageResolver } from "./v1/resolver/image.resolver";
 import { formResolver } from "./v1/resolver/form.resolver";
 import { timeResolver } from "./v1/resolver/time.resolver";
+import { unAuthGuard } from "./v2/core/guards/auth.guard";
 
 export const routes: Routes = [
+  {
+    path: 'auth',
+    title: 'Authentification',
+    loadComponent: () => import('./v2/pages/auth/auth.page').then( m => m.AuthPage),
+    canActivate: [unAuthGuard]
+  },
+
   // Commons
 
   {
@@ -18,13 +26,6 @@ export const routes: Routes = [
     loadComponent: () =>
       import("./v1/page/e404/e404.page").then((m) => m.E404Page),
     title: "404",
-  },
-  {
-    path: "login",
-    loadComponent: () =>
-      import("./v1/page/login/login.page").then((m) => m.LoginPage),
-    title: "Page de connexion",
-    canActivate: [unauthGuard],
   },
   {
     path: "home",
@@ -280,7 +281,7 @@ export const routes: Routes = [
 
   {
     path: "",
-    redirectTo: "login",
+    redirectTo: "auth",
     pathMatch: "full",
   },
 

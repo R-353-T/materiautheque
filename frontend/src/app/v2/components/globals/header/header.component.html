@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons 
+      *ngIf="lastRoute() as lastRoute"
+      slot="start">
+      <ion-button [routerLink]="lastRoute" color="dark">
+        <ion-icon
+          slot="icon-only"
+          icon="arrow-back"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title>{{ titleSignal() }}</ion-title>
+
+    <ion-buttons *ngIf="isAuthenticatedSignal()" slot="end">
+      <ion-menu-button
+        auto-hide="true"
+        menu="main"
+        color="dark"
+      ></ion-menu-button>
+    </ion-buttons>
+
+    <ion-progress-bar
+      *ngIf="isLoadingSignal()"
+      type="indeterminate"
+      color="dark"
+    ></ion-progress-bar>
+  </ion-toolbar>
+</ion-header>

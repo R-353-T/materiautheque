@@ -1,13 +1,39 @@
-import { Component } from '@angular/core';
-import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { filter, addCircle, arrowBack, arrowDown, arrowForward, arrowUp, close, create, list, menu, removeCircle, share, swapVertical, chevronExpand, checkmark, radioButtonOff, radioButtonOn, square, chevronForward, checkbox, alert, alertCircle, checkmarkCircle, ellipseOutline, ellipse } from 'ionicons/icons';
-import { MainMenuComponent } from "./v1/component/organism/main-menu/main-menu.component";
+import { Component } from "@angular/core";
+import { IonApp, IonRouterOutlet } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import {
+  addCircle,
+  alertCircle,
+  arrowBack,
+  arrowDown,
+  arrowForward,
+  arrowUp,
+  checkbox,
+  checkmarkCircle,
+  chevronExpand,
+  chevronForward,
+  close,
+  create,
+  ellipse,
+  filter,
+  menu,
+  radioButtonOff,
+  radioButtonOn,
+  removeCircle,
+  share,
+  square,
+  swapVertical,
+} from "ionicons/icons";
+import { NavigationComponent } from "./v2/components/globals/navigation/navigation.component";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: 'app.component.html',
-  imports: [IonApp, IonRouterOutlet, MainMenuComponent],
+  selector: "app-root",
+  templateUrl: "app.component.html",
+  imports: [
+    IonApp,
+    IonRouterOutlet,
+    NavigationComponent
+],
 })
 export class AppComponent {
   constructor() {
@@ -32,7 +58,7 @@ export class AppComponent {
       chevronExpand,
       radioButtonOff,
       radioButtonOn,
-      square
+      square,
     });
   }
 }

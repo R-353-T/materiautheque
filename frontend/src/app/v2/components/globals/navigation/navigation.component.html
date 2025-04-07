@@ -1,0 +1,38 @@
+<ion-menu type="overlay" side="end" menuId="main" contentId="main">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="primary">
+        <ion-menu-toggle>
+          <ion-button color="dark">
+            <ion-icon
+              slot="icon-only"
+              name="close"
+            ></ion-icon>
+          </ion-button>
+        </ion-menu-toggle>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list lines="none">
+      @for (item of routes; track $index) {
+        <ion-menu-toggle>
+          <ion-item button mode="ios" [routerLink]="[item.path]">
+            @if (item.data && item.data["icon"]) {
+              <ion-icon
+                aria-hidden="true"
+                [name]='item.data["icon"]'
+                slot="start"
+              ></ion-icon>
+            }
+            <ion-label>{{ item.title }}</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      }<ion-menu-toggle>
+        <ion-item button mode="ios" (click)="authService.logout()">
+          Se déconnecter
+        </ion-item>
+      </ion-menu-toggle>
+    </ion-list>
+  </ion-content>
+</ion-menu>

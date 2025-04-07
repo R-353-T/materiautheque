@@ -10,7 +10,6 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class ApiService {
-
   public readonly retryAfterLock = new LockTimeout('RETRY_AFTER_LOCK');
 
   private readonly baseUrl = environment.api.baseUrl;
