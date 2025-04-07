@@ -87,12 +87,12 @@
       [label]="baseForm.formLabels['field']['unitId']"
       [control]="baseForm.unitId"
       [errors]="baseForm.getErrors(baseForm.unitId)"
-      *ngIf="!baseForm.unitId.disabled"
     >
       <app-unit-select
         [label]="baseForm.formLabels['field']['unitId']"
         [control]="baseForm.unitId"
       ></app-unit-select>
+      {{ baseForm.unitId.value }}
     </app-input>
   </div>
 </ion-content>

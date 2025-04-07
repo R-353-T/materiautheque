@@ -4,6 +4,7 @@ import { ITemplate } from "../interface/template.interface";
 import { IForm } from "../interface/form.interface";
 import { signal } from "@angular/core";
 import { FFormGroup } from "./f.form-group";
+import { ValueDto } from "../model/value-dto";
 
 export class FForm extends BaseForm2 {
 
@@ -40,6 +41,7 @@ export class FForm extends BaseForm2 {
         this.groups.set([]);
 
         if(template) {
+            this.templateId.setValue(template.id);
             this.loadTemplate(template, from);
         }
 
@@ -68,6 +70,15 @@ export class FForm extends BaseForm2 {
         this.id.setValue(from.id);
         this.name.setValue(from.name);
         this.templateId.setValue(from.templateId);
+    }
+
+    get valueListDto() {
+        const groups = this.groups();
+
+        return groups.reduce((acc, group) => {
+            acc.push(...group.valueListDto);
+            return acc;
+        }, [] as ValueDto[]);
     }
 }
 

@@ -16,9 +16,16 @@
         <input type="text" [formControl]="baseForm.name">
       </app-input>
 
-      <app-form-group [baseForm]="baseForm" [template]="template"></app-form-group>
+      <app-form-group
+        [baseForm]="baseForm"
+        [template]="template"
+      ></app-form-group>
 
-      <app-submit-button></app-submit-button>
+      <app-submit-button
+        label="Ajouter"
+        [loading]="baseForm.locked"
+        (submit)="create()"
+      ></app-submit-button>
     </app-form>
   </div>
 </ion-content>

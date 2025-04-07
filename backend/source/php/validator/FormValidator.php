@@ -63,7 +63,15 @@ class FormValidator extends Validator
         }
 
         $this->requiredFields($templateId, $fieldValueMap);
-        return $fieldValueMap;
+
+        return array_reduce(
+            $fieldValueMap,
+            function ($carrier, $fieldValue) {
+                array_push($carrier, ...$fieldValue["values"]);
+                return $carrier;
+            },
+            []
+        );
     }
 
     private function valueDto(
@@ -86,6 +94,7 @@ class FormValidator extends Validator
             $column = $this->typeRepository->selectById($field->typeId)->column;
 
             $model->id = $this->dtoId($value, $index, $formId, $field);
+            $model->fieldId = $field->id;
             $model->$column = $this->dtoValue($value, $index, $field);
             $model->unitValueId = $this->dtoUnit($value, $index, $field);
             $this->dtoNotMultiple($index, $field, $fieldValueMap);
@@ -118,7 +127,7 @@ class FormValidator extends Validator
             return null;
         }
 
-        if ($field->templateId !== $templateId) {
+        if ($this->groupRepository->selectById($field->groupId)->templateId !== $templateId) {
             $this->brb->addError("valueList", BPC::NOT_RELATED, null, $index, "fieldId");
             return null;
         }

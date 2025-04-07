@@ -25,7 +25,7 @@ class FormSchema extends Schema
         $model = new FormModel();
         $model->templateId = $this->templateValidator->id($request->get_param("templateId"), true, "templateId");
         $model->name = $this->validator->name($request->get_param("name"));
-        $model->valueList = $this->validator->valueList($request->get_param("valueList"));
+        $model->valueList = $this->validator->valueList($request->get_param("valueList"), null, $model->templateId);
 
         return $this->brb->containErrors()
             ? $this->brb->build()

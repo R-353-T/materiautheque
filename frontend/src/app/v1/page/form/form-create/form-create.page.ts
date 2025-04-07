@@ -66,5 +66,19 @@ export class FormCreatePage {
   }
 
   create() {
+    console.log(this.baseForm.isOk(true))
+
+    if(this.baseForm.isOk(true) && this.baseForm.lock()) {
+      this.formService.create(this.baseForm).subscribe({
+        next: async (response) => {
+          this.toastService.showSuccessCreate(response.name);
+          await this.navigationService.goToForm(response.id);
+        },
+        error: (error) => {
+          this.baseForm.httpError(error);
+          this.baseForm.unlock();
+        },
+      })
+    }
   }
 }

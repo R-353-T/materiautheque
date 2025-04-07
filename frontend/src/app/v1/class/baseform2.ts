@@ -79,6 +79,7 @@ export class BaseForm2 {
             this.formGroups[formName].markAllAsTouched();
 
             if (this.formGroups[formName].invalid) {
+                console.log("INVALID FORM NAME", this.formGroups[formName])
                 isOk = false;
             }
         }

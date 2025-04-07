@@ -29,6 +29,24 @@ export class FFormGroup extends BaseForm2 {
         return this.formGroups["group"];
     }
 
+    get valueListDto() {
+        const fields = this.fields();
+
+        return fields.reduce((acc, field) => {
+            const dto = new ValueDto();
+
+            dto.fieldId = field.field.id;
+            dto.value = field.controls.value.value;
+
+            if (field.controls.unit) {
+                dto.unitValueId = field.controls.unit.value;
+            }
+
+            acc.push(dto);
+            return acc;
+        }, [] as ValueDto[]);
+    }
+
     constructor(group: IGroup, depth: number = 0) {
         super();
         this.group = group;
