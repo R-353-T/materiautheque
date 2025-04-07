@@ -1,0 +1,25 @@
+<div class="form-group" *ngIf="template && baseForm">
+  <app-group-summary
+    [selection]="summarySelection"
+    [template]="template"
+    [baseForm]="baseForm"
+  ></app-group-summary>
+
+  <div *ngIf="activeGroup() as group" class="flex flex-col gap-ios">
+    @for (field of group.fields(); track $index) {
+      <app-input
+        [control]="field.controls.value"
+        [errors]="baseForm.getErrors(field.controls.value)"
+        [label]="field.field.name"
+      >
+        <app-form-input
+          [control]="field.controls.value"
+          [typeId]="field.field.typeId"
+          [enumeratorId]="field.field.enumeratorId"
+          [unitId]="field.field.unitId"
+          [unitControl]="field.controls.unit"
+        ></app-form-input>
+      </app-input>
+    }
+  </div>
+</div>

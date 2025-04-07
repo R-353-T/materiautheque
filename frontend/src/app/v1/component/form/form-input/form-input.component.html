@@ -1,14 +1,54 @@
-@if (typeService.isTypeIsTextInput(typeId)) {
-  <input [formControl]="control" type="text" />
-} @else if (typeService.isTypeIsNumberInput(typeId)) {
-  <input [formControl]="control" type="number" />
-} @else if (typeService.isTypeIsTextArea(typeId)) {
-  <textarea [formControl]="control" type="text"></textarea>
-} @else if (typeService.isTypeIsDateInput(typeId)) {
-  <ion-datetime
-    [showDefaultTitle]="true"
-    [formControl]="control"
-  ></ion-datetime>
-} @else {
-  <p>Something went wrong... Oops... ({{ typeId }})</p>
+@if (iterable) {
+  @for (ctrl of farrControl.controls; track $index) {
+    @if (typeService.isTypeIsTextInput(typeId)) {
+      <input [formControl]="formControl" type="text" />
+    } @else if (typeService.isTypeIsNumberInput(typeId)) {
+      <input [formControl]="formControl" type="number" />
+    } @else if (typeService.isTypeIsTextArea(typeId)) {
+      <textarea [formControl]="formControl" type="text"></textarea>
+    } @else if (typeService.isTypeIsDateInput(typeId)) {
+      <ion-datetime
+        [showDefaultTitle]="true"
+        [formControl]="formControl"
+      ></ion-datetime>
+    } @else if (typeService.isTypeIsEnumerator(typeId)) {
+      <app-enumerator-value-select> </app-enumerator-value-select>
+    } @else {
+      <p>Something went wrong... Oops... ({{ typeId }})</p>
+    }
+  }} @else {
+  @if (typeService.isTypeIsTextInput(typeId)) {
+    <input [formControl]="formControl" type="text" />
+  } @else if (typeService.isTypeIsNumberInput(typeId)) {
+    <input [formControl]="formControl" type="number" />
+  } @else if (typeService.isTypeIsTextArea(typeId)) {
+    <textarea [formControl]="formControl" type="text"></textarea>
+  } @else if (typeService.isTypeIsDateInput(typeId)) {
+    <ion-datetime
+      [showDefaultTitle]="true"
+      [formControl]="formControl"
+    ></ion-datetime>
+  } @else if (typeService.isTypeIsEnumerator(typeId)) {
+    <app-enumerator-value-select
+      [control]="formControl"
+      [required]="required"
+      [multiple]="multiple"
+      [id]="enumeratorId"
+    >
+    </app-enumerator-value-select>
+  } @else if (typeService.isTypeIsImage(typeId)) {
+    <app-image-select
+      [formControl]="formControl"
+      [required]="required"
+      [multiple]="multiple"
+    ></app-image-select>
+  } @else if (typeService.isTypeIsForm(typeId)) {
+    <app-form-value-select
+      [formControl]="formControl"
+      [required]="required"
+      [multiple]="multiple"
+    ></app-form-value-select>
+  } @else {
+    <p>Something went wrong... Oops... ({{ typeId }})</p>
+  }
 }

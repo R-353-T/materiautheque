@@ -9,7 +9,7 @@ import { AlertService } from "src/app/v1/service/alert.service";
 import { SubmitButtonComponent } from "src/app/v1/component/form/submit-button/submit-button.component";
 import { take } from "rxjs";
 import { ToastService } from "src/app/v1/service/toast.service";
-import { InputValueListComponent } from "src/app/v1/component/enumerator/input-value-list/enumerator-input-value-list.component";
+import { InputValueListComponent } from "src/app/v1/component/enumerator/enumerator-input-value-list/enumerator-input-value-list.component";
 import { FORM__ENUMERATOR } from "src/app/v1/form/f.enumerator";
 import { FormComponent } from "../../../component/form/form/form.component";
 import { InputComponent } from "../../../component/atom/input/input.component";

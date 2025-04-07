@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, signal, ViewEncapsulation, WritableSignal } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormArray, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-input',
@@ -13,7 +13,7 @@ import { FormControl } from '@angular/forms';
 })
 export class InputComponent {
   @Input()
-  control: FormControl = new FormControl();
+  control: FormControl|FormArray<FormControl> = new FormControl();
 
   @Input()
   label?: string;

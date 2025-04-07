@@ -1,0 +1,8 @@
+<app-select
+  *ngIf="id"
+  [control]="control"
+  [required]="required"
+  [multiple]="multiple"
+  [list]="list"
+  (change)="change.emit($event)"
+></app-select>

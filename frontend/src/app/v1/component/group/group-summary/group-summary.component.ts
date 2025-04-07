@@ -6,6 +6,7 @@ import { IGroup } from 'src/app/v1/interface/group.interface';
 import { ITemplate } from 'src/app/v1/interface/template.interface';
 import { ListComponent } from '../../organism/list/list.component';
 import { ListItemComponent } from '../../organism/list-item/list-item.component';
+import { FForm } from 'src/app/v1/form/f.form';
 
 @Component({
   selector: 'app-group-summary',
@@ -32,6 +33,9 @@ export class GroupSummaryComponent implements OnInit, OnChanges {
 
   @Input()
   template!: ITemplate;
+
+  @Input()
+  baseForm!: FForm;
 
   @Output()
   change = new EventEmitter<FilterType>();

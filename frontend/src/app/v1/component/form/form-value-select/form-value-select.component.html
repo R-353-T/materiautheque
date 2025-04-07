@@ -1,0 +1,9 @@
+<app-select
+  [label]="label"
+  [required]="required"
+  [multiple]="multiple"
+  [control]="control"
+  [list]="list"
+  (change)="change.emit($event)"
+  (loadMore)="loadNext($event)"
+></app-select>

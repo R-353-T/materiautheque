@@ -83,7 +83,19 @@ export class TypeService {
     return typeId === TypeEnum.DATE;
   }
 
-  isTypsIsBoolean(typeId: number) {
+  isTypeIsBoolean(typeId: number) {
     return typeId === TypeEnum.BOOLEAN;
+  }
+
+  isTypeIsEnumerator(typeId: number) {
+    return typeId === TypeEnum.ENUMERATOR;
+  }
+
+  isTypeIsImage(typeId: number) {
+    return typeId === TypeEnum.IMAGE;
+  }
+
+  isTypeIsForm(typeId: number) {
+    return typeId === TypeEnum.FORM;
   }
 }

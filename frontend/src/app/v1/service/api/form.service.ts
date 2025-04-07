@@ -4,8 +4,6 @@ import { ApiService } from './api.service';
 import { IResponse, IResponsePage } from 'src/app/v1/interface/api.interface';
 import { map } from 'rxjs';
 import { IForm } from 'src/app/v1/interface/form.interface';
-import { FormForm } from 'src/app/v1/form/form.form';
-import { Form } from '../../form/form';
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +36,7 @@ export class FormService {
       .pipe(map(response => response.data));
   }
 
-  create(form: Form) {
+  create(form: any) {
     const body = {
       name: form.getTemplateSection().name.value,
       templateId: form.getTemplateSection().templateId.value,
@@ -52,7 +50,7 @@ export class FormService {
       .pipe(map(response => response.data));
   }
 
-  update(form: FormForm) {
+  update(form: any) {
     const body = {
       id: form.id.value,
       name: form.name.value,

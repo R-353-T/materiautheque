@@ -1,33 +1,24 @@
 <app-header></app-header>
 
 <ion-content [fullscreen]="true">
-  <div class="wrapper" *ngIf="template() as t">
-    <h1 class="main">Ajouter un "{{t.name}}"</h1>
+  <div class="wrapper" *ngIf="template() as template">
+    <h1 class="main">{{ headerService.title }}</h1>
 
-    <app-form-group-summary
-      [form]="form"
-      [activeGroupId]="activeGroupId"
-    ></app-form-group-summary>
+    <app-form
+      [formGroup]="baseForm.formGroup"
+      [errors]="baseForm.getErrors(baseForm.formGroup)"
+    >
+      <app-input
+        [label]="baseForm.formLabels['form']['name']"
+        [control]="baseForm.name"
+        [errors]="baseForm.getErrors(baseForm.name)"
+      >
+        <input type="text" [formControl]="baseForm.name">
+      </app-input>
 
-    <form class="form" *ngIf="activeSection() as section">
-      @if(activeGroupId() === 0) {
-      <ion-input
-        [formControl]="form.getTemplateSection().name"
-        type="text"
-        class="mt-8 flex-col gap-4"
-        [label]="form.getTemplateSection().labelGroup.name"
-        [errorText]="section.errorOf(form.getTemplateSection().name)"
-      ></ion-input>
-      } @else {
-      <app-form-group-content
-        [fgroup]="form.getGroupSection(activeGroupId())"
-      ></app-form-group-content>
-      }
+      <app-form-group [baseForm]="baseForm" [template]="template"></app-form-group>
 
-      <app-submit-button
-        (submit)="create()"
-        label="Ajouter"
-      ></app-submit-button>
-    </form>
+      <app-submit-button></app-submit-button>
+    </app-form>
   </div>
 </ion-content>
