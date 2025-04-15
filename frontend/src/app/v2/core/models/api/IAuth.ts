@@ -1,4 +1,5 @@
-import { UserRole } from "./IUser";
+import { UserRole } from "../../enums/UserRoles";
+
 
 export interface IAuthentication {
     user_display_name: string;

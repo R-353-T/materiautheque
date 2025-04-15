@@ -1,0 +1,11 @@
+.form-wrapper {
+    @apply flex flex-col gap-ios bg-ionLight-50 p-ios border border-ionLight-200;
+
+    .form-wrapper-title {
+        @apply text-ionDark;
+    }
+
+    form {
+        @apply flex flex-col gap-ios;
+    }
+}

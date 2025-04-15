@@ -12,17 +12,6 @@
         --padding-bottom: 14px;
     }
 
-    ion-button {
-        @apply m-0;
-        @apply uppercase font-bold tracking-wide hover:drop-shadow-none;
-        --border-radius: 0px;
-    }
-
-    ion-input {
-        --border-color: var(--ion-color-light-shade);
-        --border-width: 1px;
-    }
-
     ion-searchbar {
         @apply p-0 min-h-5 border border-ionLight-shade bg-white;
         --border-radius: 0px;

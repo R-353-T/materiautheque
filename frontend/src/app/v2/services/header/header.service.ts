@@ -9,7 +9,7 @@ export class HeaderService {
   private readonly _loadingMap: { [key: string]: boolean } = {};
 
   constructor() {
-    this.isLoadingSignal = this._isLoading;
+    this.isLoadingSignal = this._isLoading.asReadonly();
   }
 
   startLoading(key: string) {

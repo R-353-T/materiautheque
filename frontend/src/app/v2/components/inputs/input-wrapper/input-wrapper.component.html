@@ -1,0 +1,28 @@
+<div class="input-wrapper">
+  <div class="input-wrapper-content">
+    <div>
+      <div class="input-wrapper-label">
+        {{ input.label }}
+      </div>
+    </div>
+    <ng-content></ng-content>
+  </div>
+
+  <div
+    *ngIf="input.errorsSignal() as errors"
+    class="input-wrapper-error"
+  >
+    @for(error of errors; track $index) {
+      <div>{{ error }}</div>
+    }
+  </div>
+
+  <div
+    *ngIf="input.hintsSignal() as hint"
+    class="input-wrapper-hint"
+  >
+    @for(hint of hint; track $index) {
+      <div>{{ hint }}</div>
+    }
+  </div>
+</div>

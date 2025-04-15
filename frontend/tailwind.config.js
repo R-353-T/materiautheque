@@ -29,6 +29,17 @@ module.exports = {
           DEFAULT: "#f6f8fc",
           shade: "#d8dade",
           tint: "#f7f9fc",
+          '50': '#f6f8fc', // *
+          '100': '#e4e9f5',
+          '200': '#cfdaee',
+          '300': '#adc0e3',
+          '400': '#86a1d4',
+          '500': '#6a83c7',
+          '600': '#566bba',
+          '700': '#4c5aa9',
+          '800': '#424b8b',
+          '900': '#39416f',
+          '950': '#262a45',
         },
         ionSuccess: {
           DEFAULT: "#2dd55b",

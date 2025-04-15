@@ -1,7 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { AuthService } from "../auth/auth.service";
-import { UserRole } from "../../core/models/api/IUser";
-import { UserRoles } from "../../core/enums/UserRoles";
+import { UserRole, UserRoles } from "../../core/enums/UserRoles";
 
 @Injectable({ providedIn: "root" })
 export class PermissionService {

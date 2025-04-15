@@ -15,7 +15,7 @@ import {
   IonToolbar,
 } from "@ionic/angular/standalone";
 import { routes } from "src/app/app.routes";
-import { UserRole } from "src/app/v2/core/models/api/IUser";
+import { UserRole } from "src/app/v2/core/enums/UserRoles";
 import { AuthService } from "src/app/v2/services/auth/auth.service";
 import { PermissionService } from "src/app/v2/services/permission/permission.service";
 import { environment } from "src/environments/environment";

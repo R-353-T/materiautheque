@@ -20,10 +20,11 @@ export class AuthService {
   }
 
   constructor() {
-    this.isAuthenticatedSignal = this._isAuthenticated;
-    this.userSignal = this._user;
+    this.isAuthenticatedSignal = this._isAuthenticated.asReadonly();
+    this.userSignal = this._user.asReadonly();
 
     const user = localStorage.getItem("user");
+    
     if (user) {
       this.user = JSON.parse(user);
     }

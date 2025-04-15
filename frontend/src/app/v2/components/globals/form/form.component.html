@@ -1,0 +1,33 @@
+<div class="form-wrapper">
+  <h1 class="form-wrapper-title">{{ form.title }}</h1>
+
+  <form
+    *ngIf="form.errorsSignal() as errors"
+    [formGroup]="form.formGroup"
+  >
+    @for (error of errors; track $index) {
+      <div class="form-wrapper-error">
+        {{ error }}
+      </div>
+    }
+
+    @for (input of form.inputs; track $index) {
+      @switch (input.type) {
+        @case ("label") {
+          <input-label [input]="input"></input-label>
+        }
+        @case ("password") {
+          <input-password [input]="input"></input-password>
+        }
+      }
+    }
+    
+    @for (error of errors; track $index) {
+      <div class="form-wrapper-error">
+        {{ error }}
+      </div>
+    }
+
+    <ng-content></ng-content>
+  </form>
+</div>

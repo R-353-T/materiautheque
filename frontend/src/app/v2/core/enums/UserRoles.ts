@@ -1,3 +1,11 @@
+export type UserRole =
+    | "guest"
+    | "subscriber"
+    | "contributor"
+    | "author"
+    | "editor"
+    | "administrator";
+
 export enum UserRoles {
     'guest' = 1,
     'subscriber' = 2,

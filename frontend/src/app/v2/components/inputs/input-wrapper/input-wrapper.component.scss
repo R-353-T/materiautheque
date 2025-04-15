@@ -1,0 +1,18 @@
+.input-wrapper {
+    @apply flex flex-col;
+
+    .input-wrapper-content {
+        @apply flex flex-col;
+
+        .input-wrapper-label {
+            @apply inline-block text-ionDark text-xs py-1 px-2
+                uppercase font-bold;
+        }
+    }
+
+    ::ng-deep input {
+        @apply flex w-full text-base py-2 px-2 outline-none bg-white border
+            border-ionLight-200 text-ionDark;
+        border-radius: 0;
+    }
+}

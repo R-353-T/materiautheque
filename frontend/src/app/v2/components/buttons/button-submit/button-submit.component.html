@@ -1,0 +1,9 @@
+<div class="button-submit">
+  <ion-button [disabled]="disabled || loading" (click)="onClick()" size="default">
+    @if(loading === false) {
+      {{ label }}
+    } @else {
+      <ion-spinner color="white" name="dots" class="m-auto"></ion-spinner>
+    }
+  </ion-button>
+</div>
