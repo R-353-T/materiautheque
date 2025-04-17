@@ -1,0 +1,15 @@
+.input-label {
+    @apply py-1 px-2 outline-none border font-bold rounded duration-300 border-black-200
+        bg-black-50 focus:border-blue-200 focus:text-blue-shade focus:bg-blue-50;
+
+    &.ng-touched,
+    &.ng-dirty {
+        &.ng-invalid {
+            @apply border-red-200 text-red-shade bg-red-50;
+        }
+
+        &.ng-valid {
+            @apply border-green-200 text-green-shade bg-green-50;
+        }
+    }
+}

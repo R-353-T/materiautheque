@@ -1,0 +1,26 @@
+.input-wrapper {
+    @apply flex flex-col gap-1;
+}
+
+.input-wrapper-label {
+    @apply text-xs font-semibold tracking-wide select-none duration-300;
+
+    &.touched,
+    &.dirty {
+        &.valid {
+            @apply text-green-shade;
+        }
+
+        &.invalid {
+            @apply text-red-shade;
+        }
+    }
+}
+
+.input-wrapper-errors {
+    @apply flex flex-col gap-1;
+
+    .input-wrappe-error {
+        @apply text-xs text-red-shade;
+    }
+}

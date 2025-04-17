@@ -1,0 +1,24 @@
+<div>
+  <div class="input-wrapper">
+    <div class="flex">
+      <div class="input-wrapper-label" 
+        [class.touched]="input.control.touched"
+        [class.dirty]="input.control.dirty"
+        [class.valid]="input.control.valid"
+        [class.invalid]="input.control.invalid">
+        {{ input.label }}
+      </div>
+    </div>
+    <ng-content></ng-content>
+
+    @if(input.invalid) {
+      <ul class="input-wrapper-errors">
+        @for(error of input.errors; track $index) {
+          <li class="input-wrappe-error">
+            {{ error }}
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</div>

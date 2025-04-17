@@ -1,0 +1,16 @@
+.input-submit {
+    @apply flex tracking-wide items-center font-bold gap-2 border rounded py-1
+        px-2 border-blue-shade text-blue-50 bg-blue-shade duration-300
+        active:bg-blue-tint active:border-blue-tint
+        hover:bg-blue-tint hover:border-blue-tint
+        select-none cursor-pointer
+        hover:pl-4;
+
+    &.loading {
+        @apply border bg-blue-50 border-blue-200 min-w-16;
+    }
+
+    &.disabled {
+        @apply bg-black-100 border-black-100 text-black-400 cursor-not-allowed;
+    }
+}

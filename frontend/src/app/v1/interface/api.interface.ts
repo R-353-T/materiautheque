@@ -1,5 +1,3 @@
-import { key } from "ionicons/icons";
-
 export type HttpParameters = { [key: string]: string | number | boolean | undefined | null };
 
 export interface IResponse<T> {

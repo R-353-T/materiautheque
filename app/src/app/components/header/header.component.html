@@ -1,0 +1,11 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>{{ title() }}</ion-title>
+
+        <ion-progress-bar
+            *ngIf="loading()"
+            type="indeterminate"
+            color="dark"
+        ></ion-progress-bar>
+    </ion-toolbar>
+</ion-header>

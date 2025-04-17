@@ -1,6 +1,10 @@
 import { inject, Injectable, Signal, signal } from "@angular/core";
 import { MateApiService } from "../mate-api/mate-api.service";
-import { IAuthentication, IAuthenticationParsed, IAuthenticationValidated } from "../../core/models/api/IAuth";
+import {
+  IAuthentication,
+  IAuthenticationParsed,
+  IAuthenticationValidated,
+} from "../../core/models/api/IAuth";
 import { catchError, map, of, timer } from "rxjs";
 import { environment } from "src/environments/environment";
 
@@ -24,7 +28,7 @@ export class AuthService {
     this.userSignal = this._user.asReadonly();
 
     const user = localStorage.getItem("user");
-    
+
     if (user) {
       this.user = JSON.parse(user);
     }
@@ -40,14 +44,17 @@ export class AuthService {
 
   authenticate(username: string, password: string) {
     return this._mateApiService
-      .POST<IAuthentication>(environment.api.authentication.login, { username, password })
+      .POST<IAuthentication>(environment.api.authentication.login, {
+        username,
+        password,
+      })
       .pipe(map((response) => {
         const user = {
           displayName: response.user_display_name,
           email: response.user_email,
           name: response.user_nicename,
           role: response.user_role,
-          token: response.token
+          token: response.token,
         } as IAuthenticationParsed;
 
         this.user = user;
@@ -66,7 +73,7 @@ export class AuthService {
         catchError(() => {
           this.logout();
           return of(false);
-        })
+        }),
       );
   }
 
@@ -78,7 +85,7 @@ export class AuthService {
         if (user) {
           this.validate().subscribe();
         }
-      }
+      },
     });
   }
 }

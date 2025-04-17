@@ -1,0 +1,31 @@
+<div class="form-wrapper">
+  <div class="flex">
+    <div class="form-wrapper-title">
+      {{ form.title }}
+    </div>
+  </div>
+
+  @if(form.invalid) {
+    <div class="form-wrapper-errors">
+      @for(error of form.errors; track $index) {
+        <div class="form-wrapper-error">{{ error }}</div>
+      }
+    </div>
+  }
+
+  <form [formGroup]="form.group">
+    @for (input of form.inputs; track $index) {
+      @switch (input.type) {
+        @case (1) {
+          <app-input-label [input]="input"></app-input-label>
+        }
+        
+        @case (9) {
+          <app-input-password [input]="input"></app-input-password>
+        }
+      }
+    }
+
+    <ng-content></ng-content>
+  </form>
+</div>

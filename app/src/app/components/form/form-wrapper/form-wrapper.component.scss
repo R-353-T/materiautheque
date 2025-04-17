@@ -1,0 +1,25 @@
+.form-wrapper {
+    @apply flex flex-col gap-4;
+
+    &.invalid {
+        .form-wrapper-title {
+            @apply text-red-shade;
+        }
+    }
+
+    .form-wrapper-title {
+        @apply text-4xl uppercase font-bold duration-300;
+    }
+
+    form {
+        @apply flex flex-col gap-4 rounded rounded-tl-none;
+    }
+
+    .form-wrapper-errors {
+        @apply flex flex-col gap-1;
+
+        .form-wrapper-error {
+            @apply text-sm text-red-shade;
+        }
+    }
+}
