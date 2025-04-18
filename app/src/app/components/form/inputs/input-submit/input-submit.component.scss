@@ -1,16 +1,15 @@
 .input-submit {
-    @apply flex tracking-wide items-center font-bold gap-2 border rounded py-1
-        px-2 border-blue-shade text-blue-50 bg-blue-shade duration-300
-        active:bg-blue-tint active:border-blue-tint
-        hover:bg-blue-tint hover:border-blue-tint
-        select-none cursor-pointer
-        hover:pl-4;
+    @apply flex tracking-wide items-center font-bold gap-2 rounded py-1 px-2
+        duration-300 cursor-pointer select-none bg-gradient-to-br from-blue-600
+        to-blue-800 text-blue-50 hover:opacity-85 active:opacity-70 hover:pl-4;
 
     &.loading {
-        @apply border bg-blue-50 border-blue-200 min-w-16;
+        @apply from-blue-50 to-blue-200 min-w-16 max-h-8 hover:opacity-100
+            active:opacity-100 cursor-wait hover:pl-2;
     }
 
     &.disabled {
-        @apply bg-black-100 border-black-100 text-black-400 cursor-not-allowed;
+        @apply from-black-100 to-black-100 text-black-400 cursor-not-allowed
+            hover:opacity-100 active:opacity-100 hover:pl-2;
     }
 }

@@ -29,3 +29,7 @@ export interface IAuthentication {
     username: string;
     password: string;
 }
+
+export interface IAuthenticationValidateResponse {
+    code: "jwt_auth_valid_token";
+};

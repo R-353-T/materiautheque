@@ -1,9 +1,10 @@
 import { inject, Injectable, signal } from "@angular/core";
-import { IAuthentication, IUser, IUserResponse, Roles } from "../models/api.user";
+import { IAuthentication, IAuthenticationValidateResponse, IUser, IUserResponse, Roles } from "../models/api.user";
 import { environment } from "src/environments/environment";
 import { LoginForm } from "../models/form.login";
 import { ApiService } from "./api.service";
-import { map, take } from "rxjs";
+import { catchError, map, take, throwError, timer } from "rxjs";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Injectable({ providedIn: "root" })
 export class ApiAuthenticationService {
@@ -33,6 +34,7 @@ export class ApiAuthenticationService {
 
   constructor() {
     this.loadUser();
+    this.checkAuthentication();
   }
 
   private loadUser() {
@@ -40,6 +42,7 @@ export class ApiAuthenticationService {
 
     if (user) {
       this._user.set(JSON.parse(user));
+      this._authenticated.set(true);
     }
   }
 
@@ -69,5 +72,34 @@ export class ApiAuthenticationService {
           this.storeUser = user;
         }),
       );
+  }
+
+  validate() {
+    return this._api
+      .post<IAuthenticationValidateResponse>(ApiAuthenticationService.endpoints.validate, {})
+      .pipe(
+        take(1),
+        catchError((error) => {
+          if(error instanceof HttpErrorResponse && error.status === 403) {
+            this.logout();
+          }
+
+          return throwError(() => error);
+        }),
+      );
+  }
+
+  private checkAuthentication() {
+    console.log("CHECK AUTHENTICATION");
+
+    timer(0, 15000).subscribe({
+      next: async () => {
+        const user = this._user();
+
+        if (user) {
+          this.validate().subscribe();
+        }
+      },
+    });
   }
 }

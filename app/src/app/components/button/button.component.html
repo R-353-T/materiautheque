@@ -1,0 +1,9 @@
+<div class="button" (click)="onClickEvent()" [class.disabled]="disabled">
+  @if(icon) {
+    <ion-icon [name]="icon"></ion-icon>
+  }
+  
+  @if(label) {
+    {{ label}}
+  }
+</div>

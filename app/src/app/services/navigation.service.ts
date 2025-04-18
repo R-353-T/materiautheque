@@ -58,4 +58,8 @@ export class NavigationService {
   goToHome(): Promise<boolean> {
     return this.go("/home");
   }
+
+  goToLogin(): Promise<boolean> {
+    return this.go("/authentication/login");
+  }
 }

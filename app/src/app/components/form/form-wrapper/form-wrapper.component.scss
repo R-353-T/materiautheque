@@ -1,5 +1,5 @@
 .form-wrapper {
-    @apply flex flex-col gap-4;
+    @apply flex flex-col gap-4 bg-white p-4 rounded-xl shadow-md;
 
     &.invalid {
         .form-wrapper-title {
@@ -8,7 +8,7 @@
     }
 
     .form-wrapper-title {
-        @apply text-4xl uppercase font-bold duration-300;
+        @apply text-4xl uppercase font-bold duration-300 select-none;
     }
 
     form {

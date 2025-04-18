@@ -6,7 +6,10 @@ import {
   IonProgressBar,
   IonTitle,
   IonToolbar,
+  IonButtons,
+  IonMenuButton
 } from "@ionic/angular/standalone";
+import { Title } from "@angular/platform-browser";
 
 @Component({
   selector: "app-header",
@@ -17,13 +20,15 @@ import {
     IonToolbar,
     IonTitle,
     IonProgressBar,
+    IonButtons,
+    IonMenuButton,
     CommonModule,
   ],
   standalone: true,
 })
 export class HeaderComponent {
   readonly headerService = inject(HeaderService);
+  readonly titleService = inject(Title);
 
   readonly loading = this.headerService.loading;
-  readonly title = this.headerService.title.asReadonly();
 }

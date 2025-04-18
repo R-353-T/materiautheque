@@ -5,7 +5,7 @@ import { FormInput, FormInputTypes } from "../classes/form-input";
 export class LoginForm extends Form {
     constructor() {
         super(
-            "Heureux de te revoir 🎉",
+            "Heureux de te revoir !",
             [
                 new FormInput(
                     "username",

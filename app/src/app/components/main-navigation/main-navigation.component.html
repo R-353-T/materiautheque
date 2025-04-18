@@ -1,0 +1,48 @@
+<ion-menu type="overlay" side="end" menuId="mainMenu" contentId="router-outlet">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="primary">
+        <ion-menu-toggle>
+          <ion-button color="dark">
+            <ion-icon
+              slot="icon-only"
+              name="close"
+            ></ion-icon>
+          </ion-button>
+        </ion-menu-toggle>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <ion-list lines="none">
+      @for (item of items(); track $index) {
+        <ion-menu-toggle>
+          <ion-item
+            button
+            detail="false"
+            (click)="navigationService.go(item.path)"
+          >
+            @if (item.icon) {
+              <ion-icon
+                aria-hidden="true"
+                [name]="item.icon"
+                slot="start"
+              ></ion-icon>
+            }
+            <ion-label>{{ item.label }}</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      }<ion-menu-toggle>
+        <ion-item button detail="false" (click)="logout()">
+          <ion-icon
+            aria-hidden="true"
+            name="log-out"
+            slot="start"
+          ></ion-icon>
+          Se déconnecter
+        </ion-item>
+      </ion-menu-toggle>
+    </ion-list>
+  </ion-content>
+</ion-menu>
