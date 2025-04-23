@@ -2,8 +2,8 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { BadRequestError } from '../classes/bad-request-error';
 import { CountdownLock } from '../classes/countdown-lock';
+import { BadRequestError } from '../classes/bad-request-error';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {

@@ -5,7 +5,6 @@ import {
 } from "./guards/api.authentication.guard";
 
 export const routes: Routes = [
-
   // Authentication
 
   {
@@ -13,7 +12,7 @@ export const routes: Routes = [
     title: "Page de connexion",
     loadComponent: () =>
       import("./pages/login/login.page").then((m) => m.LoginPage),
-    canActivate: [apiUnauthenticatedGuard]
+    canActivate: [apiUnauthenticatedGuard],
   },
 
   // Home
@@ -28,18 +27,56 @@ export const routes: Routes = [
       navigation: {
         label: "Accueil",
         icon: "home",
-        display: true,
-        // allowedRoles: [
-        //   "guest",
-        //   "subscriber",
-        //   "contributor",
-        //   "author",
-        //   "editor",
-        //   "administrator",
-        // ],
-      }
+        display: true
+      },
     },
   },
+
+  // Image
+
+  {
+    path: "images",
+    title: "Bibliothèque d'images",
+    loadComponent: () =>
+      import("./pages/image/images/images.page").then((m) => m.ImagesPage),
+    data: {
+      navigation: {
+        label: "Images",
+        icon: "aperture",
+        display: true,
+        allowedRoles: [
+          "guest",
+          "subscriber",
+          "contributor",
+          "author",
+          "editor",
+          "administrator",
+        ],
+      },
+    },
+  },
+
+  {
+    path: 'image/:imageId',
+    title: 'Image',
+    loadComponent: () => import('./pages/image/image/image.page').then( m => m.ImagePage),
+    data: {
+      navigation: {
+        label: 'Image',
+        icon: 'aperture',
+        display: false,
+        allowedRoles: [
+          "guest",
+          "subscriber",
+          "contributor",
+          "author",
+          "editor",
+          "administrator",
+        ],
+      }
+    }
+  },
+
   {
     path: "",
     redirectTo: "authentication/login",

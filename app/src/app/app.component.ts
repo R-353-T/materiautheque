@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { checkmark, close, home, logIn, logOut, menu } from "ionicons/icons";
+import { aperture, arrowDown, checkmark, close, home, logIn, logOut, menu } from "ionicons/icons";
 import { MainNavigationComponent } from './components/main-navigation/main-navigation.component';
 
 @Component({
@@ -16,6 +16,8 @@ import { MainNavigationComponent } from './components/main-navigation/main-navig
 export class AppComponent {
   constructor() {
     addIcons({
+      aperture,
+      arrowDown,
       checkmark,
       close,
       home,

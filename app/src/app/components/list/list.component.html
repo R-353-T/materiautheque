@@ -1,0 +1,32 @@
+<div class="app-list">
+  @for (error of options.errorsSignal(); track $index) {
+    <div class="list-errors">
+      <div class="list-error">
+        {{ error }}
+      </div>
+    </div>
+  }
+  
+  <div class="app-list-items">
+    @for (item of options.items(); track $index) {
+      <div class="app-list-item" (click)="onSelect(item)">
+        <h5>{{ item.label }}</h5>
+        @if (item.description) {
+          <p>{{ item.description }}</p>
+        }
+      </div>
+    }
+  </div>
+
+  @if (options.isInfinite && options.completeSignal() === false) {
+    @if (options.loadingSignal() === false) {
+      <div class="flex">
+        <app-button label="Plus" icon="arrow-down"></app-button>
+      </div>
+    }
+
+    <ion-infinite-scroll (ionInfinite)="onLoadMore($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  }
+</div>

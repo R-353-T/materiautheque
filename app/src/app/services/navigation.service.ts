@@ -62,4 +62,12 @@ export class NavigationService {
   goToLogin(): Promise<boolean> {
     return this.go("/authentication/login");
   }
+
+  goToImages(): Promise<boolean> {
+    return this.go("/images");
+  }
+
+  goToImage(id: number): Promise<boolean> {
+    return this.go(`/image/${id}`);
+  }
 }

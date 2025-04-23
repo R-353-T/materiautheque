@@ -3,6 +3,12 @@
 
 
 :root {
-    --ion-background-color: #f6f6f6; // gray-default
+    --ion-background-color: #e4e9f5; // gray-default
     --ion-text-color: #2f2f2f; // black-default
+}
+
+ion-searchbar.ios {
+    @apply bg-white p-2 rounded-xl;
+    --background: white;
+    --border-radius: 0;
 }

@@ -90,8 +90,6 @@ export class ApiAuthenticationService {
   }
 
   private checkAuthentication() {
-    console.log("CHECK AUTHENTICATION");
-
     timer(0, 15000).subscribe({
       next: async () => {
         const user = this._user();

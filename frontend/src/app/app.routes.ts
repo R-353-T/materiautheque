@@ -1,5 +1,4 @@
 import { Routes } from "@angular/router";
-import { unauthGuard } from "./v1/guard/unauth.guard";
 import { authGuard } from "./v1/guard/auth.guard";
 import { unitResolver } from "./v1/resolver/unit.resolver";
 import { enumeratorResolver } from "./v1/resolver/enumerator.resolver";

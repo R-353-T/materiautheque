@@ -3,7 +3,7 @@
 }
 
 .input-wrapper-label {
-    @apply text-xs font-semibold tracking-wide select-none duration-300;
+    @apply text-xs font-semibold tracking-wide select-none duration-300 px-2;
 
     &.touched,
     &.dirty {
@@ -18,7 +18,7 @@
 }
 
 .input-wrapper-errors {
-    @apply flex flex-col gap-1;
+    @apply flex flex-col gap-1 px-2;
 
     .input-wrappe-error {
         @apply text-xs text-red-shade;

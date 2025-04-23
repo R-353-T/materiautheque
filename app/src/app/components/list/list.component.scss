@@ -1,0 +1,17 @@
+.app-list-items {
+    @apply flex flex-col shadow-md rounded-xl overflow-hidden;
+
+    .app-list-item {
+        @apply flex flex-col px-4 py-2 cursor-pointer duration-300
+         hover:opacity-85 active:opacity-50 select-none
+        justify-center bg-white;
+
+        h5 {
+            @apply text-lg font-bold;
+        }
+
+        &:nth-child(2n) {
+            @apply bg-gray-50;
+        }
+    }
+}

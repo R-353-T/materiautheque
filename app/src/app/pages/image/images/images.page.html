@@ -1,0 +1,21 @@
+<app-header></app-header>
+
+<ion-content [fullscreen]="true">
+    <div class="page-wrapper">
+        <ion-searchbar
+            placeholder="Rechercher"
+            searchIcon="aperture"
+            placeholder="Rechercher une image"
+            [debounce]="300"
+            (ionInput)="filterByName($event)"
+            class="mb-4"
+        ></ion-searchbar>
+
+        <app-list
+            [options]="listOptions"
+            (select)="navigationService.goToImage($event.id)"
+            (loadMore)="loadMore($event)"
+            class="pb-10"
+        ></app-list>
+    </div>
+</ion-content>
