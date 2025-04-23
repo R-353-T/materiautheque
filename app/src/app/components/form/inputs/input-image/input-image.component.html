@@ -1,0 +1,18 @@
+<app-input-wrapper [input]="input">
+  <input
+    type="file"
+    accept=".png, .jpg, .jpeg"
+    (change)="onChange($event)"
+    (cancel)="onChange($event)"
+    class="input-image"
+    [class.ng-touched]="input.control.touched"
+    [class.ng-dirty]="input.control.dirty"
+    [class.ng-invalid]="input.control.invalid"
+    [class.ng-valid]="input.control.valid"
+    #imageInput
+  />
+
+  <div *ngIf="previewUrl" class="input-image-preview">
+    <img [src]="previewUrl"/>
+  </div>
+</app-input-wrapper>

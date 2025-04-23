@@ -6,7 +6,7 @@
         [class.dirty]="input.control.dirty"
         [class.valid]="input.control.valid"
         [class.invalid]="input.control.invalid">
-        {{ input.label }}
+        {{ input.label }} {{ input.required ? '*' : '' }}
       </div>
     </div>
     <ng-content></ng-content>

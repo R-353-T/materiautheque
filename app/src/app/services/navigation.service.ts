@@ -67,6 +67,10 @@ export class NavigationService {
     return this.go("/images");
   }
 
+  goToImageCreate(): Promise<boolean> {
+    return this.go("/image/create");
+  }
+
   goToImage(id: number): Promise<boolean> {
     return this.go(`/image/${id}`);
   }

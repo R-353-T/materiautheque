@@ -1,4 +1,3 @@
-import { Validators } from "@angular/forms";
 import { Form } from "../classes/form";
 import { FormInput, FormInputTypes } from "../classes/form-input";
 
@@ -12,17 +11,19 @@ export class LoginForm extends Form {
                     FormInputTypes.label,
                     "Nom d'utilisateur",
                     "",
+                    undefined,
+                    true
                 ),
                 new FormInput(
                     "password",
                     FormInputTypes.password,
                     "Mot de passe",
                     "",
+                    undefined,
+                    true
                 ),
             ],
         );
-        this.inputs[0].control.setValidators([Validators.required]);
-        this.inputs[1].control.setValidators([Validators.required]);
     }
 
     override isValid(): boolean {

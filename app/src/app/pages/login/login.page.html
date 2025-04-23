@@ -2,13 +2,12 @@
   <div class="page-wrapper mt-16">
     <h3></h3>
     <app-form-wrapper [form]="form" class="max-w-96">
-      <app-input-submit
+      <app-button
         label="Connexion"
         icon="log-in"
-        [loading]="loading()"
+        [loading]="loadingSignal()"
         [disabled]="apiService.bucketLock.locked() && form.group.getError('auth_too_many_request') !== null"
-        (submit)="onSubmit()"
-      ></app-input-submit>
+        (onClick)="onSubmit()"></app-button>
     </app-form-wrapper>
   </div>
 </ion-content>

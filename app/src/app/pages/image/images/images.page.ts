@@ -7,6 +7,7 @@ import { ListComponent } from "../../../components/list/list.component";
 import { ListItem, ListOptions } from 'src/app/classes/list-options';
 import { ApiImageService } from 'src/app/services/api.image.service';
 import { NavigationService } from 'src/app/services/navigation.service';
+import { ButtonComponent } from "../../../components/button/button.component";
 
 @Component({
   selector: 'app-images',
@@ -19,7 +20,8 @@ import { NavigationService } from 'src/app/services/navigation.service';
     CommonModule,
     FormsModule,
     HeaderComponent,
-    ListComponent
+    ListComponent,
+    ButtonComponent
 ]
 })
 export class ImagesPage {

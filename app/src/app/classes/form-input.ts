@@ -70,13 +70,14 @@ export class FormInput {
         label?: string,
         initial?: any,
         id?: number,
+        public required: boolean = false
     ) {
         this.name = name;
         this.type = type;
         this.label = label;
         this.initial = initial;
         this.id = id;
-        this.control = new FormControl(this.initial, FormInput.inputValidators(type));
+        this.control = new FormControl(this.initial, FormInput.inputValidators(type, required));
     }
 
     reset() {
@@ -90,7 +91,12 @@ export class FormInput {
     get errors() {
         if(this.control.errors) {
             return Object.keys(this.control.errors).map((key) => {
+                if(key === "maxlength") {
+                    return FORM_INPUT_ERRORS[key].replace("$1", this.control.errors![key].requiredLength.toString());
+                }
+
                 if(key in FORM_INPUT_ERRORS) {
+
                     return FORM_INPUT_ERRORS[key];
                 } else {
                     return "error: " + key;

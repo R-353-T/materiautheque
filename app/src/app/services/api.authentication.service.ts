@@ -52,8 +52,8 @@ export class ApiAuthenticationService {
 
   login(form: LoginForm) {
     const body: IAuthentication = {
-      username: form.inputs[0].control.value,
-      password: form.inputs[1].control.value,
+      username: form.getInputByName("username").control.value,
+      password: form.getInputByName("password").control.value
     };
 
     return this._api

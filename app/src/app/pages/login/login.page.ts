@@ -4,11 +4,11 @@ import { FormsModule } from "@angular/forms";
 import { IonContent } from "@ionic/angular/standalone";
 import { LoginForm } from "src/app/models/form.login";
 import { FormWrapperComponent } from "../../components/form/form-wrapper/form-wrapper.component";
-import { InputSubmitComponent } from "../../components/form/inputs/input-submit/input-submit.component";
 import { ApiAuthenticationService } from "src/app/services/api.authentication.service";
 import { TooManyRequestError } from "src/app/classes/too-many-request-error";
 import { ApiService } from "src/app/services/api.service";
 import { NavigationService } from "src/app/services/navigation.service";
+import { ButtonComponent } from "../../components/button/button.component";
 
 @Component({
   selector: "app-login",
@@ -20,17 +20,17 @@ import { NavigationService } from "src/app/services/navigation.service";
     CommonModule,
     FormsModule,
     FormWrapperComponent,
-    InputSubmitComponent,
-  ],
+    ButtonComponent
+],
 })
 export class LoginPage {
   readonly form = new LoginForm();
   readonly authService = inject(ApiAuthenticationService);
   readonly apiService = inject(ApiService);
-  readonly loading = signal<boolean>(false);
+  readonly loadingSignal = signal<boolean>(false);
   readonly tooManyRequestSignal = this.apiService.bucketLock.locked;
 
-  private readonly navigationService = inject(NavigationService);
+  private readonly _navigationService = inject(NavigationService);
 
   constructor() {
     effect(() => {
@@ -46,12 +46,12 @@ export class LoginPage {
 
   onSubmit() {
     if (this.form.isValid()) {
-      this.loading.set(true);
+      this.loadingSignal.set(true);
 
       this.authService.login(this.form).subscribe({
         next: () => {
-          this.navigationService.goToHome();
-          this.loading.set(false);
+          this._navigationService.goToHome();
+          this.loadingSignal.set(false);
         },
         error: (error) => {
           if(error.status === 403) {
@@ -66,7 +66,7 @@ export class LoginPage {
             this.form.group.get("password")?.setErrors({});
           }
 
-          this.loading.set(false);
+          this.loadingSignal.set(false);
         }
       });
     }

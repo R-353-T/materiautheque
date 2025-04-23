@@ -1,4 +1,4 @@
-.input-label {
+.input-image {
     @apply p-2 outline-none border font-bold rounded-xl duration-300 border-black-200
         bg-white focus:border-blue-200 focus:text-blue-shade focus:bg-blue-50;
 
@@ -12,4 +12,8 @@
             @apply border-green-200 text-green-shade bg-green-50;
         }
     }
+}
+
+.input-image-preview img {
+    @apply max-h-32 rounded-xl;
 }

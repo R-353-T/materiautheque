@@ -1,9 +1,18 @@
-<div class="button" (click)="onClickEvent()" [class.disabled]="disabled">
-  @if(icon) {
-    <ion-icon [name]="icon"></ion-icon>
-  }
-  
-  @if(label) {
-    {{ label}}
+<div
+  class="button"
+  (click)="onClickEvent()"
+  [class.loading]="loading"
+  [class.disabled]="disabled"
+>
+  @if (loading) {
+    <ion-spinner color="primary" name="dots" class="m-auto"></ion-spinner>
+  } @else {
+    @if (icon) {
+      <ion-icon [name]="icon"></ion-icon>
+    }
+
+    @if (label) {
+      {{ label }}
+    }
   }
 </div>

@@ -16,7 +16,7 @@ export class CountdownLock {
 
     constructor(public storageKey: string) {
         this.loadFromLocalStorage();
-        console.log(`(LOCK) ${this.storageKey}`, this.locked());
+        console.log(`(NEW LOCK) ${this.storageKey}`, this.locked());
     }
 
     lockFor(seconds: number) {

@@ -19,9 +19,17 @@
         @case (1) {
           <app-input-label [input]="input"></app-input-label>
         }
+
+        @case (8) {
+          <app-input-image [input]="input"></app-input-image>
+        }
         
         @case (9) {
           <app-input-password [input]="input"></app-input-password>
+        }
+
+        @default {
+          {{ input.name }} | {{ input.type }} | {{ input.label }}
         }
       }
     }

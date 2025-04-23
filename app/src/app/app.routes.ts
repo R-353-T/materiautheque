@@ -57,6 +57,11 @@ export const routes: Routes = [
   },
 
   {
+    path: 'image/create',
+    loadComponent: () => import('./pages/image/create-image/create-image.page').then( m => m.CreateImagePage)
+  },
+
+  {
     path: 'image/:imageId',
     title: 'Image',
     loadComponent: () => import('./pages/image/image/image.page').then( m => m.ImagePage),

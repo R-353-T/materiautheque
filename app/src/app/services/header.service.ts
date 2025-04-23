@@ -25,8 +25,6 @@ export class HeaderService extends TitleStrategy {
   override updateTitle(snapshot: RouterStateSnapshot): void {
     const title = this.buildTitle(snapshot);
 
-    console.log(title);
-
     if(title !== undefined) {
       this._titleService.setTitle(title);
     } else {

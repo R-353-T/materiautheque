@@ -1,0 +1,23 @@
+<ion-content [fullscreen]="true">
+  <div class="page-wrapper gap-4 mt-12">
+    <div class="flex">
+      <app-button
+        icon="arrow-back"
+        label="Revenir à la bibliothèque d'images"
+        (onClick)="navigationService.goToImages()"
+      ></app-button>
+    </div>
+
+    <app-form-wrapper [form]="form">
+      <div class="flex">
+        <app-button
+          label="Téléverser"
+          icon="add"
+          [loading]="loadingSignal()"
+          (onClick)="onSubmit()"
+        >
+        </app-button>
+      </div>
+    </app-form-wrapper>
+  </div>
+</ion-content>

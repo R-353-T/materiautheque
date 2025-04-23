@@ -5,7 +5,7 @@ export interface IImage {
     relative: string;
 }
 
-export function ImageFormData(id: null|number, name: string, file?: File) {
+export function imageFormData(id: null|number, name: string, file?: File) {
     const formData = new FormData();
 
     formData.append("name", name);

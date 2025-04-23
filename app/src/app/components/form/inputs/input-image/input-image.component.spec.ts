@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { InputSubmitComponent } from './input-submit.component';
+import { InputImageComponent } from './input-image.component';
 
-describe('InputSubmitComponent', () => {
-  let component: InputSubmitComponent;
-  let fixture: ComponentFixture<InputSubmitComponent>;
+describe('InputImageComponent', () => {
+  let component: InputImageComponent;
+  let fixture: ComponentFixture<InputImageComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ InputSubmitComponent ],
+      declarations: [ InputImageComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(InputSubmitComponent);
+    fixture = TestBed.createComponent(InputImageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

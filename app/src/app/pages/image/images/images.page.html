@@ -1,21 +1,28 @@
 <app-header></app-header>
 
 <ion-content [fullscreen]="true">
-    <div class="page-wrapper">
+
+    <div class="page-wrapper gap-4">
+        <div class="flex gap-4">
+            <app-button icon="add" label="Ajouter une image" (onClick)="navigationService.goToImageCreate()"></app-button>
+        </div>
+
         <ion-searchbar
             placeholder="Rechercher"
             searchIcon="aperture"
             placeholder="Rechercher une image"
             [debounce]="300"
             (ionInput)="filterByName($event)"
-            class="mb-4"
         ></ion-searchbar>
 
         <app-list
             [options]="listOptions"
             (select)="navigationService.goToImage($event.id)"
             (loadMore)="loadMore($event)"
-            class="pb-10"
         ></app-list>
+        
+        <div class="flex gap-4">
+            <app-button icon="add" label="Ajouter une image" (onClick)="navigationService.goToImageCreate()"></app-button>
+        </div>
     </div>
 </ion-content>

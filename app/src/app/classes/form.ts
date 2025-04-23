@@ -1,7 +1,8 @@
-import { FormGroup } from "@angular/forms";
+import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { FormInput } from "./form-input";
 import { signal } from "@angular/core";
 import { FORM_INPUT_ERRORS } from "./form-input-error";
+import { BadRequestError } from "./bad-request-error";
 
 export class Form {
     private readonly _errors = signal<string[]>([]);
@@ -34,11 +35,15 @@ export class Form {
     }
 
     constructor(public title: string, public inputs: FormInput[]) {
-        this.initialize();
+        this._initialize();
     }
 
     reset() {
         this.inputs.forEach((input) => input.reset());
+    }
+
+    getInputByName(name: string) {
+        return this.inputs.find((input) => input.name === name)!;
     }
 
     isValid() {
@@ -47,7 +52,51 @@ export class Form {
         return this.group.valid;
     }
 
-    private initialize() {
+    setHttpErrors(httpErrorResponse: any) {
+        if(httpErrorResponse instanceof BadRequestError) {
+            this._setBadRequest(httpErrorResponse);
+        } else {
+            console.warn("(form) unknown http error", httpErrorResponse);
+        }
+    }
+
+    private _setBadRequest(error: BadRequestError) {
+        let applied = false;
+
+        for (const errparam of error.data.parameters) {
+            applied = false;
+
+            if(errparam.name in this.group.controls) {
+                if(errparam.index !== undefined) {
+                    const fArray = this.group.get(errparam.name) as FormArray<FormControl>;
+                    fArray.at(errparam.index)?.setErrors({ [errparam.code]: errparam.data ?? true });
+                } else {
+                    this.group.get(errparam.name)?.setErrors({ [errparam.code]: errparam.data ?? true });
+                }
+
+                applied = true;
+            }
+
+            // for(const form_name in this.group) {
+            //     if(this.formGroups[form_name].get(errparam.name)) {
+            //         if(errparam.index !== undefined) {
+            //             const fArray = this.formGroups[form_name].get(errparam.name) as FormArray<FormControl>;
+            //             fArray.at(errparam.index)?.setErrors({ [errparam.code]: errparam.data ?? true });
+            //         } else {
+            //             this.formGroups[form_name].get(errparam.name)?.setErrors({ [errparam.code]: true });
+            //             applied = true;
+            //         }
+            //     }
+            // }
+
+            if(!applied) {
+                console.warn("--- Error not applied ---", errparam);
+            }
+        }
+        
+    }
+
+    private _initialize() {
         this.inputs.forEach((input) => {
             this.group.addControl(input.name, input.control);
         });
